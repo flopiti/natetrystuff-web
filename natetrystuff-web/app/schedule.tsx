@@ -20,13 +20,37 @@ const Schedule = () => {
         setMealsSchedule(data)
     }
 
+    console.log(mealsSchedule)
     const [fourDaysSchedule, setFourDaysSchedule] = useState(getNextFourDays())
+    const [isAddMealFormVisible, setIsAddMealFormVisible] = useState(false)
+    const [meals, setMeals] = useState([])
+    const getMeals = async () => {
+        const response = await fetch('/api/meals');
+        const data = (await response.json()).data;
+        setMeals(data);
+    }
+
+    const addMealToSchedule = async (meal:any, date:any) => { 
+        console.log(date)
+        meal = {meal: meal, scheduledTime: date}
+        const mealz = JSON.stringify(meal)
+        const response = await fetch('/api/meal-schedules', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: mealz,
+        });
+        const data = await response.json();
+    }
 
     useEffect(() => {
         getMealSchedules()
+        getMeals()
     }
     , []);
-    console.log(mealsSchedule)
+
+
     return (
         <div className="h-[70vh] border-2 border-white w-full">
             
@@ -37,10 +61,31 @@ const Schedule = () => {
                         <div key={index} className="w-1/4">
                             <h1>{day.toDateString()}</h1>
                             <ul>
-                                {mealsSchedule?.map((mealSchedule:any, index: number) => {
-                                    return <li key={index}>{mealSchedule.mealName}</li>
+                                {mealsSchedule?.filter(
+                                    (mealSched:any) => {
+                                        const mealDate = new Date(mealSched.scheduledTime)
+                                        return mealDate.toDateString() === day.toDateString()
+                                    }
+                                
+                                ).map((mealSched:any, index: number) => {
+                                    return <li key={index}>{mealSched.meal.mealName}</li>
                                 })}
                             </ul>
+                            
+                            <button onClick={()=> setIsAddMealFormVisible(!isAddMealFormVisible)}>
+                                Add Meal to Schedule
+                            </button>
+                            {isAddMealFormVisible && (
+                        
+                                <ul>
+                                    {
+                                        meals.map((meal:any, index: number) => {
+                                            return <li key={index} onClick={()=>addMealToSchedule(meal, day)} >{meal.mealName}</li>
+                                        })
+                                    }
+                                </ul>
+                            )
+                            }
                         </div>
                     )
                 })}
