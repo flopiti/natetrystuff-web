@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 const Meals = () => {
 
     const [meals, setMeals] = useState<any>([]);
-    
 
     const getMeals = async () => {
         const response = await fetch('/api/meals');
