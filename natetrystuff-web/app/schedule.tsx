@@ -30,7 +30,6 @@ const Schedule = () => {
     }
 
     const addMealToSchedule = async (meal:any, date:any) => { 
-        console.log(date)
         meal = {meal: meal, scheduledTime: date}
         const mealz = JSON.stringify(meal)
         const response = await fetch('/api/meal-schedules', {
@@ -51,7 +50,6 @@ const Schedule = () => {
 
     const[addMealsIndexes, setAddMealsIndexes] = useState<any>([]) 
 
-    console.log(addMealsIndexes)
     const showAddMeal = (index: number) => {
         setIsAddMealFormVisible(prevVisible => !prevVisible);  // Toggles visibility state
     
@@ -67,6 +65,14 @@ const Schedule = () => {
     }
     
 
+    const deleteScheduledMeal = async (mealSched:any) => {
+        console.log(mealSched)
+        const response = await fetch(`/api/meal-schedules/${mealSched}`, {
+            method: 'DELETE',
+        });
+        const data = await response.json();
+    }
+
     return (
         <div className="h-[70vh] border-2 border-white w-full">
             
@@ -76,7 +82,7 @@ const Schedule = () => {
         <div key={index} className="w-1/4 flex flex-col">
             <h1>{day.toDateString()}</h1>
             <div className="bg-green-500 flex flex-col flex-grow">
-                {
+            {
                    mealsSchedule?.filter(
                         (mealSched:any) => {
                             const mealDate = new Date(mealSched.scheduledTime);
@@ -89,12 +95,14 @@ const Schedule = () => {
                                 const mealDate = new Date(mealSched.scheduledTime);
                                 return mealDate.toDateString() === day.toDateString();
                             }
-                        ).map((mealSched:any, idx) => (
-                            <li key={idx}>{mealSched.meal.mealName}</li>
-                        ))}
-                    </ul>
-                    ) : <></>
+                        )
+                        .map((mealSched:any, idx) => (
+                            <li key={idx}><span>{mealSched.meal.mealName}</span><button className="mx-2" onClick={()=>deleteScheduledMeal(mealSched.scheduleId)}>X</button></li>
+                        ))
+                        }
+                    </ul> ) : <></>
                 }
+
 
                 <button onClick={() => showAddMeal(index)}>
                     Add Meal to Schedule
@@ -102,12 +110,16 @@ const Schedule = () => {
                 {addMealsIndexes.includes(index) && (
                     <ul>
                         {meals.map((meal:any, idx) => (
-                            <li className="m-2 text-sm bg-yellow-500"  key={idx} onClick={() => addMealToSchedule(meal, day)}>{meal.mealName}</li>
+                            <li className="m-2 text-sm bg-yellow-500"  key={idx} onClick={() => addMealToSchedule(meal, day)}>{meal.mealName}</li>  
                         ))}
+
                     </ul>
+
                 )}
+
             </div>
-        </div>
+        
+     </div>
     ))}
 </div>
 
