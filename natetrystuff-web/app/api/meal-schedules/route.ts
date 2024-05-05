@@ -36,6 +36,6 @@ export async function POST(request: NextRequest) {
     });
 }
 
-export const config = {
-    runtime: 'experimental-edge',
-};
+// export const config = {
+//     runtime: 'experimental-edge',
+// };

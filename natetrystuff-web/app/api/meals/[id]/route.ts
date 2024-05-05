@@ -18,6 +18,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: n
 }
 
 
-export const config = {
-    runtime: 'experimental-edge',
-};
+// export const config = {
+//     runtime: 'experimental-edge',
+// };

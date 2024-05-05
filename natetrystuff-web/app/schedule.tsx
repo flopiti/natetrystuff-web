@@ -98,7 +98,7 @@ const Schedule = () => {
                                 return mealDate.toDateString() === day.toDateString();
                             }
                         )
-                        .map((mealSched:any, idx) => (
+                        .map((mealSched:any, idx:any) => (
                             <li key={idx}><span>{mealSched.meal.mealName}</span><button className="mx-2" onClick={()=>deleteScheduledMeal(mealSched.scheduleId)}>X</button></li>
                         ))
                         }

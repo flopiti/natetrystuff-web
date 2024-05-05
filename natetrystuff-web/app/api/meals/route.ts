@@ -59,6 +59,6 @@ export async function DELETE(request: NextRequest) {
 }
 
 
-export const config = {
-    runtime: 'experimental-edge',
-};
+// export const config = {
+//     runtime: 'experimental-edge',
+// };
