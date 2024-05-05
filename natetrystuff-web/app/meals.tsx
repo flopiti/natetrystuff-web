@@ -10,7 +10,6 @@ const Meals = () => {
         const data = (await response.json()).data;
         setMeals(data);
     }
-    console.log(meals);
 
     useEffect(() => {
         getMeals();
@@ -18,9 +17,7 @@ const Meals = () => {
     , []);
 
     const addMeal = async (meal:any) => {
-
         meal = {mealName: meal}
-        console.log(meal)
         const mealz = JSON.stringify(meal)
         const response = await fetch('/api/meals', {
             method: 'POST',
@@ -29,9 +26,7 @@ const Meals = () => {
             },
             body: mealz,
         });
-        console.log(response)
         const data = await response.json();
-        console.log(data);
     }
 
     return (
@@ -41,7 +36,6 @@ const Meals = () => {
             </button>
             <ul>
                 {meals?.map((meal:any, index: number) => {
-                    console.log(meal)
                     return <li key={index}>{meal.mealName}</li>
                 })}
             </ul>
