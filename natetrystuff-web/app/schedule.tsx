@@ -13,7 +13,7 @@ const Schedule = () => {
         }
         return fourDays
     }
-    const [mealsSchedule, setMealsSchedule] = useState([]) // [ {date: Date, meals: [ {mealName: string, ingredients: [string]} ] }
+    const [mealsSchedule, setMealsSchedule] = useState<any>([]) // [ {date: Date, meals: [ {mealName: string, ingredients: [string]} ] }
     const getMealSchedules = async () => {
         const response = await fetch('/api/meal-schedules')
         const data = (await response.json()).data
@@ -40,6 +40,7 @@ const Schedule = () => {
             body: mealz,
         });
         const data = await response.json();
+        setMealsSchedule([...mealsSchedule, data.data])
     }
 
     useEffect(() => {
@@ -71,6 +72,7 @@ const Schedule = () => {
             method: 'DELETE',
         });
         const data = await response.json();
+        setMealsSchedule(mealsSchedule.filter((meal:any) => meal.scheduleId !== mealSched))
     }
 
     return (

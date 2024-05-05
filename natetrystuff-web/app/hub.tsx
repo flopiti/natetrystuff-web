@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Schedule from "./schedule";
 import Meals from "./meals";
+import Code from "./code";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -12,6 +13,7 @@ const Hub = () => {
         <div>
             <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
             <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
+            <button className="mx-2" onClick={() => setPage('code')}>Code</button>
         </div>
         {
             page === 'schedule' ? (
@@ -19,8 +21,10 @@ const Hub = () => {
             ) : 
             page === 'meals'? (
                 <Meals />
-            )
-            : null
+            ) : 
+            page === 'code' ? (
+                <Code/>
+            ) : null
 
         }
         </>
