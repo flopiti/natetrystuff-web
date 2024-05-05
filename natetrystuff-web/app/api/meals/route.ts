@@ -39,6 +39,26 @@ export async function POST(request: NextRequest) {
     });
 }
 
+export async function DELETE(request: NextRequest) {
+
+    //get id from the path
+
+    const res = await fetch('http://localhost:8080/meals/:id', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+    const data = await res.json();
+    return new NextResponse(JSON.stringify({ data }), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+
 export const config = {
     runtime: 'experimental-edge',
 };

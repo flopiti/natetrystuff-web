@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     const body = await request.json()
-    console.log(body)
     const res = await fetch('http://localhost:8080/meal-schedules', {
         method: 'POST',
         headers: {

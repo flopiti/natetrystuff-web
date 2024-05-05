@@ -29,6 +29,16 @@ const Meals = () => {
         const data = await response.json();
     }
 
+    const deleteMeal = async (meal:any) => {
+        const response = await fetch(`/api/meals/${meal.mealId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+    }  
+
     return (
         <div  className="h-[70vh] border-2 border-white w-full">
             <button className="mx-2" onClick={()=>setIsAddMealFormVisible(!isAddMealFormVisible)}>
@@ -36,8 +46,9 @@ const Meals = () => {
             </button>
             <ul>
                 {meals?.map((meal:any, index: number) => {
-                    return <li key={index}>{meal.mealName}</li>
+                    return <li key={index}><span>{meal.mealName}</span><button className="mx-2" onClick={()=>deleteMeal(meal)}>X</button></li>
                 })}
+                
             </ul>
             {
                 isAddMealFormVisible && (
