@@ -21,6 +21,24 @@ export async function GET(request: NextRequest) {
     });
 }
 
+export async function POST(request: NextRequest) {
+    const body = await request.json()
+    const res = await fetch('http://localhost:8080/meals', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    return new NextResponse(JSON.stringify({ data }), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
 export const config = {
     runtime: 'experimental-edge',
 };
