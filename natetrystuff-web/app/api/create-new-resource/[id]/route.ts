@@ -1,7 +1,7 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest, { params }: { params: { id: number } }) {
+export async function POST(request: NextRequest, { params }: { params: { id: number } }) {  
         const requestBody = await request.json();
         try {
         const response = await axios.post(`http://localhost:1234/create-new-resource/${params.id}`, {
@@ -21,7 +21,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: num
         });
     } catch (error) {
         console.error('This resource already exists', 'error');
-        return new NextResponse(JSON.stringify({ error: 'Resource already exists', details:'error' }), {
+        return new NextResponse(JSON.stringify({ error: 'Resource already exists', details: request.body
+        }), {
             status: 400,
             headers: {
                 'Content-Type': 'application/json'

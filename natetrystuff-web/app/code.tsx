@@ -28,6 +28,19 @@ const Code = () => {
         setProperty1Name(name)
     }
 
+    const[class1Name, setClass1Name] = useState('');
+    const[class2Name, setClass2Name] = useState('');
+
+    const hasMany = async (class1:string, class2:string) => {
+        const response = await fetch(`/api/has-many`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ class1, class2 })});
+        const data = await response.json();
+    }
+
     return (
         <div className="bg-yellow-500 flex-grow w-full p-4 m-24">
             <button onClick={()=>addGetOneToMeal()}>Add Get One to Meals</button>
@@ -36,6 +49,14 @@ const Code = () => {
             <button onClick={()=>createNewResource()}>
                 Create New Resource
             </button>
+            <div>
+                <input type="text" className="text-black" placeholder="Class1" value={class1Name} onChange={(e:any)=>setClass1Name(e.target.value)} />
+                <span>  Has many</span>
+                <input type="text" className="text-black" placeholder="Class2" value={class2Name} onChange={(e:any)=>setClass2Name(e.target.value)} />
+                <button onClick={()=>hasMany(class1Name, class2Name)}>
+                    Create Relationship
+                </button>
+            </div>
         </div>
     );
 }
