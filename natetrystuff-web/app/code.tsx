@@ -18,7 +18,7 @@ const Code = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ properties: property1Name }), // Corrected to use property value
+            body: JSON.stringify({ propertieName: property1Name }), // Corrected to use property value
         });
         const data = await response.json();
     }
