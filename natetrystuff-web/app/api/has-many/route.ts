@@ -12,6 +12,12 @@ export async function POST(request: NextRequest) {
             },
             data: requestBody
         });
+        return new NextResponse(JSON.stringify(response.data), {
+            status: response.status,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
         }      catch (error:any) {
             console.log('Error in Axios request:', error.response ? error.response.data : error.message); // Log detailed error from Axios
             // Return a detailed error response back to the client
