@@ -70,20 +70,23 @@ const Meals = () => {
             <button className="mx-2" onClick={()=>setIsAddMealFormVisible(!isAddMealFormVisible)}>
                 Add Meal
             </button>
-            <ul>
+            <ul className="list-disc ml-5">
                 {meals?.map((meal:any, index: number) => {
-                    return <li key={index}>
+                    return <li key={index} className="">
                         <span>{meal.mealName}</span><button className="mx-2" onClick={()=>deleteMeal(meal)}>X</button>
+                        <ul className="list-disc ml-10">
                         {
                             meal.mealIngredients?.map((mealIngredients:any, index:number) => {
                                 console.log(mealIngredients)
-                                return <div key={index}>
+                                return <li key={index}>
                                     <span>{mealIngredients.quantity}</span>
                                     <span>{mealIngredients.unit}</span>
                                     <span>{mealIngredients.ingredient.ingredientName}</span>
-                                </div>
+                                </li>
                             })
                         }
+                        </ul>
+
                         </li>
                 })}
                 
