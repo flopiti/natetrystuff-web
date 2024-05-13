@@ -23,12 +23,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     const body = await request.json()
+    console.log(JSON.stringify(body.meal))
     const res = await fetch('http://localhost:8080/meals', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(body.meal),
     });
     const data = await res.json();
     return new NextResponse(JSON.stringify({ data }), {

@@ -9,7 +9,7 @@ const Meals = () => {
     }
     const [meals, setMeals] = useState<any[]>([]);
     const [isAddMealFormVisible, setIsAddMealFormVisible] = useState(false);
-
+    console.log(meals)
     const [formMealName, setFormMealName] = useState<any>('')
     const [formMealIngredients, setFormMealIngredients] = useState<MealIngredient[]>([
         {  ingredientName:'', quantity: 0, unit: '' },
@@ -29,14 +29,9 @@ const Meals = () => {
         getMeals();
     }
     , []);
-
-    console.log(meals)
-    const addMeal = async (name:any, ingredients:any) => {
-        const meal = {meal: name, mealIngredients: ingredients}
-        console.log(meal)
+    const addMeal = async (name:any, mealIngredients:any) => {
+        const meal = {mealName: name, mealIngredients: mealIngredients}
         const mealz = JSON.stringify({meal})
-        console.log(mealz)
-        console.log(mealz)
         const response = await fetch('/api/meals', {
             method: 'POST',
             headers: {
@@ -56,7 +51,9 @@ const Meals = () => {
         });
         const data = await response.json();
     }  
-    const handleInputChange = (index:number, field:any, value:any) => {
+    const handleInputChange = (index:number, field:any, value:any)=> {
+    console.log(field)
+
         console.log(index, field, value)
         const updatedMealIngredients = formMealIngredients.map((meal:any, idx:any) => {
           if (idx === index) {
@@ -66,8 +63,8 @@ const Meals = () => {
         });
         setFormMealIngredients(updatedMealIngredients);
       };
-      console.log(formMealIngredients)
       
+
     return (
         <div  className="h-[70vh] border-2 border-white w-full">
             <button className="mx-2" onClick={()=>setIsAddMealFormVisible(!isAddMealFormVisible)}>
@@ -78,12 +75,12 @@ const Meals = () => {
                     return <li key={index}>
                         <span>{meal.mealName}</span><button className="mx-2" onClick={()=>deleteMeal(meal)}>X</button>
                         {
-                            meal.ingredients?.map((mealIngredients:any, index:number) => {
+                            meal.mealIngredients?.map((mealIngredients:any, index:number) => {
                                 console.log(mealIngredients)
                                 return <div key={index}>
-                                    <span>{mealIngredients.meal}</span>
                                     <span>{mealIngredients.quantity}</span>
                                     <span>{mealIngredients.unit}</span>
+                                    <span>{mealIngredients.ingredient.ingredientName}</span>
                                 </div>
                             })
                         }
