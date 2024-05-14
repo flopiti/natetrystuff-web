@@ -9,6 +9,15 @@ const DevDb = () => {
     const[chosenDeleteTable, setChosenDeleteTable] = useState('')
     const[chosenDescribeTable, setChosenDescribeTable] = useState('')
 
+
+    const getTables = () => {
+        fetch('/api/get-tables')
+        .then(response => response.json())
+        .then(data => {
+            setTables(data)
+        })
+    }
+
     const selectAll = () => {
         
     }
