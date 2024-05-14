@@ -15,6 +15,7 @@ const Hub = () => {
             <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
             <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
             <button className="mx-2" onClick={() => setPage('code')}>Code</button>
+            <button className="mx-2" onClick={() => setPage('/dev-db')}>Dev DB</button>
         </div>
         {
             page === 'schedule' ? (
