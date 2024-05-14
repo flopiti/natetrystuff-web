@@ -4,6 +4,7 @@ import { useState } from "react";
 import Schedule from "./schedule";
 import Meals from "./meals";
 import Code from "./code";
+import DevDb from "./devdb";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -24,6 +25,9 @@ const Hub = () => {
             ) : 
             page === 'code' ? (
                 <Code/>
+            ) :
+            page === '/dev-db' ? (
+                <DevDb/>
             ) : null
 
         }
