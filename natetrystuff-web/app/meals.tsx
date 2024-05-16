@@ -41,7 +41,8 @@ const Meals = () => {
             body: mealz,
         });
         const data = await response.json();
-    }
+        setMeals([...meals, data.data]);
+        }
 
     const deleteMeal = async (meal:any) => {
         const response = await fetch(`/api/meals/${meal.mealId}`, {
@@ -50,7 +51,7 @@ const Meals = () => {
                 'Content-Type': 'application/json',
             },
         });
-        const data = await response.json();
+        setMeals(meals.filter((m:any) => m.mealId !== meal.mealId));
     }  
     const handleInputChange = (index:number, field:any, value:any)=> {
     console.log(field)
