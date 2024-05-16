@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: number } }) {
-    console.log('ww')
     const res = await fetch(`http://localhost:8080/meal-schedules/${params.id}`, {
         method: 'DELETE',
         headers: {
