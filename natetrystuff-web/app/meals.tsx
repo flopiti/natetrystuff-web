@@ -30,7 +30,8 @@ const Meals = () => {
     }
     , []);
     const addMeal = async (name:any, mealIngredients:any) => {
-        const meal = {mealName: name, mealIngredients: mealIngredients}
+        const meal = {mealName: name, mealIngredients: mealIngredients.filter(
+            (mealIngredient: { ingredientName: string; quantity: number; unit: string;}) => mealIngredient.ingredientName !== '' && mealIngredient.quantity !== 0 && mealIngredient.unit !== '')}
         const mealz = JSON.stringify({meal})
         const response = await fetch('/api/meals', {
             method: 'POST',
