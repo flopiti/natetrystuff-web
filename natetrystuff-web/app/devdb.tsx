@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const DevDb = () => {
 
@@ -11,7 +11,7 @@ const DevDb = () => {
 
 
     const getTables = () => {
-        fetch('/api/get-tables')
+        fetch('/api/db/get-tables')
         .then(response => response.json())
         .then(data => {
             setTables(data)
@@ -29,6 +29,10 @@ const DevDb = () => {
 
     }
 
+    useEffect(() => {
+        getTables()
+    }
+    , [])
 
   return (
     <div>
