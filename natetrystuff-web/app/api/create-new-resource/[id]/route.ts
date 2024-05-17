@@ -32,6 +32,3 @@ export async function POST(request: NextRequest, { params }: { params: { id: num
     console.error('This resource already exist');
     
 }
-export const config = {
-    runtime: 'nodejs', // Switch back to a standard Node.js runtime to compare behavior
-};
