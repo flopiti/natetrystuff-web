@@ -1,0 +1,53 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: cd natetrystuff-web && npm install
+
+      - name: Build Next.js app
+        run: cd natetrystuff-web && npm run build
+
+      - name: Export static files (if using static export)
+        run: cd natetrystuff-web && npm run export
+
+      - name: List output of build
+        run: ls -l natetrystuff-web/out/  # Adjust if using `npm run export`
+
+      - name: Setup SSH Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.DROPLET_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+            ssh-private-key: ${{ secrets.DROPLET_SSH_KEY }}
+
+      - name: Copy built files to server
+        run: scp -r natetrystuff-web/.next/ ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/path/to/your/nextjs/app/.next
+        # If using static export
+        # run: scp -r your_nextjs_app/out/ ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/path/to/your/nextjs/app/
+
+    #   - name: Restart Service
+    #     run: ssh ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} 'sudo systemctl restart your_nextjs_app.service'
