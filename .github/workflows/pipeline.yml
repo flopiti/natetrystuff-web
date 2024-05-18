@@ -21,12 +21,18 @@ jobs:
         with:
           node-version: '18'
 
+      - name: lstest
+        run: ls -l
+
       - name: Install dependencies
         run: cd natetrystuff-web && npm install
 
       - name: is.Env? 
         run: cd natetrystuff-web & ls
-        
+
+      - name: is.Env?
+        run: ls
+
       - name: Build Next.js app
         run:  npm run build
 
