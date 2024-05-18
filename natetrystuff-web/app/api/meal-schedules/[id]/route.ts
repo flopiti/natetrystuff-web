@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: number } }) {
+
+    console.log(process.env)
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules/${params.id}`, {
         method: 'DELETE',
         headers: {
