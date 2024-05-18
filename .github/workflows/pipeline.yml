@@ -24,8 +24,11 @@ jobs:
       - name: Install dependencies
         run: cd natetrystuff-web && npm install
 
+      - name: is.Env? 
+        run: cd natetrystuff-web & ls
+        
       - name: Build Next.js app
-        run: cd natetrystuff-web && npm run build
+        run:  npm run build
 
       - name: Export static files (if using static export)
         run: cd natetrystuff-web && npm run export
