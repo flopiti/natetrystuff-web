@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
+    console.log(process.env)
     const res = await fetch(`${process.env.CODE_HELPER_URL}/add-request`, {
         headers: {
           'Content-Type': 'application/json',
         },
     });
-
 
     const data = await res.json();
     return new NextResponse(JSON.stringify({ data }), {
