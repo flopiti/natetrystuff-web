@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-    const res = await fetch('http://localhost:1234/add-request', {
+    const res = await fetch(`${process.env.CODE_HELPER_URL}/add-request`, {
         headers: {
           'Content-Type': 'application/json',
         },

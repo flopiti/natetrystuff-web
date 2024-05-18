@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: number } }) {
     try {
-        const res = await fetch(`http://localhost:8080/meals/${params.id}`, {
+        const res = await fetch(`${process.env.SPRING_BOOT_URL}/meals/${params.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

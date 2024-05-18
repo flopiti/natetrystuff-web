@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     const body = await request.json()
-    const res = await fetch('http://localhost:8080/meal-schedules', {
+    const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

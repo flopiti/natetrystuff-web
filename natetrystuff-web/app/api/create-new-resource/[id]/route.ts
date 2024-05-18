@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest, { params }: { params: { id: number } }) {  
         const requestBody = await request.json();
         try {
-        const response = await axios.post(`http://localhost:1234/create-new-resource/${params.id}`, {
+        const response = await axios.post(`${process.env.CODE_HELPER_URL}/create-new-resource/${params.id}`, {
             headers: {
                 'Content-Type': 'application/json',
 
