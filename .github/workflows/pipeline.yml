@@ -26,6 +26,9 @@ jobs:
 
       - name: Build Next.js app
         run: cd natetrystuff-web && ls && npm run build
+        env:
+          SPRING_BOOT_URL: http://localhost:8080
+          CODE_HELPER_URL: http://localhost:1234 
 
       - name: Export static files (if using static export)
         run: cd natetrystuff-web && npm run export
