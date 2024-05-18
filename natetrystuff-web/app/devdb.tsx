@@ -42,8 +42,8 @@ const DevDb = () => {
         <select onChange={(e) => setChosenSelectTable(e.target.value)}>
                 <option value="" >Select Table</option>
                 {
-                    tables.map(table => (
-                        <option value={table}>{table}</option>
+                    tables.map((table:any, index:number) => (
+                        <option key={index} value={table}>{table}</option>
                     ))
                 }
               </select>
@@ -54,8 +54,8 @@ const DevDb = () => {
         <select onChange={(e) => setChosenDeleteTable(e.target.value)}>
                 <option value="" >Select Table</option>
                 {
-                    tables.map(table => (
-                        <option value={table}>{table}</option>
+                    tables.map((table:any, index:number) => (
+                        <option key={index} value={table}>{table}</option>
                     ))
                 }
               </select>
@@ -66,8 +66,8 @@ const DevDb = () => {
         <select onChange={(e) => setChosenDescribeTable(e.target.value)}>
                 <option value="" >Select Table</option>
                 {
-                    tables.map(table => (
-                        <option value={table}>{table}</option>
+                    tables.map((table:any, index:number) => (
+                        <option key={index}value={table}>{table}</option>
                     ))
                 }
               </select>
