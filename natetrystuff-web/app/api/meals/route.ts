@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     const body = await request.json()
-    console.log(JSON.stringify(body.meal))
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meals`, {
         method: 'POST',
         headers: {
@@ -36,9 +35,6 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-
-    //get id from the path
-
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meals/:id`, {
         method: 'DELETE',
         headers: {
@@ -53,8 +49,3 @@ export async function DELETE(request: NextRequest) {
         },
     });
 }
-
-
-// export const config = {
-//     runtime: 'experimental-edge',
-// };
