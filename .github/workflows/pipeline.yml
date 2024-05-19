@@ -43,7 +43,7 @@ jobs:
 
       - name: Copy built files and configuration to server
         run: |
-          scp -r natetrystuff-web/.next .env.production natetrystuff-web/package.json ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/apps/natetrystuff-web/app/
+          scp -r natetrystuff-web/.next natetrystuff-web/.env.production natetrystuff-web/package.json ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/apps/natetrystuff-web/app/
           ssh ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "cd /apps/natetrystuff-web/app && npm install"
           
         # If using static export
