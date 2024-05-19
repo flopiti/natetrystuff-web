@@ -41,8 +41,11 @@ jobs:
         with:
             ssh-private-key: ${{ secrets.DROPLET_SSH_KEY }}
 
-      - name: Copy built files to server
-        run: scp -r natetrystuff-web/.next/ ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/apps/natetrystuff-web/app/.next
+      - name: Copy built files and configuration to server
+        run: |
+          scp -r natetrystuff-web/.next natetrystuff-web/next.config.js natetrystuff-web/package.json ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/apps/natetrystuff-web/app/
+          ssh ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "cd /apps/natetrystuff-web/app && npm install"
+          
         # If using static export
         # run: scp -r your_nextjs_app/out/ ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/path/to/your/nextjs/app/
 
