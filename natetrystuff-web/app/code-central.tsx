@@ -14,18 +14,36 @@ const CodeCentral = () => {
     const springBootFiles = await res.json();
     setSpringBootFiles(springBootFiles.data);
     }
-    console.log(springBootFiles)
     useEffect(() => {
         getSpringBootFiles();
         
     }
     ,[])
 
-    const [conversation, setConversation] = useState<string[]>([]);
+    const [conversation, setConversation] = useState<any[]>([]);
+
+    const askChat = async (conversation_: string[]) => {
+        console.log(conversation_)
+        const res = await fetch('api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store'
+            },
+            body: JSON.stringify({ conversation_ })
+        });
+
+
+        const response = await res.json();
+        console.log(response)
+        console.log(conversation_)
+        setConversation([...conversation_, {content: response.chatCompletion.choices[0].message.content, role: 'assistant', type: 'text'}]);
+    }
 
     const addToConversation = (message: string) => {
-        setConversation([...conversation, message]);
+        askChat([...conversation, {content:message, role: 'user', type: 'text'}]);
     }
+    console.log(conversation)
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
@@ -55,15 +73,15 @@ const CodeCentral = () => {
             </div>
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200">
-                    {
-                        conversation.map((message, index) => {
+                {
+                        conversation?.map((message, index) => {
                             return (
-                                <div key={index} className="text-black">
-                                    <p>{message}</p>
+                                <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}                                >
+                                    <p>{message.content}</p>
                                 </div>
                             );
                         })
-                    }
+                    } 
                 </div>
                 <div className="w-full h-1/5 bg-purple-200">
                     <input type="text" className="w-full h-full text-black"
