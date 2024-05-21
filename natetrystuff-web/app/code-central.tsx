@@ -3,6 +3,9 @@ import { use, useEffect, useState } from "react";
 const CodeCentral = () => {
 
     const [springBootFiles, setSpringBootFiles] = useState([]);
+    const [selectedFileName, setSelectedFileName] = useState('');
+    const [selectedFileContent, setSelectedFileContent] = useState('');
+
     const getSpringBootFiles = async () => {
         const res = await fetch('api/spring-boot-classes', {
             headers: {
@@ -23,7 +26,6 @@ const CodeCentral = () => {
     const [conversation, setConversation] = useState<any[]>([]);
 
     const askChat = async (conversation_: string[]) => {
-        console.log(conversation_)
         const res = await fetch('api/chat', {
             method: 'POST',
             headers: {
@@ -33,43 +35,58 @@ const CodeCentral = () => {
             body: JSON.stringify({ conversation_ })
         });
 
-
         const response = await res.json();
-        console.log(response)
-        console.log(conversation_)
         setConversation([...conversation_, {content: response.chatCompletion.choices[0].message.content, role: 'assistant', type: 'text'}]);
     }
 
     const addToConversation = (message: string) => {
         askChat([...conversation, {content:message, role: 'user', type: 'text'}]);
     }
-    console.log(conversation)
+
+    const getFile = async (fileName:string) => {
+        const res = await fetch(`api/get-file?fileName=${fileName}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store'
+            },
+        });
+
+        const data = await res.json();
+        return data.data;
+    }
+
+
+    const handleFileSelect = async (fileName:string) => {
+        setSelectedFileName(fileName);
+        const content = await getFile(fileName);
+        setSelectedFileContent(content);
+      };
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
-            <div className="w-1/5 bg-green-500 h-full overflow-hidden overflow-y-scroll">
-                {
-                    springBootFiles.length > 0 && springBootFiles.map((springBootClass:any) => {
-                        return (
-                            <div key={springBootClass.name}>
-                                <h1>{springBootClass.name}</h1>
-                                {
-                                    springBootClass.files.map(
-                                        (file:any, index:number) => (
-                                            <div key={index}>
-                                                <p>{file}</p>
-                                            </div>
-                                        )
-                                    )
-                                }
-                            </div>
-                        );
-                    })
+            <div>
+            {springBootFiles.length > 0 && springBootFiles.map((springBootClass:any) => {
+                return (
+                <div key={springBootClass.name}>
+                    <h1>{springBootClass.name}</h1>
+                    {springBootClass.files.map((file:any, index:any) => (
+                    <div key={index} onClick={() => handleFileSelect(file)}>
+                        <p style={{ cursor: 'pointer', fontWeight: selectedFileName === file ? 'bold' : 'normal' }}>
+                        {file}
+                        </p>
+                    </div>
+                    ))}
+                </div>
+                );
+            })}
 
-                }
             </div>
-            <div className="w-1/2 bg-blue-200 h-full">
-
+            <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
+                {selectedFileContent && (
+                    <div>
+                    <pre>{selectedFileContent}</pre>
+                    </div>
+                )}
             </div>
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200">
