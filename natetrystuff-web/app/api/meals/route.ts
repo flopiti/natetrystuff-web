@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-    console.log('yo : ' + process.env.SPRING_BOOT_URL)
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meals`, {
         headers: {
           'Content-Type': 'application/json',
