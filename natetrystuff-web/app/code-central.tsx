@@ -1,0 +1,101 @@
+import { use, useEffect, useState } from "react";
+
+const CodeCentral = () => {
+
+    const [springBootFiles, setSpringBootFiles] = useState([]);
+    const getSpringBootFiles = async () => {
+        const res = await fetch('api/spring-boot-classes', {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store' 
+            },
+        });
+
+    const springBootFiles = await res.json();
+    setSpringBootFiles(springBootFiles.data);
+    }
+    useEffect(() => {
+        getSpringBootFiles();
+        
+    }
+    ,[])
+
+    const [conversation, setConversation] = useState<any[]>([]);
+
+    const askChat = async (conversation_: string[]) => {
+        console.log(conversation_)
+        const res = await fetch('api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store'
+            },
+            body: JSON.stringify({ conversation_ })
+        });
+
+
+        const response = await res.json();
+        console.log(response)
+        console.log(conversation_)
+        setConversation([...conversation_, {content: response.chatCompletion.choices[0].message.content, role: 'assistant', type: 'text'}]);
+    }
+
+    const addToConversation = (message: string) => {
+        askChat([...conversation, {content:message, role: 'user', type: 'text'}]);
+    }
+    console.log(conversation)
+
+    return (
+        <div className="h-[70vh] border-2 border-white w-full flex flex-row">
+            <div className="w-1/5 bg-green-500 h-full overflow-hidden overflow-y-scroll">
+                {
+                    springBootFiles.length > 0 && springBootFiles.map((springBootClass:any) => {
+                        return (
+                            <div key={springBootClass.name}>
+                                <h1>{springBootClass.name}</h1>
+                                {
+                                    springBootClass.files.map(
+                                        (file:any, index:number) => (
+                                            <div key={index}>
+                                                <p>{file}</p>
+                                            </div>
+                                        )
+                                    )
+                                }
+                            </div>
+                        );
+                    })
+
+                }
+            </div>
+            <div className="w-1/2 bg-blue-200 h-full">
+
+            </div>
+            <div className="w-[30%] bg-red-200 h-full flex flex-col">
+                <div className="w-full h-4/5 bg-yellow-200">
+                {
+                        conversation?.map((message, index) => {
+                            return (
+                                <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}                                >
+                                    <p>{message.content}</p>
+                                </div>
+                            );
+                        })
+                    } 
+                </div>
+                <div className="w-full h-1/5 bg-purple-200">
+                    <input type="text" className="w-full h-full text-black"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
+                                addToConversation(e.currentTarget.value);
+                                e.currentTarget.value = '';
+                            }
+                        }}/>
+            
+                </div>
+            </div>
+        </div>
+    );
+    }
+
+export default CodeCentral;
