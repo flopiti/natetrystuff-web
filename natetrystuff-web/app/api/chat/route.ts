@@ -6,10 +6,10 @@ export async function POST(request: NextRequest) {
     const openai = new OpenAI({
         apiKey: process.env.OPEN_AI_API_KEY
       });
-    console.log(body.conversation)
+    console.log(body.messages)
 
     const chatCompletion = await openai.chat.completions.create({
-        messages: body.conversation ,
+        messages: body.messages ,
         model: 'gpt-4o',
         response_format:{ "type": "json_object" },
       });

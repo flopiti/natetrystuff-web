@@ -13,6 +13,8 @@ const CodeCentral = () => {
         role: 'system',
         type: 'text'
     }]);
+    const [activeTab, setActiveTab] = useState('file'); // Default to showing file
+    const [chatCode, setChatCode] = useState('');
 
     const getSpringBootFiles = async () => {
         const res = await fetch('api/spring-boot-classes', {
@@ -40,13 +42,19 @@ const CodeCentral = () => {
     }, [conversation])
 
     const askChat = async () => {
+        const messages = conversation.map((message) => {
+            return {role: message.role, content: message.content, type: 'text'};
+        });
+        const lastMessage = messages[messages.length - 1];
+        messages.pop();
+        messages.push({content: lastMessage.content + ` The code is: ${selectedFileContent}`,role: 'user',  type: 'text'});
         const res = await fetch('api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-store'
             },
-            body: JSON.stringify({ conversation })
+            body: JSON.stringify({ messages })
         });
 
         const response = await res.json();
@@ -60,7 +68,6 @@ const CodeCentral = () => {
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, {content:message, role: 'user', type: 'text'}]);
-        // askChat([...conversation, {content:message, role: 'user', type: 'text'}]);
     }
 
     const getFile = async (fileName:string) => {
@@ -80,8 +87,6 @@ const CodeCentral = () => {
         const content = await getFile(fileName);
         setSelectedFileContent(content);
       };
-    const [activeTab, setActiveTab] = useState('file'); // Default to showing file
-    const [chatCode, setChatCode] = useState('');
 
     console.log(conversation)
 
