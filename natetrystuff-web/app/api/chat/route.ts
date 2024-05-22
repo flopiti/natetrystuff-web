@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
     const chatCompletion = await openai.chat.completions.create({
         messages: body.conversation_ ,
         model: 'gpt-4o',
+        response_format:{ "type": "json_object" },
       });
 
     console.log(chatCompletion.choices[0].message.content)

@@ -17,13 +17,23 @@ const CodeCentral = () => {
     const springBootFiles = await res.json();
     setSpringBootFiles(springBootFiles.data);
     }
+
+    const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
+    answer with the JSON object {"answer": your textual answer as a chat bot, "code": the code snippet that you think is the answer}. If the code is not a coding solution,
+    simply do not include the property in the JSON object. 
+    `;
+
     useEffect(() => {
         getSpringBootFiles();
         
     }
     ,[])
 
-    const [conversation, setConversation] = useState<any[]>([]);
+    const [conversation, setConversation] = useState<any[]>([{
+        content: PROMPT,
+        role: 'system',
+        type: 'text'
+    }]);
 
     const askChat = async (conversation_: string[]) => {
         const res = await fetch('api/chat', {
@@ -43,6 +53,7 @@ const CodeCentral = () => {
         askChat([...conversation, {content:message, role: 'user', type: 'text'}]);
     }
 
+    console.log(conversation)
     const getFile = async (fileName:string) => {
         const res = await fetch(`api/get-file?fileName=${fileName}`, {
             headers: {
@@ -91,14 +102,12 @@ const CodeCentral = () => {
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200">
                 {
-                        conversation?.map((message, index) => {
-                            return (
-                                <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}                                >
-                                    <p>{message.content}</p>
-                                </div>
-                            );
-                        })
-                    } 
+                    conversation?.slice(1).map((message, index) => (
+                        <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                            <p>{message.content}</p>
+                        </div>
+                    ))
+                }
                 </div>
                 <div className="w-full h-1/5 bg-purple-200">
                     <input type="text" className="w-full h-full text-black"
