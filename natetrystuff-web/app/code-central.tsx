@@ -90,6 +90,18 @@ const CodeCentral = () => {
 
     console.log(conversation)
 
+
+    const replaceCode = async () => {
+        const response = await fetch('/api/replace-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({fileName: selectedFileName, code: chatCode}),
+        });
+        console.log(response)
+    }
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
@@ -133,9 +145,13 @@ const CodeCentral = () => {
                 {activeTab === 'chat' && chatCode && (
                     <div>
                         <pre className="w-full">{chatCode}</pre>
+                        <button
+                            className="bg-blue-500 text-white p-2"
+                            onClick={replaceCode}
+                        >Replace code</button>
                     </div>
                 )}
-            </div>
+                </div>
             </div>
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200">
