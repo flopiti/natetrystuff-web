@@ -16,9 +16,7 @@ const Meals = () => {
         {  ingredientName:'', quantity: 0, unit: '' },
         {  ingredientName:'', quantity: 0, unit: '' }
       ]);
-    
-    // const [newMealName, setNewMealName] = useState('');
-    // const [newMealIngredients, setNewMealIngredients] = useState('');
+
     const getMeals = async () => {
         const response = await fetch('/api/meals');
         const data = (await response.json()).data;
@@ -79,7 +77,6 @@ const Meals = () => {
                         <ul className="list-disc ml-10">
                         {
                             meal.mealIngredients?.map((mealIngredients:any, index:number) => {
-                                console.log(mealIngredients)
                                 return <li key={index}>
                                     <span>{mealIngredients.quantity}</span>
                                     <span>{mealIngredients.unit}</span>
