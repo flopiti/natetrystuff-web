@@ -77,7 +77,6 @@ const CodeCentral = () => {
                 'Cache-Control': 'no-store'
             },
         });
-
         const data = await res.json();
         return data.data;
     }
@@ -86,20 +85,16 @@ const CodeCentral = () => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName);
         setSelectedFileContent(content);
-      };
-
-    console.log(conversation)
-
+    };
 
     const replaceCode = async () => {
-        const response = await fetch('/api/replace-code', {
+        await fetch('/api/replace-code', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({fileName: selectedFileName, code: chatCode}),
         });
-        console.log(response)
     }
 
     return (
