@@ -116,6 +116,22 @@ const CodeCentral = () => {
         });
     }
 
+ 
+    const [projectFiles, setProjectFiles] = useState([]);
+    
+    const getProjectFiles = async () => {
+        const res = await fetch(`api/get-all-filenames?projectPath=${selectedProject}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'no-store' 
+            },
+        });
+    
+    	const files = await res.json();
+      setProjectFiles(files.data);
+      }
+    
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
@@ -128,18 +144,13 @@ const CodeCentral = () => {
                     ))}
                   </select>
                 </div>
-                {springBootFiles.length > 0 && springBootFiles.map((springBootClass:any) => {
+                {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
                     return (
-                    <div key={springBootClass.name}>
-                        <h1>{springBootClass.name}</h1>
-                        {springBootClass.files.map((file:any, index:any) => (
-                        <div key={index} onClick={() => handleFileSelect(file)}>
+                        <div key={index} onClick={() => handleFileSelect(projectFile)}>
                             <p style={{ cursor: 'pointer', fontWeight: selectedFileName === file ? 'bold' : 'normal' }}>
                             {file}
                             </p>
                         </div>
-                        ))}
-                    </div>
                     );
                 })}
             </div>
