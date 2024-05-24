@@ -8,6 +8,8 @@ const CodeCentral = () => {
     const [springBootFiles, setSpringBootFiles] = useState([]);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
+    const[projects, setProjects] = useState<string[]([]);
+    const[selectedProject, setSelectedProject] = useState<string>('');
     const [conversation, setConversation] = useState<any[]>([{
         content: PROMPT,
         role: 'system',
