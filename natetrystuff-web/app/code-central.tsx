@@ -49,6 +49,7 @@ const CodeCentral = () => {
 
     useEffect(() => {
         getSpringBootFiles();
+        getProjects();
     }
     ,[])
 
