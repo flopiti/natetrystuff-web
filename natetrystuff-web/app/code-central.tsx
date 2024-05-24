@@ -61,6 +61,8 @@ const CodeCentral = () => {
 
     }, [conversation])
 
+    useEffect(() => {getProjectFiles()} ,[selectedProject])
+
     const askChat = async () => {
         const messages = conversation.map((message) => {
             return {role: message.role, content: message.content, type: 'text'};
@@ -121,7 +123,7 @@ const CodeCentral = () => {
     const [projectFiles, setProjectFiles] = useState([]);
     
     const getProjectFiles = async () => {
-        const res = await fetch(`api/get-all-filenames?projectPath=${selectedProject}`, {
+        const res = await fetch(`api/get-all-filenames?project=${selectedProject}`, {
             headers: {
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store' 
@@ -129,7 +131,7 @@ const CodeCentral = () => {
         });
     
     	const files = await res.json();
-      setProjectFiles(files.data);
+      setProjectFiles([]);
       }
     
 
