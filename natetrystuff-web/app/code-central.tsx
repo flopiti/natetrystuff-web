@@ -8,7 +8,7 @@ const CodeCentral = () => {
     const [springBootFiles, setSpringBootFiles] = useState([]);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
-    const[projects, setProjects] = useState<string[]([]);
+    const[projects, setProjects] = useState<string[]>([]);
     const[selectedProject, setSelectedProject] = useState<string>('');
     const [conversation, setConversation] = useState<any[]>([{
         content: PROMPT,
@@ -18,7 +18,7 @@ const CodeCentral = () => {
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
 
-    const getProjects = () => {
+    const getProjects = async () => {
         const res = await fetch('api/get-projects', {
                 headers: {
                   'Content-Type': 'application/json',
@@ -26,8 +26,8 @@ const CodeCentral = () => {
                 },
             });
     
-        const projects = await res.json().data;
-        setProjects(projects);
+        const projects = await res.json();
+        setProjects(projects.data);
     }
 
     const handleSelectedProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -136,7 +136,7 @@ const CodeCentral = () => {
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
                 <div>
-                  <select value={selectedProject} onChange={handleChange}>
+                  <select value={selectedProject} onChange={handleSelectedProjectChange}>
                     {projects.map(project => (
                       <option key={project} value={project}>
                         {project}
@@ -147,8 +147,8 @@ const CodeCentral = () => {
                 {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
                     return (
                         <div key={index} onClick={() => handleFileSelect(projectFile)}>
-                            <p style={{ cursor: 'pointer', fontWeight: selectedFileName === file ? 'bold' : 'normal' }}>
-                            {file}
+                            <p style={{ cursor: 'pointer', fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
+                            {projectFile}
                             </p>
                         </div>
                     );
