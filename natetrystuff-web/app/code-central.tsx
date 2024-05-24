@@ -18,6 +18,23 @@ const CodeCentral = () => {
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
 
+    const getProjects = () => {
+        const res = await fetch('api/get-projects', {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-store' 
+                },
+            });
+    
+        const projects = await res.json().data;
+        setProjects(projects);
+    }
+
+    const handleSelectedProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      setSelectedProject(event.target.value);
+    };
+
+    
     const getSpringBootFiles = async () => {
         const res = await fetch('api/spring-boot-classes', {
             headers: {
@@ -102,21 +119,29 @@ const CodeCentral = () => {
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
-            {springBootFiles.length > 0 && springBootFiles.map((springBootClass:any) => {
-                return (
-                <div key={springBootClass.name}>
-                    <h1>{springBootClass.name}</h1>
-                    {springBootClass.files.map((file:any, index:any) => (
-                    <div key={index} onClick={() => handleFileSelect(file)}>
-                        <p style={{ cursor: 'pointer', fontWeight: selectedFileName === file ? 'bold' : 'normal' }}>
-                        {file}
-                        </p>
-                    </div>
+                <div>
+                  <select value={selectedProject} onChange={handleChange}>
+                    {projects.map(project => (
+                      <option key={project} value={project}>
+                        {project}
+                      </option>
                     ))}
+                  </select>
                 </div>
-                );
-            })}
-
+                {springBootFiles.length > 0 && springBootFiles.map((springBootClass:any) => {
+                    return (
+                    <div key={springBootClass.name}>
+                        <h1>{springBootClass.name}</h1>
+                        {springBootClass.files.map((file:any, index:any) => (
+                        <div key={index} onClick={() => handleFileSelect(file)}>
+                            <p style={{ cursor: 'pointer', fontWeight: selectedFileName === file ? 'bold' : 'normal' }}>
+                            {file}
+                            </p>
+                        </div>
+                        ))}
+                    </div>
+                    );
+                })}
             </div>
             <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
                 <div className="flex bg-gray-100 p-2">
