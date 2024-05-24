@@ -9,7 +9,6 @@ const Meals = () => {
     }
     const [meals, setMeals] = useState<any[]>([]);
     const [isAddMealFormVisible, setIsAddMealFormVisible] = useState(false);
-    console.log(meals)
     const [formMealName, setFormMealName] = useState<any>('')
     const [formMealIngredients, setFormMealIngredients] = useState<MealIngredient[]>([
         {  ingredientName:'', quantity: 0, unit: '' },
