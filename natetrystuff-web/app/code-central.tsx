@@ -5,11 +5,11 @@ const CodeCentral = () => {
     answer with the JSON object {"answer": your textual answer as a chat bot, "code": the code snippet that you think is the answer}. If the code is not a coding solution,
     simply do not include the property in the JSON object. 
     `;
-    const [springBootFiles, setSpringBootFiles] = useState([]);
+    const [projectFiles, setProjectFiles] = useState([]);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
-    const[projects, setProjects] = useState<string[]>([]);
-    const[selectedProject, setSelectedProject] = useState<string>('');
+    const[projects, setProjects] = useState<any[]>([]);
+    const[selectedProject, setSelectedProject] = useState<any>('');
     const [conversation, setConversation] = useState<any[]>([{
         content: PROMPT,
         role: 'system',
@@ -26,29 +26,28 @@ const CodeCentral = () => {
                 },
             });
     
-        const projects = await res.json();
-        setProjects(projects.data);
+        const projects_ = await res.json();
+        setProjects(projects_.data);
     }
 
     const handleSelectedProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedProject(event.target.value);
+        const pr = projects.find(project => project.name === event.target.value);
+        setSelectedProject(pr);
     };
 
-    
     const getSpringBootFiles = async () => {
-        const res = await fetch('api/spring-boot-classes', {
+        const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
             headers: {
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store' 
             },
         });
-
+        
     const springBootFiles = await res.json();
-    setSpringBootFiles(springBootFiles.data);
+    setProjectFiles(springBootFiles.data);
     }
 
     useEffect(() => {
-        getSpringBootFiles();
         getProjects();
     }
     ,[])
@@ -61,7 +60,11 @@ const CodeCentral = () => {
 
     }, [conversation])
 
-    useEffect(() => {getProjectFiles()} ,[selectedProject])
+    useEffect(() => {
+        if(selectedProject.type === 'spring-boot') {
+            getSpringBootFiles();
+        }
+    },[selectedProject]) 
 
     const askChat = async () => {
         const messages = conversation.map((message) => {
@@ -120,29 +123,26 @@ const CodeCentral = () => {
     }
 
  
-    const [projectFiles, setProjectFiles] = useState([]);
     
     const getProjectFiles = async () => {
-        const res = await fetch(`api/get-all-filenames?project=${selectedProject}`, {
+        const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
             headers: {
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store' 
             },
         });
     
-    	const files = await res.json();
+    const files = await res.json();
       setProjectFiles([]);
-      }
-    
-
-    return (
+    }    
+      return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
                 <div>
                   <select value={selectedProject} onChange={handleSelectedProjectChange}>
                     {projects.map(project => (
-                      <option key={project} value={project}>
-                        {project}
+                      <option key={project.name} value={project.name}>
+                        {project.name}
                       </option>
                     ))}
                   </select>
@@ -151,7 +151,7 @@ const CodeCentral = () => {
                     return (
                         <div key={index} onClick={() => handleFileSelect(projectFile)}>
                             <p style={{ cursor: 'pointer', fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
-                            {projectFile}
+                            {projectFile.split('/').pop()}
                             </p>
                         </div>
                     );
