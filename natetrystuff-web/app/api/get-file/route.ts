@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const fileName = searchParams.get('fileName');
-    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-file?fileName=${fileName}`, {
+    const project = searchParams.get('project');
+    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-file?fileName=${fileName}&project=${project}`, {
         headers: {
           'Content-Type': 'application/json',
         },

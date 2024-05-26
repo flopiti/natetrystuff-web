@@ -35,7 +35,7 @@ const CodeCentral = () => {
         setSelectedProject(pr);
     };
 
-    const getSpringBootFiles = async () => {
+    const getProjectFiles = async () => {
         const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
             headers: {
               'Content-Type': 'application/json',
@@ -43,8 +43,9 @@ const CodeCentral = () => {
             },
         });
         
-    const springBootFiles = await res.json();
-    setProjectFiles(springBootFiles.data);
+    const files = await res.json();
+    console.log(files.data);
+    setProjectFiles(files.data);
     }
 
     useEffect(() => {
@@ -61,8 +62,8 @@ const CodeCentral = () => {
     }, [conversation])
 
     useEffect(() => {
-        if(selectedProject.type === 'spring-boot') {
-            getSpringBootFiles();
+        if (selectedProject) {
+            getProjectFiles();
         }
     },[selectedProject]) 
 
@@ -95,8 +96,8 @@ const CodeCentral = () => {
         setConversation([...conversation, {content:message, role: 'user', type: 'text'}]);
     }
 
-    const getFile = async (fileName:string) => {
-        const res = await fetch(`api/get-file?fileName=${fileName}`, {
+    const getFile = async (fileName:string, project :string) => {
+        const res = await fetch(`api/get-file?fileName=${fileName}&project=${project}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-store'
@@ -108,7 +109,7 @@ const CodeCentral = () => {
 
     const handleFileSelect = async (fileName:string) => {
         setSelectedFileName(fileName);
-        const content = await getFile(fileName);
+        const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
     };
 
@@ -120,21 +121,9 @@ const CodeCentral = () => {
             },
             body: JSON.stringify({fileName: selectedFileName, code: chatCode}),
         });
-    }
+    } 
 
- 
-    
-    const getProjectFiles = async () => {
-        const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
-            headers: {
-              'Content-Type': 'application/json',
-              'Cache-Control': 'no-store' 
-            },
-        });
-    
-    const files = await res.json();
-      setProjectFiles([]);
-    }    
+    console.log(projectFiles)
       return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
@@ -151,7 +140,7 @@ const CodeCentral = () => {
                     return (
                         <div key={index} onClick={() => handleFileSelect(projectFile)}>
                             <p style={{ cursor: 'pointer', fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
-                            {projectFile.split('/').pop()}
+                            {projectFile}
                             </p>
                         </div>
                     );
