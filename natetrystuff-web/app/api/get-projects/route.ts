@@ -2,10 +2,7 @@ import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const project = searchParams.get('project');
-    const type = searchParams.get('type');
-    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-all-filenames?project=${project}&type=${type}`, {
+    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-projects`, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -21,14 +18,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const project = searchParams.get('project');
-    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-all-filenames?project=${project}`, {
+    const body = await request.json()
+    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-projects`, {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
+        body: JSON.stringify(body.meal),
     });
-
     const data = await res.json();
     return new NextResponse(JSON.stringify({ data }), {
         status: 200,

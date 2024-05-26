@@ -5,9 +5,11 @@ const CodeCentral = () => {
     answer with the JSON object {"answer": your textual answer as a chat bot, "code": the code snippet that you think is the answer}. If the code is not a coding solution,
     simply do not include the property in the JSON object. 
     `;
-    const [springBootFiles, setSpringBootFiles] = useState([]);
+    const [projectFiles, setProjectFiles] = useState([]);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
+    const[projects, setProjects] = useState<any[]>([]);
+    const[selectedProject, setSelectedProject] = useState<any>('');
     const [conversation, setConversation] = useState<any[]>([{
         content: PROMPT,
         role: 'system',
@@ -16,20 +18,38 @@ const CodeCentral = () => {
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
 
-    const getSpringBootFiles = async () => {
-        const res = await fetch('api/spring-boot-classes', {
+    const getProjects = async () => {
+        const res = await fetch('api/get-projects', {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-store' 
+                },
+            });
+    
+        const projects_ = await res.json();
+        setProjects(projects_.data);
+    }
+
+    const handleSelectedProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const pr = projects.find(project => project.name === event.target.value);
+        setSelectedProject(pr);
+    };
+
+    const getProjectFiles = async () => {
+        const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
             headers: {
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store' 
             },
         });
-
-    const springBootFiles = await res.json();
-    setSpringBootFiles(springBootFiles.data);
+        
+    const files = await res.json();
+    console.log(files.data);
+    setProjectFiles(files.data);
     }
 
     useEffect(() => {
-        getSpringBootFiles();
+        getProjects();
     }
     ,[])
 
@@ -40,6 +60,12 @@ const CodeCentral = () => {
         }
 
     }, [conversation])
+
+    useEffect(() => {
+        if (selectedProject) {
+            getProjectFiles();
+        }
+    },[selectedProject]) 
 
     const askChat = async () => {
         const messages = conversation.map((message) => {
@@ -70,8 +96,8 @@ const CodeCentral = () => {
         setConversation([...conversation, {content:message, role: 'user', type: 'text'}]);
     }
 
-    const getFile = async (fileName:string) => {
-        const res = await fetch(`api/get-file?fileName=${fileName}`, {
+    const getFile = async (fileName:string, project :string) => {
+        const res = await fetch(`api/get-file?fileName=${fileName}&project=${project}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-store'
@@ -83,7 +109,7 @@ const CodeCentral = () => {
 
     const handleFileSelect = async (fileName:string) => {
         setSelectedFileName(fileName);
-        const content = await getFile(fileName);
+        const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
     };
 
@@ -95,26 +121,30 @@ const CodeCentral = () => {
             },
             body: JSON.stringify({fileName: selectedFileName, code: chatCode}),
         });
-    }
+    } 
 
-    return (
+    console.log(projectFiles)
+      return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
-            {springBootFiles.length > 0 && springBootFiles.map((springBootClass:any) => {
-                return (
-                <div key={springBootClass.name}>
-                    <h1>{springBootClass.name}</h1>
-                    {springBootClass.files.map((file:any, index:any) => (
-                    <div key={index} onClick={() => handleFileSelect(file)}>
-                        <p style={{ cursor: 'pointer', fontWeight: selectedFileName === file ? 'bold' : 'normal' }}>
-                        {file}
-                        </p>
-                    </div>
+                <div>
+                  <select value={selectedProject} onChange={handleSelectedProjectChange}>
+                    {projects.map(project => (
+                      <option key={project.name} value={project.name}>
+                        {project.name}
+                      </option>
                     ))}
+                  </select>
                 </div>
-                );
-            })}
-
+                {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
+                    return (
+                        <div key={index} onClick={() => handleFileSelect(projectFile)}>
+                            <p style={{ cursor: 'pointer', fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
+                            {projectFile}
+                            </p>
+                        </div>
+                    );
+                })}
             </div>
             <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
                 <div className="flex bg-gray-100 p-2">

@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
 
     });
     const data = await res.json();
-    console.log(data)
     return new NextResponse(JSON.stringify({ data }), {
         status: 200,
         headers: {
