@@ -122,8 +122,6 @@ const CodeCentral = () => {
             body: JSON.stringify({fileName: selectedFileName, code: chatCode}),
         });
     } 
-
-    console.log(projectFiles)
       return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5">
