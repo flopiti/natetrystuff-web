@@ -19,3 +19,15 @@ export async function GET(request: NextRequest) {
         },
     });
 }
+
+export async function POST(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const fileName = searchParams.get('fileName');
+    const project = searchParams.get('project');
+    console.log(`${process.env.CODE_HELPER_URL}/get-file?fileName=${fileName}&project=${project}`);
+    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-file?fileName=${fileName}&project=${project}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+    });
+}
