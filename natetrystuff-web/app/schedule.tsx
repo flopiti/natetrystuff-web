@@ -84,32 +84,35 @@ const Schedule = () => {
     };
 
     return (
-        <div className='h-[70vh] border-2 border-white w-full'>
-            <div className='flex flex-row h-full'>
+        <div className='h-[70vh] border-2 border-white w-full p-4 bg-gray-100 rounded-lg'>
+            <div className='flex flex-row h-full space-x-4'>
                 {fourDaysSchedule.map((day, index) => (
-                    <div key={index} className='w-1/4 flex flex-col'>
-                        <h1>{day.toLocaleDateString()}</h1>
-                        <div className='bg-green-500 flex flex-col flex-grow'>
+                    <div key={index} className='w-1/4 flex flex-col bg-white shadow-md rounded-lg p-4'>
+                        <h1 className='text-lg font-bold mb-2 text-black'>{day.toLocaleDateString()}</h1>
+                        <div className='bg-green-300 flex flex-col flex-grow p-2 rounded-lg'>
                             {mealsSchedule.filter((mealSched: any) => {
                                 const mealDate = new Date(mealSched.scheduledTime);
                                 return mealDate.toLocaleDateString() === day.toLocaleDateString();
                             }).length > 0 ? (
-                                <ul className='m-2 border-red-100 border-2'>
+                                <ul className='m-2 border-gray-300 border-2 p-2 rounded-lg bg-white'>
                                     {mealsSchedule.filter((mealSched: any) => {
                                         const mealDate = new Date(mealSched.scheduledTime);
                                         return mealDate.toLocaleDateString() === day.toLocaleDateString();
                                     }).map((mealSched: any, idx: any) => (
-                                        <li key={idx}><span>{mealSched.meal.mealName}</span><button className='mx-2' onClick={() => deleteScheduledMeal(mealSched.scheduleId)}>X</button></li>
+                                        <li key={idx} className='flex justify-between items-center mb-2 text-black'>
+                                            <span>{mealSched.meal.mealName}</span>
+                                            <button className='bg-red-500 text-white rounded px-2 py-1' onClick={() => deleteScheduledMeal(mealSched.scheduleId)}>X</button>
+                                        </li>
                                     ))}
                                 </ul> 
-                            ) : <></>}
-                            <button onClick={() => showAddMeal(index)}>
+                            ) : <p className='text-gray-500'>No meals scheduled</p>}
+                            <button className='bg-blue-500 text-white mt-2 py-1 px-4 rounded hover:bg-blue-600' onClick={() => showAddMeal(index)}>
                                 Add Meal to Schedule
                             </button>
                             {addMealsIndexes.includes(index) && (
-                                <ul>
+                                <ul className='mt-2'>
                                     {meals.map((meal: any, idx: any) => (
-                                        <li className='m-2 text-sm bg-yellow-500' key={idx} onClick={() => addMealToSchedule(meal, day)}>{meal.mealName}</li>  
+                                        <li className='m-2 text-sm bg-yellow-500 p-2 rounded hover:bg-yellow-600 cursor-pointer text-black' key={idx} onClick={() => addMealToSchedule(meal, day)}>{meal.mealName}</li>  
                                     ))}
                                 </ul>
                             )}
