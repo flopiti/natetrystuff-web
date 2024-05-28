@@ -19,10 +19,8 @@ const Meals = () => {
     const getMeals = async () => {
         const response = await fetch('/api/meals');
         const data = (await response.json()).data;
-        console.log(data)
         setMeals(data);
     }
-    console.log(meals)
 
     useEffect(() => {
         getMeals();
@@ -54,7 +52,6 @@ const Meals = () => {
         setMeals(meals.filter((m:any) => m.mealId !== meal.mealId));
     }  
     const handleInputChange = (index:number, field:any, value:any)=> {
-        console.log(index, field, value)
         const updatedMealIngredients = formMealIngredients.map((meal:any, idx:any) => {
           if (idx === index) {
             return { ...meal, [field]: value };
