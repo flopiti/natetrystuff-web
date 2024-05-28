@@ -19,12 +19,15 @@ const Meals = () => {
     const getMeals = async () => {
         const response = await fetch('/api/meals');
         const data = (await response.json()).data;
+        console.log(data)
         setMeals(data);
     }
+    console.log(meals)
 
     useEffect(() => {
         getMeals();
     }
+    
     , []);
     const addMeal = async (name:any, mealIngredients:any) => {
         const meal = {mealName: name, mealIngredients: mealIngredients.filter(
@@ -51,8 +54,6 @@ const Meals = () => {
         setMeals(meals.filter((m:any) => m.mealId !== meal.mealId));
     }  
     const handleInputChange = (index:number, field:any, value:any)=> {
-    console.log(field)
-
         console.log(index, field, value)
         const updatedMealIngredients = formMealIngredients.map((meal:any, idx:any) => {
           if (idx === index) {
@@ -79,7 +80,7 @@ const Meals = () => {
                                 return <li key={index}>
                                     <span>{mealIngredients.quantity}</span>
                                     <span>{mealIngredients.unit}</span>
-                                    <span>{mealIngredients.ingredient.ingredientName}</span>
+                                    <span>{mealIngredients.ingredientName}</span>
                                 </li>
                             })
                         }
