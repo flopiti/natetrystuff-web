@@ -10,7 +10,7 @@ const CodeCentral = () => {
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
     const [projects, setProjects] = useState<any[]>([]);
-    const [selectedProject, setSelectedProject] = useState<any>('');
+    const [selectedProject, setSelectedProject] = useState<any>(null);
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
@@ -26,13 +26,13 @@ const CodeCentral = () => {
         const projects_ = await res.json();
         setProjects(projects_.data);
     }
-
     const handleSelectedProjectChange = (event:any) => {
         const pr = projects.find(project => project.name === event.target.value);
-        setSelectedProject(pr);
+        setSelectedProject(pr ? pr : null);
     };
 
     const getProjectFiles = async () => {
+        if (!selectedProject) return;
         const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -41,7 +41,6 @@ const CodeCentral = () => {
         });
 
         const files = await res.json();
-        console.log(files.data);
         setProjectFiles(files.data);
     }
 
@@ -135,7 +134,8 @@ const CodeCentral = () => {
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5 bg-gray-100 text-black">
                 <div className="sticky top-0 bg-gray-100">
-                    <select value={selectedProject} onChange={handleSelectedProjectChange} className="w-full p-2">
+                    <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2">
+                        <option value="" disabled>Select a project</option>
                         {projects.map(project => (
                             <option key={project.name} value={project.name}>
                                 {project.name}
