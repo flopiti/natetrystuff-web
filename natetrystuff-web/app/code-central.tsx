@@ -124,7 +124,7 @@ const CodeCentral = () => {
     } 
       return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
-            <div className="w-1/5">
+            <div className="w-1/5 overflow-auto">
                 <div>
                   <select value={selectedProject} onChange={handleSelectedProjectChange}>
                     {projects.map(project => (
@@ -199,6 +199,6 @@ const CodeCentral = () => {
             </div>
         </div>
     );
-    }
+}
 
 export default CodeCentral;
