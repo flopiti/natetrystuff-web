@@ -5,11 +5,11 @@ const CodeCentral = () => {
     answer with the JSON object {"answer": your textual answer as a chat bot, "code": the code snippet that you think is the answer}. If the code is not a coding solution,
     simply do not include the property in the JSON object. 
     `;
-    const [projectFiles, setProjectFiles] = useState([]);
+    const [projectFiles, setProjectFiles] = useState<any>([]);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
-    const [projects, setProjects] = useState([]);
-    const [selectedProject, setSelectedProject] = useState('');
+    const [projects, setProjects] = useState<any[]>([]);
+    const [selectedProject, setSelectedProject] = useState<any>('');
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
@@ -26,7 +26,7 @@ const CodeCentral = () => {
         setProjects(projects_.data);
     }
 
-    const handleSelectedProjectChange = (event) => {
+    const handleSelectedProjectChange = (event:any) => {
         const pr = projects.find(project => project.name === event.target.value);
         setSelectedProject(pr);
     };
@@ -87,11 +87,11 @@ const CodeCentral = () => {
         setChatCode(JSON.parse(response.chatCompletion.choices[0].message.content).code);
     }
 
-    const addToConversation = (message) => {
+    const addToConversation = (message:any) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     }
 
-    const getFile = async (fileName, project) => {
+    const getFile = async (fileName:any, project:any) => {
         const res = await fetch(`api/get-file?fileName=${fileName}&project=${project}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ const CodeCentral = () => {
         return data.data;
     }
 
-    const handleFileSelect = async (fileName) => {
+    const handleFileSelect = async (fileName:any) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
@@ -131,7 +131,7 @@ const CodeCentral = () => {
                     </select>
                 </div>
                 <div className="h-full overflow-auto">
-                    {projectFiles.length > 0 && projectFiles.map((projectFile, index) => {
+                    {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
                         return (
                             <div key={index} onClick={() => handleFileSelect(projectFile)} className="p-2 cursor-pointer hover:bg-gray-200">
                                 <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
