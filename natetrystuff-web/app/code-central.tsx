@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Diff, diffLines } from 'diff';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
     answer with the JSON object {"answer": your textual answer as a chat bot, "code": the code snippet that you think is the answer}. If the code is not a coding solution,
-    simply do not include the property in the JSON object. 
-    `;
-    const [projectFiles, setProjectFiles] = useState<any>([]);
+    simply do not include the property in the JSON object.`;
+    
+    const [projectFiles, setProjectFiles] = useState<any[]>([]);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
     const [projects, setProjects] = useState<any[]>([]);
@@ -53,7 +54,6 @@ const CodeCentral = () => {
         if (lastMessage.role === 'user') {
             askChat();
         }
-
     }, [conversation])
 
     useEffect(() => {
@@ -61,6 +61,11 @@ const CodeCentral = () => {
             getProjectFiles();
         }
     }, [selectedProject])
+
+    useEffect(() => {
+        // Reset chat code when selectedFileContent changes
+        setChatCode('');
+    }, [selectedFileContent])
 
     const askChat = async () => {
         const messages = conversation.map((message) => {
@@ -118,6 +123,14 @@ const CodeCentral = () => {
         });
     }
 
+    const getHighlightedCode = () => {
+        const diff = diffLines(selectedFileContent, chatCode);
+        return diff.map((part:any, index:number) => {
+            const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
+            return <span key={index} style={style}>{part.value}</span>;
+        });
+    }
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5 bg-gray-100 text-black">
@@ -165,7 +178,7 @@ const CodeCentral = () => {
                     )}
                     {activeTab === 'chat' && chatCode && (
                         <div>
-                            <pre className="w-full">{chatCode}</pre>
+                            <pre className="w-full">{getHighlightedCode()}</pre>
                             <button
                                 className="bg-blue-500 text-white p-2"
                                 onClick={replaceCode}
