@@ -14,7 +14,7 @@ const CodeCentral = () => {
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
-    const [highlightedFlights, setHighlightedFlights] = useState<string[]>([]);
+    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
 
     const getProjects = async () => {
         const res = await fetch('api/get-projects', {
@@ -133,7 +133,7 @@ const CodeCentral = () => {
 
     const handleFlightClick = (fileName: string, event: any) => {
         if (event.shiftKey) {
-            setHighlightedFlights((prev) =>
+            setHighlightedFiles((prev) =>
                 prev.includes(fileName) ? prev.filter((flight) => flight !== fileName) : [...prev, fileName]
             );
         } else {
@@ -156,7 +156,7 @@ const CodeCentral = () => {
                 </div>
                 <div className="h-full overflow-auto">
                     {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
-                        const isHighlighted = highlightedFlights.includes(projectFile);
+                        const isHighlighted = highlightedFiles.includes(projectFile);
                         return (
                             <div
                                 key={index}
