@@ -83,12 +83,17 @@ const Schedule = () => {
         setMealsSchedule(mealsSchedule.filter((meal: any) => meal.scheduleId !== mealSched));
     };
 
+    const formatDate = (date: Date): string => {
+        const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString(undefined, options);
+    };
+
     return (
         <div className='h-[70vh] border-2 border-white w-full p-4 bg-gray-100 rounded-lg'>
             <div className='flex flex-row h-full space-x-4'>
                 {fourDaysSchedule.map((day, index) => (
-                    <div key={index} className='w-1/4 flex flex-col bg-white shadow-md rounded-lg p-4'>
-                        <h1 className='text-lg font-bold mb-2 text-black'>{day.toLocaleDateString()}</h1>
+                    <div key={index} className='w-1/4 flex flex-col bg-sky-100 shadow-lg rounded-lg p-6'>
+                        <h1 className='text-xl font-extrabold mb-2 text-gray-800'>{formatDate(day)}</h1>
                         <div className='bg-green-300 flex flex-col flex-grow p-2 rounded-lg'>
                             {mealsSchedule.filter((mealSched: any) => {
                                 const mealDate = new Date(mealSched.scheduledTime);
@@ -99,8 +104,8 @@ const Schedule = () => {
                                         const mealDate = new Date(mealSched.scheduledTime);
                                         return mealDate.toLocaleDateString() === day.toLocaleDateString();
                                     }).map((mealSched: any, idx: any) => (
-                                        <li key={idx} className='flex justify-between items-center mb-2 text-black'>
-                                            <span>{mealSched.meal.mealName}</span>
+                                        <li key={idx} className='flex justify-between items-center mb-2 text-gray-700'>
+                                            <span className='font-medium'>{mealSched.meal.mealName}</span>
                                             <button className='bg-red-500 text-white rounded px-2 py-1' onClick={() => deleteScheduledMeal(mealSched.scheduleId)}>X</button>
                                         </li>
                                     ))}

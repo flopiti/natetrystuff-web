@@ -14,6 +14,7 @@ const CodeCentral = () => {
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
+    const [highlightedFlights, setHighlightedFlights] = useState<string[]>([]);
 
     const getProjects = async () => {
         const res = await fetch('api/get-projects', {
@@ -130,6 +131,16 @@ const CodeCentral = () => {
         });
     }
 
+    const handleFlightClick = (fileName: string, event: any) => {
+        if (event.shiftKey) {
+            setHighlightedFlights((prev) =>
+                prev.includes(fileName) ? prev.filter((flight) => flight !== fileName) : [...prev, fileName]
+            );
+        } else {
+            handleFileSelect(fileName);
+        }
+    }
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <div className="w-1/5 bg-gray-100 text-black">
@@ -145,8 +156,13 @@ const CodeCentral = () => {
                 </div>
                 <div className="h-full overflow-auto">
                     {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
+                        const isHighlighted = highlightedFlights.includes(projectFile);
                         return (
-                            <div key={index} onClick={() => handleFileSelect(projectFile)} className="p-2 cursor-pointer hover:bg-gray-200">
+                            <div
+                                key={index}
+                                onClick={event => handleFlightClick(projectFile, event)}
+                                className={`p-2 cursor-pointer hover:bg-gray-200', ${ isHighlighted ? `bg-yellow-300` : ''}`}
+                            >
                                 <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
                                     {projectFile}
                                 </p>
