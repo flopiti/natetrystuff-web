@@ -3,8 +3,8 @@ import { Diff, diffLines } from 'diff';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
-    answer with the JSON object {"answer": your textual answer as a chat bot, "code": the code snippet that you think is the answer}. If the code is not a coding solution,
-    simply do not include the property in the JSON object.`;
+    answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] 
+    the code snippet that you think is the answer}. If the code is not a coding solution, simply do not include the property in the JSON object.`;
     
     const [projectFiles, setProjectFiles] = useState<any[]>([]);
     const [selectedFileName, setSelectedFileName] = useState('');
@@ -96,6 +96,7 @@ const CodeCentral = () => {
             role: 'assistant',
             type: 'text'
         }]);
+        console.log(JSON.parse(response.chatCompletion.choices[0].message.content));
         setChatCode(JSON.parse(response.chatCompletion.choices[0].message.content).code);
     }
 
