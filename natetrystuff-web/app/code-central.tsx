@@ -15,6 +15,7 @@ const CodeCentral = () => {
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCode, setChatCode] = useState('');
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<string[]>([]);
 
     const getProjects = async () => {
         const res = await fetch('api/get-projects', {
@@ -107,10 +108,17 @@ const CodeCentral = () => {
         return data.data;
     }
 
-    const handleFileSelect = async (fileName:any) => {
+    const handleFileSelect = async (fileName: any) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
+    };
+
+    const fetchHighlightedFilesContent = async () => {
+        const filesContentPromises = highlightedFiles.map(fileName => getFile(fileName, selectedProject.name));
+        const filesContent = await Promise.all(filesContentPromises);
+        setHighlightedFilesContent(filesContent);
+        console.log(filesContent);
     };
 
     const replaceCode = async () => {
@@ -140,6 +148,12 @@ const CodeCentral = () => {
             handleFileSelect(fileName);
         }
     }
+
+    useEffect(() => {
+        if (highlightedFiles.length > 0) {
+            fetchHighlightedFilesContent();
+        }
+    }, [highlightedFiles]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
@@ -206,7 +220,7 @@ const CodeCentral = () => {
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200 overflow-scroll">
                     {conversation?.slice(1).map((message, index) => (
-                        <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                        <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}> 
                             <p>{message.content}</p>
                         </div>
                     ))}
