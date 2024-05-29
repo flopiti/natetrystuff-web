@@ -74,7 +74,12 @@ const CodeCentral = () => {
         });
         const lastMessage = messages[messages.length - 1];
         messages.pop();
-        messages.push({ content: lastMessage.content + ` The code is: ${selectedFileContent}`, role: 'user', type: 'text' });
+        const highlightedFilesMap = highlightedFiles.reduce((acc, fileName, index) => ({
+            ...acc,
+            [fileName]: highlightedFilesContent[index]
+        }), {});
+        const highlightedFilesText = JSON.stringify(highlightedFilesMap);
+        messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
         const res = await fetch('api/chat', {
             method: 'POST',
             headers: {
@@ -85,6 +90,7 @@ const CodeCentral = () => {
         });
 
         const response = await res.json();
+        console.log(response.chatCompletion.choices[0].message.content)
         setConversation([...conversation, {
             content: JSON.parse(response.chatCompletion.choices[0].message.content).answer,
             role: 'assistant',
