@@ -63,10 +63,6 @@ const CodeCentral = () => {
         }
     }, [selectedProject])
 
-    useEffect(() => {
-        // Reset chat codes when selectedFileContent changes
-        setChatCodes([]);
-    }, [selectedFileContent])
 
     const askChat = async () => {
         const messages = conversation.map((message) => {
@@ -96,9 +92,10 @@ const CodeCentral = () => {
             role: 'assistant',
             type: 'text'
         }]);
-        console.log(JSON.parse(response.chatCompletion.choices[0].message.content));
         setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
     }
+
+    console.log('chatCodes', chatCodes)
 
     const addToConversation = (message:any) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
@@ -178,6 +175,12 @@ const CodeCentral = () => {
                 <div className="h-full overflow-auto">
                     {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
                         const isHighlighted = highlightedFiles.includes(projectFile);
+
+                        const doWeHaveChatCode = chatCodes.find((fileData:any) => fileData.fileName === projectFile);
+
+                        if(doWeHaveChatCode) {
+                            console.log('we do have file for', projectFile);
+                        }
                         return (
                             <div
                                 key={index}
@@ -187,6 +190,7 @@ const CodeCentral = () => {
                                 <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
                                     {projectFile}
                                 </p>
+                                {doWeHaveChatCode && <img width={30} height={30} src="/openai.svg" alt="Open" />}
                             </div>
                         );
                     })}
