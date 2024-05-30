@@ -3,8 +3,8 @@ import { Diff, diffLines } from 'diff';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
-    answer with the JSON object {"answer": your textual answer as a chat bot, "code": the code snippet that you think is the answer}. If the code is not a coding solution,
-    simply do not include the property in the JSON object.`;
+    answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] 
+    the code snippet that you think is the answer}. If the code is not a coding solution, simply do not include the property in the JSON object.`;
     
     const [projectFiles, setProjectFiles] = useState<any[]>([]);
     const [selectedFileName, setSelectedFileName] = useState('');
@@ -13,7 +13,10 @@ const CodeCentral = () => {
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
-    const [chatCode, setChatCode] = useState('');
+    const [chatCodes, setChatCodes] = useState([]); // Change state to an array
+    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<string[]>([]);
+    const [selectedChatCode, setSelectedChatCode] = useState(''); // Add state to store selected chat code
 
     const getProjects = async () => {
         const res = await fetch('api/get-projects', {
@@ -61,10 +64,6 @@ const CodeCentral = () => {
         }
     }, [selectedProject])
 
-    useEffect(() => {
-        // Reset chat code when selectedFileContent changes
-        setChatCode('');
-    }, [selectedFileContent])
 
     const askChat = async () => {
         const messages = conversation.map((message) => {
@@ -72,7 +71,12 @@ const CodeCentral = () => {
         });
         const lastMessage = messages[messages.length - 1];
         messages.pop();
-        messages.push({ content: lastMessage.content + ` The code is: ${selectedFileContent}`, role: 'user', type: 'text' });
+        const highlightedFilesMap = highlightedFiles.reduce((acc, fileName, index) => ({
+            ...acc,
+            [fileName]: highlightedFilesContent[index]
+        }), {});
+        const highlightedFilesText = JSON.stringify(highlightedFilesMap);
+        messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
         const res = await fetch('api/chat', {
             method: 'POST',
             headers: {
@@ -88,8 +92,9 @@ const CodeCentral = () => {
             role: 'assistant',
             type: 'text'
         }]);
-        setChatCode(JSON.parse(response.chatCompletion.choices[0].message.content).code);
+        setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
     }
+
 
     const addToConversation = (message:any) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
@@ -106,10 +111,20 @@ const CodeCentral = () => {
         return data.data;
     }
 
-    const handleFileSelect = async (fileName:any) => {
+    const handleFileSelect = async (fileName: any) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
+        const chatCode:any = chatCodes.find((fileData:any) => fileData.fileName === fileName);
+        if(chatCode){
+            setSelectedChatCode(chatCode.code);
+        }
+    };
+
+    const fetchHighlightedFilesContent = async () => {
+        const filesContentPromises = highlightedFiles.map(fileName => getFile(fileName, selectedProject.name));
+        const filesContent = await Promise.all(filesContentPromises);
+        setHighlightedFilesContent(filesContent);
     };
 
     const replaceCode = async () => {
@@ -118,17 +133,33 @@ const CodeCentral = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ fileName: selectedFileName, code: chatCode, project: selectedProject.name }),
+            body: JSON.stringify({ fileName: selectedFileName, project: selectedProject.name, code: selectedFileContent })
         });
     }
 
-    const getHighlightedCode = () => {
-        const diff = diffLines(selectedFileContent, chatCode);
+    const getHighlightedCode = (fileCode:any) => { // Accept parameter to get respective chat code
+        const diff = diffLines(selectedFileContent, fileCode);
         return diff.map((part:any, index:number) => {
             const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
             return <span key={index} style={style}>{part.value}</span>;
         });
     }
+
+    const handleFlightClick = (fileName: string, event: any) => {
+        if (event.shiftKey) {
+            setHighlightedFiles((prev) =>
+                prev.includes(fileName) ? prev.filter((flight) => flight !== fileName) : [...prev, fileName]
+            );
+        } else {
+            handleFileSelect(fileName);
+        }
+    }
+
+    useEffect(() => {
+        if (highlightedFiles.length > 0) {
+            fetchHighlightedFilesContent();
+        }
+    }, [highlightedFiles]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
@@ -145,11 +176,20 @@ const CodeCentral = () => {
                 </div>
                 <div className="h-full overflow-auto">
                     {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
+                        const isHighlighted = highlightedFiles.includes(projectFile);
+
+                        const doWeHaveChatCode = chatCodes.find((fileData:any) => fileData.fileName === projectFile);
+
                         return (
-                            <div key={index} onClick={() => handleFileSelect(projectFile)} className="p-2 cursor-pointer hover:bg-gray-200">
+                            <div
+                                key={index}
+                                onClick={event => handleFlightClick(projectFile, event)}
+                                className={`p-2 cursor-pointer hover:bg-gray-200', ${ isHighlighted ? `bg-yellow-300` : ''}`}
+                            >
                                 <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
                                     {projectFile}
                                 </p>
+                                {doWeHaveChatCode && <img width={30} height={30} src="/openai.svg" alt="Open" />}
                             </div>
                         );
                     })}
@@ -176,21 +216,27 @@ const CodeCentral = () => {
                             <pre>{selectedFileContent}</pre>
                         </div>
                     )}
-                    {activeTab === 'chat' && chatCode && (
-                        <div>
-                            <pre className="w-full">{getHighlightedCode()}</pre>
-                            <button
-                                className="bg-blue-500 text-white p-2"
-                                onClick={replaceCode}
-                            >Replace code</button>
-                        </div>
-                    )}
+                {
+                    activeTab === 'chat' && selectedChatCode && (() => {
+                        return (
+                            <div>
+                                <pre className="w-full">{getHighlightedCode(selectedChatCode)}</pre>
+                                <button
+                                    className="bg-blue-500 text-white p-2"
+                                    onClick={() => replaceCode()}
+                                >
+                                    Replace code in {selectedFileName}
+                                </button>
+                            </div>
+                        );
+                    })()
+                }
                 </div>
             </div>
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200 overflow-scroll">
                     {conversation?.slice(1).map((message, index) => (
-                        <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                        <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}> 
                             <p>{message.content}</p>
                         </div>
                     ))}
