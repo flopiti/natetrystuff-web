@@ -108,6 +108,22 @@ const Meals = () => {
     }
   };
 
+  const handleAddIngredient = (type: 'form' | 'edit') => {
+    if (type === 'form') {
+      setFormMealIngredients([...formMealIngredients, { ingredientName: '', quantity: 0, unit: '' }]);
+    } else if (type === 'edit') {
+      setEditMealIngredients([...editMealIngredients, { ingredientName: '', quantity: 0, unit: '' }]);
+    }
+  };
+
+  const handleRemoveIngredient = (index: number, type: 'form' | 'edit') => {
+    if (type === 'form') {
+      setFormMealIngredients(formMealIngredients.filter((item, idx) => idx !== index));
+    } else if (type === 'edit') {
+      setEditMealIngredients(editMealIngredients.filter((item, idx) => idx !== index));
+    }
+  };
+
   const startEditMeal = (meal: any) => {
     setEditMealId(meal.mealId);
     setEditMealName(meal.mealName);
@@ -115,37 +131,35 @@ const Meals = () => {
   };
 
   return (
-    <div className='h-[70vh] border-2 border-white w-full'>
-      <button className='mx-2' onClick={() => setIsAddMealFormVisible(!isAddMealFormVisible)}>
+    <div className='h-[70vh] border-2 border-white w-full p-4'>
+      <button className='mx-2 bg-blue-500 p-2 rounded text-white' onClick={() => setIsAddMealFormVisible(!isAddMealFormVisible)}>
         Add Meal
       </button>
       <ul className='list-disc ml-5'>
         {meals?.map((meal: any, index: number) => {
           return (
-            <li key={index} className=''>
-              <span>{meal.mealName}</span>
-              <button className='mx-2' onClick={() => deleteMeal(meal)}>
+            <li key={index} className='mb-4'>
+              <span className='font-bold'>{meal.mealName}</span>
+              <button className='mx-2 bg-red-500 p-1 rounded text-white' onClick={() => deleteMeal(meal)}>
                 X
               </button>
-              <button className='mx-2' onClick={() => startEditMeal(meal)}>
+              <button className='mx-2 bg-yellow-500 p-1 rounded text-white' onClick={() => startEditMeal(meal)}>
                 Edit
               </button>
               <ul className='list-disc ml-10'>
                 {meal.mealIngredients?.map((mealIngredients: any, index: number) => {
                   return (
                     <li key={index}>
-                      <span>{mealIngredients.quantity}</span>
-                      <span>{mealIngredients.unit}</span>
-                      <span>{mealIngredients.ingredientName}</span>
+                      <span>{mealIngredients.quantity} {mealIngredients.unit} of {mealIngredients.ingredientName}</span>
                     </li>
                   );
                 })}
               </ul>
 
               {editMealId === meal.mealId && (
-                <div>
+                <div className='mt-4 bg-gray-200 p-4 rounded'>
                   <input
-                    className='text-black'
+                    className='text-black p-2 rounded w-full mb-2'
                     type='text'
                     placeholder='Meal Name'
                     value={editMealName}
@@ -153,32 +167,34 @@ const Meals = () => {
                   />
                   <div>
                     {editMealIngredients.map((mealIngredient, index) => (
-                      <div key={index}>
+                      <div key={index} className='flex items-center mb-2'>
                         <input
-                          className='text-black'
+                          className='text-black p-2 rounded mr-2 flex-1'
                           type='text'
                           value={mealIngredient.ingredientName}
                           onChange={(e) => handleInputChange(index, 'ingredientName', e.target.value, 'edit')}
                           placeholder='Ingredient Name'
                         />
                         <input
-                          className='text-black'
+                          className='text-black p-2 rounded mr-2 w-24'
                           type='number'
                           value={mealIngredient.quantity}
                           onChange={(e) => handleInputChange(index, 'quantity', e.target.value, 'edit')}
                           placeholder='Quantity'
                         />
                         <input
-                          className='text-black'
+                          className='text-black p-2 rounded mr-2 w-24'
                           type='text'
                           value={mealIngredient.unit}
                           onChange={(e) => handleInputChange(index, 'unit', e.target.value, 'edit')}
                           placeholder='Unit'
                         />
+                        <button className='bg-red-500 text-white p-2 rounded' onClick={() => handleRemoveIngredient(index, 'edit')}>Remove</button>
                       </div>
                     ))}
+                    <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={() => handleAddIngredient('edit')}>Add Ingredient</button>
                   </div>
-                  <button onClick={() => updateMeal(meal.mealId, editMealName, editMealIngredients)}>Update Meal</button>
+                  <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => updateMeal(meal.mealId, editMealName, editMealIngredients)}>Update Meal</button>
                 </div>
               )}
             </li>
@@ -186,9 +202,9 @@ const Meals = () => {
         })}
       </ul>
       {isAddMealFormVisible && (
-        <div>
+        <div className='mt-4 bg-gray-200 p-4 rounded'>
           <input
-            className='text-black'
+            className='text-black p-2 rounded w-full mb-2'
             type='text'
             placeholder='Meal Name'
             value={formMealName}
@@ -197,33 +213,35 @@ const Meals = () => {
           <div>
             {formMealIngredients.map((mealIngredient, index) => {
               return (
-                <div key={index}>
+                <div key={index} className='flex items-center mb-2'>
                   <input
-                    className='text-black'
+                    className='text-black p-2 rounded mr-2 flex-1'
                     type='text'
                     value={mealIngredient.ingredientName}
                     onChange={(e) => handleInputChange(index, 'ingredientName', e.target.value, 'form')}
                     placeholder='Ingredient Name'
                   />
                   <input
-                    className='text-black'
+                    className='text-black p-2 rounded mr-2 w-24'
                     type='number'
                     value={mealIngredient.quantity}
                     onChange={(e) => handleInputChange(index, 'quantity', e.target.value, 'form')}
                     placeholder='Quantity'
                   />
                   <input
-                    className='text-black'
+                    className='text-black p-2 rounded mr-2 w-24'
                     type='text'
                     value={mealIngredient.unit}
                     onChange={(e) => handleInputChange(index, 'unit', e.target.value, 'form')}
                     placeholder='Unit'
                   />
+                  <button className='bg-red-500 text-white p-2 rounded' onClick={() => handleRemoveIngredient(index, 'form')}>Remove</button>
                 </div>
               );
             })}
+            <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={() => handleAddIngredient('form')}>Add Ingredient</button>
           </div>
-          <button onClick={() => addMeal(formMealName, formMealIngredients)}>Add Meal</button>
+          <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => addMeal(formMealName, formMealIngredients)}>Add Meal</button>
         </div>
       )}
     </div>
