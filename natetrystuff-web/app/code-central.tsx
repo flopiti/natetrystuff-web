@@ -133,7 +133,7 @@ const CodeCentral = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ fileName: selectedFileName, project: selectedProject.name, code: selectedFileContent })
+            body: JSON.stringify({  project: selectedProject.name, files: chatCodes})
         });
     }
 
