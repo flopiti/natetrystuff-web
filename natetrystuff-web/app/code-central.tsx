@@ -16,6 +16,7 @@ const CodeCentral = () => {
     const [chatCodes, setChatCodes] = useState([]); // Change state to an array
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<string[]>([]);
+    const [selectedChatCode, setSelectedChatCode] = useState(''); // Add state to store selected chat code
 
     const getProjects = async () => {
         const res = await fetch('api/get-projects', {
@@ -86,7 +87,6 @@ const CodeCentral = () => {
         });
 
         const response = await res.json();
-        console.log(response.chatCompletion.choices[0].message.content)
         setConversation([...conversation, {
             content: JSON.parse(response.chatCompletion.choices[0].message.content).answer,
             role: 'assistant',
@@ -95,7 +95,6 @@ const CodeCentral = () => {
         setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
     }
 
-    console.log('chatCodes', chatCodes)
 
     const addToConversation = (message:any) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
@@ -116,13 +115,16 @@ const CodeCentral = () => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
+        const chatCode:any = chatCodes.find((fileData:any) => fileData.fileName === fileName);
+        if(chatCode){
+            setSelectedChatCode(chatCode.code);
+        }
     };
 
     const fetchHighlightedFilesContent = async () => {
         const filesContentPromises = highlightedFiles.map(fileName => getFile(fileName, selectedProject.name));
         const filesContent = await Promise.all(filesContentPromises);
         setHighlightedFilesContent(filesContent);
-        console.log(filesContent);
     };
 
     const replaceCode = async () => {
@@ -178,9 +180,6 @@ const CodeCentral = () => {
 
                         const doWeHaveChatCode = chatCodes.find((fileData:any) => fileData.fileName === projectFile);
 
-                        if(doWeHaveChatCode) {
-                            console.log('we do have file for', projectFile);
-                        }
                         return (
                             <div
                                 key={index}
@@ -217,16 +216,21 @@ const CodeCentral = () => {
                             <pre>{selectedFileContent}</pre>
                         </div>
                     )}
-                    {activeTab === 'chat' && chatCodes.length > 0 && chatCodes.map((fileData:any, index) => (
-                        <div key={index}>
-                            <h3>{fileData.fileName}</h3>
-                            <pre className="w-full">{getHighlightedCode(fileData.code)}</pre>
-                            <button
-                                className="bg-blue-500 text-white p-2"
-                                onClick={() => replaceCode()}
-                            >Replace code in {fileData.fileName}</button>
-                        </div>
-                    ))}
+                {
+                    activeTab === 'chat' && selectedChatCode && (() => {
+                        return (
+                            <div>
+                                <pre className="w-full">{getHighlightedCode(selectedChatCode)}</pre>
+                                <button
+                                    className="bg-blue-500 text-white p-2"
+                                    onClick={() => replaceCode()}
+                                >
+                                    Replace code in {selectedFileName}
+                                </button>
+                            </div>
+                        );
+                    })()
+                }
                 </div>
             </div>
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
