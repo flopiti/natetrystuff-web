@@ -125,9 +125,13 @@ const Meals = () => {
   };
 
   const startEditMeal = (meal: any) => {
-    setEditMealId(meal.mealId);
-    setEditMealName(meal.mealName);
-    setEditMealIngredients(meal.mealIngredients);
+    if (editMealId === meal.mealId) {
+      setEditMealId(null); // If the same meal is clicked, close the edit box
+    } else {
+      setEditMealId(meal.mealId);
+      setEditMealName(meal.mealName);
+      setEditMealIngredients(meal.mealIngredients);
+    }
   };
 
   return (
