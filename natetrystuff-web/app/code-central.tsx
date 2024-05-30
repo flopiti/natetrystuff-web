@@ -13,7 +13,7 @@ const CodeCentral = () => {
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
-    const [chatCode, setChatCode] = useState('');
+    const [chatCodes, setChatCodes] = useState([]); // Change state to an array
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<string[]>([]);
 
@@ -64,8 +64,8 @@ const CodeCentral = () => {
     }, [selectedProject])
 
     useEffect(() => {
-        // Reset chat code when selectedFileContent changes
-        setChatCode('');
+        // Reset chat codes when selectedFileContent changes
+        setChatCodes([]);
     }, [selectedFileContent])
 
     const askChat = async () => {
@@ -97,7 +97,7 @@ const CodeCentral = () => {
             type: 'text'
         }]);
         console.log(JSON.parse(response.chatCompletion.choices[0].message.content));
-        setChatCode(JSON.parse(response.chatCompletion.choices[0].message.content).code);
+        setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
     }
 
     const addToConversation = (message:any) => {
@@ -134,12 +134,12 @@ const CodeCentral = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ fileName: selectedFileName, code: chatCode, project: selectedProject.name }),
+            body: JSON.stringify({ fileName: selectedFileName, project: selectedProject.name, code: selectedFileContent })
         });
     }
 
-    const getHighlightedCode = () => {
-        const diff = diffLines(selectedFileContent, chatCode);
+    const getHighlightedCode = (fileCode:any) => { // Accept parameter to get respective chat code
+        const diff = diffLines(selectedFileContent, fileCode);
         return diff.map((part:any, index:number) => {
             const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
             return <span key={index} style={style}>{part.value}</span>;
@@ -213,15 +213,16 @@ const CodeCentral = () => {
                             <pre>{selectedFileContent}</pre>
                         </div>
                     )}
-                    {activeTab === 'chat' && chatCode && (
-                        <div>
-                            <pre className="w-full">{getHighlightedCode()}</pre>
+                    {activeTab === 'chat' && chatCodes.length > 0 && chatCodes.map((fileData:any, index) => (
+                        <div key={index}>
+                            <h3>{fileData.fileName}</h3>
+                            <pre className="w-full">{getHighlightedCode(fileData.code)}</pre>
                             <button
                                 className="bg-blue-500 text-white p-2"
-                                onClick={replaceCode}
-                            >Replace code</button>
+                                onClick={() => replaceCode()}
+                            >Replace code in {fileData.fileName}</button>
                         </div>
-                    )}
+                    ))}
                 </div>
             </div>
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
