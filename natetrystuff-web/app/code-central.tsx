@@ -52,15 +52,6 @@ const CodeCentral = () => {
         }
     };
 
-    const getHighlightedCode = (fileCode: any, diffLines: { (oldStr: string, newStr: string, options?: LinesOptions | undefined): Change[]; (oldStr: string, newStr: string, options: Callback | (LinesOptions & CallbackOptions)): void; (arg0: any, arg1: any): any; }, selectedFileContent: string) => { // Accept parameter to get respective chat code
-        const diff = diffLines(selectedFileContent, fileCode);
-        return diff.map((part: any, index: any) => {
-            const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-            return part.value.split('\n').map((line: any, index: any) => {
-                return <span key={index} style={style}>{part.value}</span>;
-        });
-    });
-    }
 
     useEffect(() => {
         if (highlightedFiles.length > 0) {
@@ -87,9 +78,7 @@ const CodeCentral = () => {
                 selectedFileContent={selectedFileContent} 
                 selectedChatCode={selectedChatCode} 
                 selectedFileName={selectedFileName} 
-                setSelectedChatCode={setSelectedChatCode} 
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)}
-                getHighlightedCode={(fileCode: any) => getHighlightedCode(fileCode, diffLines, selectedFileContent)}
             />
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200 overflow-scroll">

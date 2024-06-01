@@ -1,3 +1,4 @@
+import { diffLines } from 'diff';
 import React from 'react';
 
 const FileViewer = ({
@@ -6,19 +7,27 @@ const FileViewer = ({
   selectedFileContent,
   selectedChatCode,
   selectedFileName,
-  setSelectedChatCode,
-  replaceCode,
-  getHighlightedCode
+  replaceCode
 }: {
   activeTab: any,
   setActiveTab: any,
   selectedFileContent: any,
   selectedChatCode: any,
   selectedFileName: any,
-  setSelectedChatCode: any,
   replaceCode: any,
-  getHighlightedCode: any
 }) => {
+  const getHighlightedCode = () => {
+    const diff = diffLines(selectedFileContent, selectedChatCode);
+    return (
+      <pre>{diff.map((part: any, index: any) => {
+        const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
+        return part.value.split('\n').map((line: any, lineIndex: any) => {
+          return <div key={lineIndex} style={style}>{line}</div>;
+        });
+      })}</pre>
+    );
+  };
+
   return (
     <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
@@ -38,8 +47,7 @@ const FileViewer = ({
       <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
         {activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
         {activeTab === 'chat' && selectedChatCode && (
-          <div>
-            <pre className="w-full">{getHighlightedCode(selectedChatCode)}</pre>
+          <div>{getHighlightedCode()}
             <button
               className="bg-blue-500 text-white p-2"
               onClick={() => replaceCode()}
