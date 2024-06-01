@@ -9,53 +9,78 @@ const CodeCentral = () => {
     answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] 
     the code snippet that you think is the answer}. You are allowed to create new files if necessary. If the code is not a coding solution, simply do not include the property in the JSON object.`;
     
-    const [projectFiles, setProjectFiles] = useState([]);
-    const [selectedFileName, setSelectedFileName] = useState('');
-    const [selectedFileContent, setSelectedFileContent] = useState('');
-    const [projects, setProjects] = useState([]);
+    const [projectFiles, setProjectFiles] = useState<string[]>([]);
+    const [selectedFileName, setSelectedFileName] = useState<string>('');
+    const [selectedFileContent, setSelectedFileContent] = useState<string>('');
+    const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
-    const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
-    const [activeTab, setActiveTab] = useState('file'); // Default to showing file
-    const [chatCodes, setChatCodes] = useState([]); // Change state to an array
-    const [highlightedFiles, setHighlightedFiles] = useState([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState([]);
-    const [selectedChatCode, setSelectedChatCode] = useState(''); // Add state to store selected chat code
+    const [conversation, setConversation] = useState<{ content: string, role: string, type: string }[]>([{ content: PROMPT, role: 'system', type: 'text' }]);
+    const [activeTab, setActiveTab] = useState<string>('file'); // Default to showing file
+    const [chatCodes, setChatCodes] = useState<any[]>([]); // Change state to an array
+    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
+    const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
 
     useEffect(() => {
-        getProjects(setProjects);
+        (async () => {
+            const data = await getProjects();
+            setProjects(data);
+        })();
     }, []);
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            askChat(conversation, setConversation, setChatCodes, highlightedFiles, highlightedFilesContent);
+            (async () => {
+                const response = await askChat(conversation, highlightedFiles, highlightedFilesContent);
+                setConversation([...conversation, { content: response.answer, role: 'assistant', type: 'text' }]);
+                setChatCodes(response.files);
+            })();
         }
     }, [conversation]);
 
     useEffect(() => {
         if (selectedProject) {
-            getProjectFiles(selectedProject, setProjectFiles);
+            (async () => {
+                const data = await getProjectFiles(selectedProject);
+                setProjectFiles(data);
+            })();
         }
     }, [selectedProject]);
 
+    useEffect(() => {
+        if (chatCodes.length > 0) {
+            setActiveTab('chat'); // Switch to Chat tab when new chat codes are added
+            const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
+            if (chatCode) {
+                setSelectedChatCode(chatCode.code);
+            }
+        }
+    }, [chatCodes]);
+
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
-    }
+    };
 
-    const handleFileSelect = async (fileName: SetStateAction<string>) => {
+    const handleFileSelect = async (fileName: string) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
-        const chatCode:any = chatCodes?.find((fileData:any) => fileData.fileName === fileName);
+        const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
+        if (!highlightedFiles.includes(fileName)) {
+            setHighlightedFiles([...highlightedFiles, fileName]);
+        }
     };
-
 
     useEffect(() => {
         if (highlightedFiles.length > 0) {
-            fetchHighlightedFilesContent(highlightedFiles, selectedProject.name, setHighlightedFilesContent);
+            (async () => {
+                const content = await fetchHighlightedFilesContent(highlightedFiles, selectedProject.name);
+                setHighlightedFilesContent(content);
+            })();
         }
     }, [highlightedFiles]);
 
@@ -66,7 +91,7 @@ const CodeCentral = () => {
                 selectedProject={selectedProject}
                 setSelectedProject={setSelectedProject}
                 projectFiles={projectFiles}
-                handleFlightClick={(fileName, event) => handleFlightClick(fileName, event, setHighlightedFiles, handleFileSelect, highlightedFiles)}
+                handleFlightClick={(fileName, event) => setHighlightedFiles((prev: any) => handleFlightClick(fileName, event, prev, handleFileSelect))}
                 selectedFileName={selectedFileName}
                 highlightedFiles={highlightedFiles}
                 chatCodes={chatCodes}

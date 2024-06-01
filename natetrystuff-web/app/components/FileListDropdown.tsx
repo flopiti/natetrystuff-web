@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const FileListDropdown = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode }: {
+interface FileListDropdownProps {
     projects: any[],
     selectedProject: any,
     setSelectedProject: (project: any) => void,
@@ -10,7 +10,9 @@ const FileListDropdown = ({ projects, selectedProject, setSelectedProject, proje
     highlightedFiles: any[],
     chatCodes: any[],
     setSelectedChatCode: (code: any) => void
-}) => {
+}
+
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode }) => {
     const handleSelectedProjectChange = (event: any) => {
         const pr = projects.find((project:any) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);

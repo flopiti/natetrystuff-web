@@ -1,7 +1,6 @@
 import { LinesOptions, Change, Callback, CallbackOptions } from "diff";
-import { SetStateAction } from "react";
 
-export const getProjects = async (setProjects: { (value: SetStateAction<never[]>): void; (arg0: any): void; }) => {
+export const getProjects = async () => {
     const res = await fetch('api/get-projects', {
         headers: {
             'Content-Type': 'application/json',
@@ -10,11 +9,11 @@ export const getProjects = async (setProjects: { (value: SetStateAction<never[]>
     });
 
     const projects_ = await res.json();
-    setProjects(projects_.data);
+    return projects_.data;
 }
 
-export const getProjectFiles = async (selectedProject: any, setProjectFiles: { (value: SetStateAction<never[]>): void; (arg0: any): void; }) => {
-    if (!selectedProject) return;
+export const getProjectFiles = async (selectedProject: any) => {
+    if (!selectedProject) return [];
     const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -23,10 +22,10 @@ export const getProjectFiles = async (selectedProject: any, setProjectFiles: { (
     });
 
     const files = await res.json();
-    setProjectFiles(files.data);
+    return files.data;
 }
 
-export const askChat = async (conversation: any[], setConversation: { (value: SetStateAction<{ content: string; role: string; type: string; }[]>): void; (arg0: any[]): void; }, setChatCodes: { (value: SetStateAction<never[]>): void; (arg0: any): void; }, highlightedFiles: any[], highlightedFilesContent: never[]) => {
+export const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
     const messages = conversation.map((message: { role: any; content: any; }) => {
         return { role: message.role, content: message.content, type: 'text' };
     });
@@ -48,12 +47,7 @@ export const askChat = async (conversation: any[], setConversation: { (value: Se
     });
 
     const response = await res.json();
-    setConversation([...conversation, {
-        content: JSON.parse(response.chatCompletion.choices[0].message.content).answer,
-        role: 'assistant',
-        type: 'text'
-    }]);
-    setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
+    return JSON.parse(response.chatCompletion.choices[0].message.content);
 }
 
 export const getFile = async (fileName: any, project: any) => {
@@ -67,13 +61,13 @@ export const getFile = async (fileName: any, project: any) => {
     return data.data;
 }
 
-export const fetchHighlightedFilesContent = async (highlightedFiles: any[], projectName: any, setHighlightedFilesContent: any) => {
+export const fetchHighlightedFilesContent = async (highlightedFiles: any[], projectName: any) => {
     const filesContentPromises = highlightedFiles.map((fileName: any) => getFile(fileName, projectName));
     const filesContent = await Promise.all(filesContentPromises);
-    setHighlightedFilesContent(filesContent);
+    return filesContent;
 };
 
-export const replaceCode = async (projectName: any, chatCodes: never[]) => {
+export const replaceCode = async (projectName: any, chatCodes: any[]) => {
     await fetch('/api/replace-code', {
         method: 'POST',
         headers: {
@@ -83,14 +77,11 @@ export const replaceCode = async (projectName: any, chatCodes: never[]) => {
     });
 };
 
-
-
-export const handleFlightClick = (fileName: any, event: { shiftKey: any; }, setHighlightedFiles: { (value: SetStateAction<never[]>): void; (arg0: (prev: any) => any): void; }, handleFileSelect: { (fileName: any): Promise<void>; (arg0: any): void; }, highlightedFiles: never[]) => {
+export const handleFlightClick = (fileName: any, event: { shiftKey: any; }, highlightedFiles: any[], handleFileSelect: { (fileName: any): Promise<void>; (arg0: any): void; }) => {
     if (event.shiftKey) {
-        setHighlightedFiles((prev: any[]) =>
-            prev.includes(fileName) ? prev.filter((flight: any) => flight !== fileName) : [...prev, fileName]
-        );
+        return highlightedFiles.includes(fileName) ? highlightedFiles.filter((flight: any) => flight !== fileName) : [...highlightedFiles, fileName];
     } else {
         handleFileSelect(fileName);
     }
+    return highlightedFiles;
 }
