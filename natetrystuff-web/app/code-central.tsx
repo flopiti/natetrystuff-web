@@ -99,12 +99,13 @@ const CodeCentral = () => {
                         </div>
                     ))}
                 </div>
-                <div className="w-full h-1/5 bg-purple-200">
-                    <input type="text" className="w-full h-full text-black"
+                <div className="w-full h-1/5 bg-purple-20">
+                    <textarea className="w-full h-full text-black p-2 whitespace-pre-wrap break-words"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
                                 addToConversation(e.currentTarget.value);
                                 e.currentTarget.value = '';
+                                e.preventDefault(); 
                             }
                         }} />
                 </div>
