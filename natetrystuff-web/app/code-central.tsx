@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Diff, diffLines } from 'diff';
 import FileViewer from './components/FileViewer';
+import FileListDropdown from './components/FileListDropdown';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -30,10 +31,6 @@ const CodeCentral = () => {
         const projects_ = await res.json();
         setProjects(projects_.data);
     }
-    const handleSelectedProjectChange = (event:any) => {
-        const pr = projects.find(project => project.name === event.target.value);
-        setSelectedProject(pr ? pr : null);
-    };
 
     const getProjectFiles = async () => {
         if (!selectedProject) return;
@@ -50,20 +47,20 @@ const CodeCentral = () => {
 
     useEffect(() => {
         getProjects();
-    }, [])
+    }, []);
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             askChat();
         }
-    }, [conversation])
+    }, [conversation]);
 
     useEffect(() => {
         if (selectedProject) {
             getProjectFiles();
         }
-    }, [selectedProject])
+    }, [selectedProject]);
 
     const askChat = async () => {
         const messages = conversation.map((message) => {
@@ -95,11 +92,11 @@ const CodeCentral = () => {
         setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
     }
 
-    const addToConversation = (message:any) => {
+    const addToConversation = (message: any) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     }
 
-    const getFile = async (fileName:any, project:any) => {
+    const getFile = async (fileName: any, project: any) => {
         const res = await fetch(`api/get-file?fileName=${fileName}&project=${project}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -114,8 +111,8 @@ const CodeCentral = () => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
-        const chatCode:any = chatCodes?.find((fileData:any) => fileData.fileName === fileName);
-        if(chatCode){
+        const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
+        if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
     };
@@ -132,13 +129,13 @@ const CodeCentral = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({  project: selectedProject.name, files: chatCodes})
+            body: JSON.stringify({ project: selectedProject.name, files: chatCodes })
         });
     }
 
-    const getHighlightedCode = (fileCode:any) => { // Accept parameter to get respective chat code
+    const getHighlightedCode = (fileCode: any) => { // Accept parameter to get respective chat code
         const diff = diffLines(selectedFileContent, fileCode);
-        return diff.map((part:any, index:number) => {
+        return diff.map((part: any, index: number) => {
             const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
             return <span key={index} style={style}>{part.value}</span>;
         });
@@ -162,49 +159,17 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
-            <div className="w-1/5 bg-gray-100 text-black">
-                <div className="sticky top-0 bg-gray-100">
-                    <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2">
-                        <option value="" disabled>Select a project</option>
-                        {projects.map(project => (
-                            <option key={project.name} value={project.name}>
-                                {project.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="h-full overflow-auto">
-                    {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
-                        const isHighlighted = highlightedFiles.includes(projectFile);
-
-                        const doWeHaveChatCode = chatCodes?.find((fileData:any) => fileData.fileName === projectFile);
-
-                        return (
-                            <div
-                                key={index}
-                                onClick={event => handleFlightClick(projectFile, event)}
-                                className={`p-2 cursor-pointer hover:bg-gray-200', ${ isHighlighted ? `bg-yellow-300` : ''}`}
-                            >
-                                <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
-                                    {projectFile}
-                                </p>
-                                {doWeHaveChatCode && <img width={30} height={30} src="/openai.svg" alt="Open" />}
-                            </div>
-                        );
-                    })}
-                    {chatCodes?.length > 0 && chatCodes?.filter(({fileName}) => !projectFiles.includes(fileName)).map(({fileName, code}, index) => (
-                        <div
-                            key={projectFiles.length + index}
-                            onClick={() => setSelectedChatCode(code)}
-                            className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300"
-                        >
-                            <p style={{ fontWeight: selectedFileName === fileName ? 'bold' : 'normal' }}>
-                                {fileName}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <FileListDropdown
+                projects={projects}
+                selectedProject={selectedProject}
+                setSelectedProject={setSelectedProject}
+                projectFiles={projectFiles}
+                handleFlightClick={handleFlightClick}
+                selectedFileName={selectedFileName}
+                highlightedFiles={highlightedFiles}
+                chatCodes={chatCodes}
+                setSelectedChatCode={setSelectedChatCode}
+            />
             <FileViewer 
                 activeTab={activeTab} 
                 setActiveTab={setActiveTab} 
