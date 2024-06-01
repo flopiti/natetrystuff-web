@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Diff, diffLines } from 'diff';
+import FileViewer from './components/FileViewer';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -64,7 +65,6 @@ const CodeCentral = () => {
         }
     }, [selectedProject])
 
-
     const askChat = async () => {
         const messages = conversation.map((message) => {
             return { role: message.role, content: message.content, type: 'text' };
@@ -94,7 +94,6 @@ const CodeCentral = () => {
         }]);
         setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
     }
-
 
     const addToConversation = (message:any) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
@@ -206,44 +205,16 @@ const CodeCentral = () => {
                     ))}
                 </div>
             </div>
-            <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
-                <div className="flex bg-gray-100 p-2">
-                    <button
-                        className={`flex-1 text-center p-2 ${activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-                        onClick={() => setActiveTab('file')}
-                    >
-                        File
-                    </button>
-                    <button
-                        className={`flex-1 text-center p-2 ${activeTab === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-                        onClick={() => setActiveTab('chat')}
-                    >
-                        Chat
-                    </button>
-                </div>
-                <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
-                    {activeTab === 'file' && selectedFileContent && (
-                        <div>
-                            <pre>{selectedFileContent}</pre>
-                        </div>
-                    )}
-                {
-                    activeTab === 'chat' && selectedChatCode && (() => {
-                        return (
-                            <div>
-                                <pre className="w-full">{getHighlightedCode(selectedChatCode)}</pre>
-                                <button
-                                    className="bg-blue-500 text-white p-2"
-                                    onClick={() => replaceCode()}
-                                >
-                                    Replace code in {selectedFileName}
-                                </button>
-                            </div>
-                        );
-                    })()
-                }
-                </div>
-            </div>
+            <FileViewer 
+                activeTab={activeTab} 
+                setActiveTab={setActiveTab} 
+                selectedFileContent={selectedFileContent} 
+                selectedChatCode={selectedChatCode} 
+                selectedFileName={selectedFileName} 
+                setSelectedChatCode={setSelectedChatCode} 
+                replaceCode={replaceCode}
+                getHighlightedCode={getHighlightedCode}
+            />
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200 overflow-scroll">
                     {conversation?.slice(1).map((message, index) => (
