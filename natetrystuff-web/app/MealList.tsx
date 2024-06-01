@@ -11,6 +11,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
   const [editMealId, setEditMealId] = useState<number | null>(null);
   const [editMealName, setEditMealName] = useState('');
   const [editMealIngredients, setEditMealIngredients] = useState<MealIngredient[]>([]);
+  const [openedMealId, setOpenedMealId] = useState<number | null>(null);
 
   const handleInputChange = (index: number, field: string, value: any) => {
     const updatedMealIngredients = editMealIngredients.map((meal, idx) => {
@@ -40,27 +41,39 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
     }
   };
 
+  const toggleIngredients = (mealId: number) => {
+    if (mealId === openedMealId) {
+      setOpenedMealId(null);
+    } else {
+      setOpenedMealId(mealId);
+    }
+  };
+
   return (
     <ul className='list-disc ml-5'>
       {meals?.map((meal: any, index: number) => {
         return (
           <li key={index} className='mb-4'>
-            <span className='font-bold'>{meal.mealName}</span>
+            <span className='font-bold cursor-pointer' onClick={() => toggleIngredients(meal.mealId)}>
+              {meal.mealName}
+            </span>
             <button className='mx-2 bg-red-500 p-1 rounded text-white' onClick={() => deleteMeal(meal)}>
               X
             </button>
             <button className='mx-2 bg-yellow-500 p-1 rounded text-white' onClick={() => startEditMeal(meal)}>
               Edit
             </button>
-            <ul className='list-disc ml-10'>
-              {meal.mealIngredients?.map((mealIngredient: any, index: number) => {
-                return (
-                  <li key={index}>
-                    <span>{mealIngredient.quantity} {mealIngredient.unit} of {mealIngredient.ingredientName}</span>
-                  </li>
-                );
-              })}
-            </ul>
+            {openedMealId === meal.mealId && (
+              <ul className='list-disc ml-10'>
+                {meal.mealIngredients?.map((mealIngredient: any, index: number) => {
+                  return (
+                    <li key={index}>
+                      <span>{mealIngredient.quantity} {mealIngredient.unit} of {mealIngredient.ingredientName}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
             {editMealId === meal.mealId && (
               <div className='mt-4 bg-gray-200 p-4 rounded'>

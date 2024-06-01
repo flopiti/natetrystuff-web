@@ -17,7 +17,7 @@ const Meals = () => {
   }, []);
 
   return (
-    <div className='h-[70vh] border-2 border-white w-full p-4'>
+    <div className='h-[70vh] border-2 border-white w-full p-4 overflow-auto'>
       <button className='mx-2 bg-blue-500 p-2 rounded text-white' onClick={() => setIsAddMealFormVisible(!isAddMealFormVisible)}>
         Add Meal
       </button>
