@@ -7,8 +7,8 @@ export const getMeals = async () => {
 };
 
 
-// Update setMeals to use Meal[]
-export const addMeal = async (name: string, mealIngredients: MealIngredient[], setMeals: (meals: any[]) => void) => {
+// Updated setMeals type to use (meals: any[] | ((prevMeals: any[]) => any[])) => void
+export const addMeal = async (name: string, mealIngredients: MealIngredient[], setMeals: (meals: any[] | ((prevMeals: any[]) => any[])) => void) => {
   const meal = {
     mealName: name,
     mealIngredients: mealIngredients
@@ -23,15 +23,16 @@ export const addMeal = async (name: string, mealIngredients: MealIngredient[], s
   const data = await response.json();
   setMeals((prevMeals: any[]) => [...prevMeals, data.data]); // Ensure data.data is of type Meal
 };
-export const deleteMeal = async (meal: any, setMeals: (meals: any[]) => void) => {
+
+export const deleteMeal = async (meal: any, setMeals: (meals: any[] | ((prevMeals: any[]) => any[])) => void) => {
   await fetch(`/api/meals/${meal.mealId}`, {
     method: 'DELETE',
     headers: {'Content-Type': 'application/json'},
   });
-  setMeals(prevMeals => prevMeals.filter(m => m.mealId !== meal.mealId));
+  setMeals((prevMeals: any[]) => prevMeals.filter(m => m.mealId !== meal.mealId));
 };
 
-export const updateMeal = async (mealId: number, name: string, mealIngredients: MealIngredient[], setMeals: (meals: any[]) => void) => {
+export const updateMeal = async (mealId: number, name: string, mealIngredients: MealIngredient[], setMeals: (meals: any[] | ((prevMeals: any[]) => any[])) => void) => {
   const meal = {
     mealName: name,
     mealIngredients: mealIngredients
@@ -44,5 +45,5 @@ export const updateMeal = async (mealId: number, name: string, mealIngredients: 
       body: JSON.stringify(meal),
     });
     const updatedMeal = await response.json();
-    setMeals(prevMeals => prevMeals.map(m => m.mealId === mealId ? updatedMeal : m));
+    setMeals((prevMeals: any[]) => prevMeals.map(m => m.mealId === mealId ? updatedMeal : m));
 };
