@@ -1,106 +1,20 @@
 import { useEffect, useState } from 'react';
 import AddMealForm from './AddMealForm';
 import MealList from './MealList';
+import { getMeals, addMeal, deleteMeal, updateMeal } from './mealService';
+import { MealIngredient } from './types';
+import { useFormState } from './useFormState';
 
 const Meals = () => {
-  interface MealIngredient {
-    ingredientName: string;
-    quantity: number;
-    unit: string;
-    mealIngredientId?: number | null;
-  }
   const [meals, setMeals] = useState<any[]>([]);
   const [isAddMealFormVisible, setIsAddMealFormVisible] = useState(false);
-  const [formMealName, setFormMealName] = useState('');
-  const [formMealIngredients, setFormMealIngredients] = useState<MealIngredient[]>([
-    { ingredientName: '', quantity: 0, unit: '', mealIngredientId: null }
-  ]);
-
-  const getMeals = async () => {
-    const response = await fetch('/api/meals');
-    const data = (await response.json()).data;
-    setMeals(data);
-  };
+  const {
+    formMealName, setFormMealName, formMealIngredients, setFormMealIngredients, handleInputChange, handleAddIngredient, handleRemoveIngredient
+  } = useFormState();
 
   useEffect(() => {
-    getMeals();
+    getMeals().then((data:any) => setMeals(data));
   }, []);
-
-  const addMeal = async (name: any, mealIngredients: any) => {
-    const meal = {
-      mealName: name,
-      mealIngredients: mealIngredients
-        .filter((mealIngredient: { ingredientName: string; quantity: number; unit: string }) =>
-          mealIngredient.ingredientName !== '' && mealIngredient.quantity !== 0 && mealIngredient.unit !== ''
-        )
-        .map((ingredient: MealIngredient, index: number) => ({
-          ...ingredient,
-          mealIngredientId: index + 1,
-        })),
-    };
-    console.log(meal);
-    const response = await fetch('/api/meals', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({meal}),
-    });
-    const data = await response.json();
-    setMeals([...meals, data.data]);
-  };
-
-  const deleteMeal = async (meal: any) => {
-    const response = await fetch(`/api/meals/${meal.mealId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    setMeals(meals.filter((m: any) => m.mealId !== meal.mealId));
-  };
-
-  const updateMeal = async (mealId: number, name: any, mealIngredients: any) => {
-    const meal = {
-      mealName: name,
-      mealIngredients: mealIngredients
-        .filter((mealIngredient: { ingredientName: string; quantity: number; unit: string }) =>
-          mealIngredient.ingredientName !== '' && mealIngredient.quantity !== 0 && mealIngredient.unit !== ''
-        )
-        .map((ingredient: MealIngredient, index: number) => ({
-          ...ingredient,
-          mealIngredientId: ingredient.mealIngredientId || index + 1,
-        })),
-    };
-    console.log('updating meal', meal);
-    const response = await fetch(`/api/meals/${mealId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(meal),
-    });
-    const updatedMeal = await response.json();
-    setMeals(meals.map((m) => (m.mealId === mealId ? updatedMeal : m)));
-  };
-
-  const handleInputChange = (index: number, field: string, value: any) => {
-    const updatedMealIngredients = formMealIngredients.map((meal, idx) => {
-      if (idx === index) {
-        return { ...meal, [field]: value };
-      }
-      return meal;
-    });
-    setFormMealIngredients(updatedMealIngredients);
-  };
-
-  const handleAddIngredient = () => {
-    setFormMealIngredients([...formMealIngredients, { ingredientName: '', quantity: 0, unit: '' }]);
-  };
-
-  const handleRemoveIngredient = (index: number) => {
-    setFormMealIngredients(formMealIngredients.filter((item, idx) => idx !== index));
-  };
 
   return (
     <div className='h-[70vh] border-2 border-white w-full p-4'>
@@ -109,8 +23,8 @@ const Meals = () => {
       </button>
       <MealList
           meals={meals}
-          deleteMeal={deleteMeal}
-          updateMeal={updateMeal}
+          deleteMeal={(meal:any) => deleteMeal(meal, setMeals)}
+          updateMeal={(mealId:any, name:any, ingredients:any) => updateMeal(mealId, name, ingredients, setMeals)}
       />
       {isAddMealFormVisible && (
         <AddMealForm
@@ -121,7 +35,7 @@ const Meals = () => {
           handleInputChange={handleInputChange}
           handleAddIngredient={handleAddIngredient}
           handleRemoveIngredient={handleRemoveIngredient}
-          addMeal={addMeal}
+          addMeal={(name, ingredients) => addMeal(name, ingredients, setMeals)}
         />
       )}
     </div>
