@@ -18,32 +18,40 @@ const CodeCentral = () => {
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCodes, setChatCodes] = useState([]); // Change state to an array
     const [highlightedFiles, setHighlightedFiles] = useState<any>([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any>([]);
     const [selectedChatCode, setSelectedChatCode] = useState(''); // Add state to store selected chat code
 
     useEffect(() => {
-        getProjects(setProjects);
+        (async () => {
+            const data = await getProjects();
+            setProjects(data);
+        })();
     }, []);
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            askChat(conversation, setConversation, setChatCodes, highlightedFiles, highlightedFilesContent);
+            (async () => {
+                const response = await askChat(conversation, highlightedFiles, highlightedFilesContent);
+                setConversation([...conversation, { content: response.answer, role: 'assistant', type: 'text' }]);
+                setChatCodes(response.files);
+            })();
         }
     }, [conversation]);
 
     useEffect(() => {
         if (selectedProject) {
-            getProjectFiles(selectedProject, setProjectFiles);
+            (async () => {
+                const data = await getProjectFiles(selectedProject);
+                setProjectFiles(data);
+            })();
         }
     }, [selectedProject]);
 
     useEffect(() => {
-        console.log('he')
         if (chatCodes.length > 0) {
-
             setActiveTab('chat'); // Switch to Chat tab when new chat codes are added
-            const chatCode:any = chatCodes?.find((fileData:any) => fileData.fileName === selectedFileName);
+            const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
                 setSelectedChatCode(chatCode.code);
             }
@@ -58,7 +66,7 @@ const CodeCentral = () => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
-        const chatCode:any = chatCodes?.find((fileData:any) => fileData.fileName === fileName);
+        const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
@@ -69,7 +77,10 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (highlightedFiles.length > 0) {
-            fetchHighlightedFilesContent(highlightedFiles, selectedProject.name, setHighlightedFilesContent);
+            (async () => {
+                const content = await fetchHighlightedFilesContent(highlightedFiles, selectedProject.name);
+                setHighlightedFilesContent(content);
+            })();
         }
     }, [highlightedFiles]);
 
@@ -80,7 +91,7 @@ const CodeCentral = () => {
                 selectedProject={selectedProject}
                 setSelectedProject={setSelectedProject}
                 projectFiles={projectFiles}
-                handleFlightClick={(fileName, event) => handleFlightClick(fileName, event, setHighlightedFiles, handleFileSelect, highlightedFiles)}
+                handleFlightClick={(fileName, event) => setHighlightedFiles((prev: any) => handleFlightClick(fileName, event, prev, handleFileSelect))}
                 selectedFileName={selectedFileName}
                 highlightedFiles={highlightedFiles}
                 chatCodes={chatCodes}
