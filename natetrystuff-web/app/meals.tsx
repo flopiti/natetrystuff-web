@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AddMealForm from './AddMealForm';
 
 const Meals = () => {
   
@@ -206,47 +207,16 @@ const Meals = () => {
         })}
       </ul>
       {isAddMealFormVisible && (
-        <div className='mt-4 bg-gray-200 p-4 rounded'>
-          <input
-            className='text-black p-2 rounded w-full mb-2'
-            type='text'
-            placeholder='Meal Name'
-            value={formMealName}
-            onChange={(e) => setFormMealName(e.target.value)}
-          />
-          <div>
-            {formMealIngredients.map((mealIngredient, index) => {
-              return (
-                <div key={index} className='flex items-center mb-2'>
-                  <input
-                    className='text-black p-2 rounded mr-2 flex-1'
-                    type='text'
-                    value={mealIngredient.ingredientName}
-                    onChange={(e) => handleInputChange(index, 'ingredientName', e.target.value, 'form')}
-                    placeholder='Ingredient Name'
-                  />
-                  <input
-                    className='text-black p-2 rounded mr-2 w-24'
-                    type='number'
-                    value={mealIngredient.quantity}
-                    onChange={(e) => handleInputChange(index, 'quantity', e.target.value, 'form')}
-                    placeholder='Quantity'
-                  />
-                  <input
-                    className='text-black p-2 rounded mr-2 w-24'
-                    type='text'
-                    value={mealIngredient.unit}
-                    onChange={(e) => handleInputChange(index, 'unit', e.target.value, 'form')}
-                    placeholder='Unit'
-                  />
-                  <button className='bg-red-500 text-white p-2 rounded' onClick={() => handleRemoveIngredient(index, 'form')}>Remove</button>
-                </div>
-              );
-            })}
-            <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={() => handleAddIngredient('form')}>Add Ingredient</button>
-          </div>
-          <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => addMeal(formMealName, formMealIngredients)}>Add Meal</button>
-        </div>
+        <AddMealForm
+          formMealName={formMealName}
+          formMealIngredients={formMealIngredients}
+          setFormMealName={setFormMealName}
+          setFormMealIngredients={setFormMealIngredients}
+          handleInputChange={handleInputChange}
+          handleAddIngredient={handleAddIngredient}
+          handleRemoveIngredient={handleRemoveIngredient}
+          addMeal={addMeal}
+        />
       )}
     </div>
   );
