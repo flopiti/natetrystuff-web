@@ -50,8 +50,10 @@ const CodeCentral = () => {
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
+        if (!highlightedFiles.includes(fileName)) {
+            setHighlightedFiles([...highlightedFiles, fileName]);
+        }
     };
-
 
     useEffect(() => {
         if (highlightedFiles.length > 0) {
