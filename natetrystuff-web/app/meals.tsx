@@ -3,7 +3,6 @@ import AddMealForm from './AddMealForm';
 import MealList from './MealList';
 
 const Meals = () => {
-  
   interface MealIngredient {
     ingredientName: string;
     quantity: number;
@@ -16,9 +15,6 @@ const Meals = () => {
   const [formMealIngredients, setFormMealIngredients] = useState<MealIngredient[]>([
     { ingredientName: '', quantity: 0, unit: '', mealIngredientId: null }
   ]);
-  const [editMealId, setEditMealId] = useState<number | null>(null);
-  const [editMealName, setEditMealName] = useState('');
-  const [editMealIngredients, setEditMealIngredients] = useState<MealIngredient[]>([]);
 
   const getMeals = async () => {
     const response = await fetch('/api/meals');
@@ -39,7 +35,7 @@ const Meals = () => {
         )
         .map((ingredient: MealIngredient, index: number) => ({
           ...ingredient,
-          mealIngredientId: index + 1, // Generate ID for each ingredient
+          mealIngredientId: index + 1,
         })),
     };
     console.log(meal);
@@ -76,7 +72,7 @@ const Meals = () => {
           mealIngredientId: ingredient.mealIngredientId || index + 1,
         })),
     };
-    console.log('updating meal', meal)
+    console.log('updating meal', meal);
     const response = await fetch(`/api/meals/${mealId}`, {
       method: 'PUT',
       headers: {
@@ -86,54 +82,24 @@ const Meals = () => {
     });
     const updatedMeal = await response.json();
     setMeals(meals.map((m) => (m.mealId === mealId ? updatedMeal : m)));
-    setEditMealId(null);
   };
 
-  const handleInputChange = (index: number, field: string, value: any, type: 'form' | 'edit') => {
-    let updatedMealIngredients;
-    if (type === 'form') {
-      updatedMealIngredients = formMealIngredients.map((meal: any, idx: any) => {
-        if (idx === index) {
-          return { ...meal, [field]: value };
-        }
-        return meal;
-      });
-      setFormMealIngredients(updatedMealIngredients);
-    } else if (type === 'edit') {
-      updatedMealIngredients = editMealIngredients.map((meal: any, idx: any) => {
-        if (idx === index) {
-          return { ...meal, [field]: value };
-        }
-        return meal;
-      });
-      setEditMealIngredients(updatedMealIngredients);
-    }
+  const handleInputChange = (index: number, field: string, value: any) => {
+    const updatedMealIngredients = formMealIngredients.map((meal, idx) => {
+      if (idx === index) {
+        return { ...meal, [field]: value };
+      }
+      return meal;
+    });
+    setFormMealIngredients(updatedMealIngredients);
   };
 
-  const handleAddIngredient = (type: 'form' | 'edit') => {
-    if (type === 'form') {
-      setFormMealIngredients([...formMealIngredients, { ingredientName: '', quantity: 0, unit: '' }]);
-    } else if (type === 'edit') {
-      setEditMealIngredients([...editMealIngredients, { ingredientName: '', quantity: 0, unit: '' }]);
-    }
+  const handleAddIngredient = () => {
+    setFormMealIngredients([...formMealIngredients, { ingredientName: '', quantity: 0, unit: '' }]);
   };
 
-  const handleRemoveIngredient = (index: number, type: 'form' | 'edit') => {
-    if (type === 'form') {
-      setFormMealIngredients(formMealIngredients.filter((item, idx) => idx !== index));
-    } else if (type === 'edit') {
-      setEditMealIngredients(editMealIngredients.filter((item, idx) => idx !== index));
-    }
-  };
-
-  const startEditMeal = (meal: any) => {
-    if (editMealId === meal.mealId) {
-      setEditMealId(null); // If the same meal is clicked, close the edit box
-    } else {
-      setEditMealId(meal.mealId);
-      setEditMealName(meal.mealName);
-      setEditMealIngredients(meal.mealIngredients);
-    }
+  const handleRemoveIngredient = (index: number) => {
+    setFormMealIngredients(formMealIngredients.filter((item, idx) => idx !== index));
   };
 
   return (
@@ -144,14 +110,6 @@ const Meals = () => {
       <MealList
           meals={meals}
           deleteMeal={deleteMeal}
-          startEditMeal={startEditMeal}
-          editMealId={editMealId}
-          editMealName={editMealName}
-          editMealIngredients={editMealIngredients}
-          setEditMealName={setEditMealName}
-          handleInputChange={handleInputChange}
-          handleAddIngredient={handleAddIngredient}
-          handleRemoveIngredient={handleRemoveIngredient}
           updateMeal={updateMeal}
       />
       {isAddMealFormVisible && (
