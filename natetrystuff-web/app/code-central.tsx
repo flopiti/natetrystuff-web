@@ -1,249 +1,96 @@
-import { useEffect, useState } from 'react';
-import { Diff, diffLines } from 'diff';
+import { SetStateAction, useEffect, useState } from 'react';
+import { Callback, CallbackOptions, Change, LinesOptions, diffLines } from 'diff';
+import FileViewer from './components/FileViewer';
+import FileListDropdown from './components/FileListDropdown';
+import { getProjects, getProjectFiles, askChat, getFile, fetchHighlightedFilesContent, replaceCode, handleFlightClick } from './utils';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
     answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] 
     the code snippet that you think is the answer}. You are allowed to create new files if necessary. If the code is not a coding solution, simply do not include the property in the JSON object.`;
     
-    const [projectFiles, setProjectFiles] = useState<any[]>([]);
+    const [projectFiles, setProjectFiles] = useState([]);
     const [selectedFileName, setSelectedFileName] = useState('');
     const [selectedFileContent, setSelectedFileContent] = useState('');
-    const [projects, setProjects] = useState<any[]>([]);
+    const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCodes, setChatCodes] = useState([]); // Change state to an array
-    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState<string[]>([]);
+    const [highlightedFiles, setHighlightedFiles] = useState([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState([]);
     const [selectedChatCode, setSelectedChatCode] = useState(''); // Add state to store selected chat code
 
-    const getProjects = async () => {
-        const res = await fetch('api/get-projects', {
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-store'
-            },
-        });
-
-        const projects_ = await res.json();
-        setProjects(projects_.data);
-    }
-    const handleSelectedProjectChange = (event:any) => {
-        const pr = projects.find(project => project.name === event.target.value);
-        setSelectedProject(pr ? pr : null);
-    };
-
-    const getProjectFiles = async () => {
-        if (!selectedProject) return;
-        const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-store'
-            },
-        });
-
-        const files = await res.json();
-        setProjectFiles(files.data);
-    }
-
     useEffect(() => {
-        getProjects();
-    }, [])
+        getProjects(setProjects);
+    }, []);
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            askChat();
+            askChat(conversation, setConversation, setChatCodes, highlightedFiles, highlightedFilesContent);
         }
-    }, [conversation])
+    }, [conversation]);
 
     useEffect(() => {
         if (selectedProject) {
-            getProjectFiles();
+            getProjectFiles(selectedProject, setProjectFiles);
         }
-    }, [selectedProject])
+    }, [selectedProject]);
 
-
-    const askChat = async () => {
-        const messages = conversation.map((message) => {
-            return { role: message.role, content: message.content, type: 'text' };
-        });
-        const lastMessage = messages[messages.length - 1];
-        messages.pop();
-        const highlightedFilesMap = highlightedFiles.reduce((acc, fileName, index) => ({
-            ...acc,
-            [fileName]: highlightedFilesContent[index]
-        }), {});
-        const highlightedFilesText = JSON.stringify(highlightedFilesMap);
-        messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
-        const res = await fetch('api/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-store'
-            },
-            body: JSON.stringify({ messages })
-        });
-
-        const response = await res.json();
-        setConversation([...conversation, {
-            content: JSON.parse(response.chatCompletion.choices[0].message.content).answer,
-            role: 'assistant',
-            type: 'text'
-        }]);
-        setChatCodes(JSON.parse(response.chatCompletion.choices[0].message.content).files);
-    }
-
-
-    const addToConversation = (message:any) => {
+    const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     }
 
-    const getFile = async (fileName:any, project:any) => {
-        const res = await fetch(`api/get-file?fileName=${fileName}&project=${project}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-store'
-            },
-        });
-        const data = await res.json();
-        return data.data;
-    }
-
-    const handleFileSelect = async (fileName: any) => {
+    const handleFileSelect = async (fileName: SetStateAction<string>) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
         const chatCode:any = chatCodes?.find((fileData:any) => fileData.fileName === fileName);
-        if(chatCode){
+        if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
     };
 
-    const fetchHighlightedFilesContent = async () => {
-        const filesContentPromises = highlightedFiles.map(fileName => getFile(fileName, selectedProject.name));
-        const filesContent = await Promise.all(filesContentPromises);
-        setHighlightedFilesContent(filesContent);
-    };
-
-    const replaceCode = async () => {
-        await fetch('/api/replace-code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({  project: selectedProject.name, files: chatCodes})
-        });
-    }
-
-    const getHighlightedCode = (fileCode:any) => { // Accept parameter to get respective chat code
+    const getHighlightedCode = (fileCode: any, diffLines: { (oldStr: string, newStr: string, options?: LinesOptions | undefined): Change[]; (oldStr: string, newStr: string, options: Callback | (LinesOptions & CallbackOptions)): void; (arg0: any, arg1: any): any; }, selectedFileContent: string) => { // Accept parameter to get respective chat code
         const diff = diffLines(selectedFileContent, fileCode);
-        return diff.map((part:any, index:number) => {
+        return diff.map((part: any, index: any) => {
             const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-            return <span key={index} style={style}>{part.value}</span>;
+            return part.value.split('\n').map((line: any, index: any) => {
+                return <span key={index} style={style}>{part.value}</span>;
         });
-    }
-
-    const handleFlightClick = (fileName: string, event: any) => {
-        if (event.shiftKey) {
-            setHighlightedFiles((prev) =>
-                prev.includes(fileName) ? prev.filter((flight) => flight !== fileName) : [...prev, fileName]
-            );
-        } else {
-            handleFileSelect(fileName);
-        }
+    });
     }
 
     useEffect(() => {
         if (highlightedFiles.length > 0) {
-            fetchHighlightedFilesContent();
+            fetchHighlightedFilesContent(highlightedFiles, selectedProject.name, setHighlightedFilesContent);
         }
     }, [highlightedFiles]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
-            <div className="w-1/5 bg-gray-100 text-black">
-                <div className="sticky top-0 bg-gray-100">
-                    <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2">
-                        <option value="" disabled>Select a project</option>
-                        {projects.map(project => (
-                            <option key={project.name} value={project.name}>
-                                {project.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="h-full overflow-auto">
-                    {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
-                        const isHighlighted = highlightedFiles.includes(projectFile);
-
-                        const doWeHaveChatCode = chatCodes?.find((fileData:any) => fileData.fileName === projectFile);
-
-                        return (
-                            <div
-                                key={index}
-                                onClick={event => handleFlightClick(projectFile, event)}
-                                className={`p-2 cursor-pointer hover:bg-gray-200', ${ isHighlighted ? `bg-yellow-300` : ''}`}
-                            >
-                                <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
-                                    {projectFile}
-                                </p>
-                                {doWeHaveChatCode && <img width={30} height={30} src="/openai.svg" alt="Open" />}
-                            </div>
-                        );
-                    })}
-                    {chatCodes?.length > 0 && chatCodes?.filter(({fileName}) => !projectFiles.includes(fileName)).map(({fileName, code}, index) => (
-                        <div
-                            key={projectFiles.length + index}
-                            onClick={() => setSelectedChatCode(code)}
-                            className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300"
-                        >
-                            <p style={{ fontWeight: selectedFileName === fileName ? 'bold' : 'normal' }}>
-                                {fileName}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
-                <div className="flex bg-gray-100 p-2">
-                    <button
-                        className={`flex-1 text-center p-2 ${activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-                        onClick={() => setActiveTab('file')}
-                    >
-                        File
-                    </button>
-                    <button
-                        className={`flex-1 text-center p-2 ${activeTab === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
-                        onClick={() => setActiveTab('chat')}
-                    >
-                        Chat
-                    </button>
-                </div>
-                <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
-                    {activeTab === 'file' && selectedFileContent && (
-                        <div>
-                            <pre>{selectedFileContent}</pre>
-                        </div>
-                    )}
-                {
-                    activeTab === 'chat' && selectedChatCode && (() => {
-                        return (
-                            <div>
-                                <pre className="w-full">{getHighlightedCode(selectedChatCode)}</pre>
-                                <button
-                                    className="bg-blue-500 text-white p-2"
-                                    onClick={() => replaceCode()}
-                                >
-                                    Replace code in {selectedFileName}
-                                </button>
-                            </div>
-                        );
-                    })()
-                }
-                </div>
-            </div>
+            <FileListDropdown
+                projects={projects}
+                selectedProject={selectedProject}
+                setSelectedProject={setSelectedProject}
+                projectFiles={projectFiles}
+                handleFlightClick={(fileName, event) => handleFlightClick(fileName, event, setHighlightedFiles, handleFileSelect, highlightedFiles)}
+                selectedFileName={selectedFileName}
+                highlightedFiles={highlightedFiles}
+                chatCodes={chatCodes}
+                setSelectedChatCode={setSelectedChatCode}
+            />
+            <FileViewer 
+                activeTab={activeTab} 
+                setActiveTab={setActiveTab} 
+                selectedFileContent={selectedFileContent} 
+                selectedChatCode={selectedChatCode} 
+                selectedFileName={selectedFileName} 
+                setSelectedChatCode={setSelectedChatCode} 
+                replaceCode={() => replaceCode(selectedProject.name, chatCodes)}
+                getHighlightedCode={(fileCode: any) => getHighlightedCode(fileCode, diffLines, selectedFileContent)}
+            />
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200 overflow-scroll">
                     {conversation?.slice(1).map((message, index) => (
@@ -252,12 +99,13 @@ const CodeCentral = () => {
                         </div>
                     ))}
                 </div>
-                <div className="w-full h-1/5 bg-purple-200">
-                    <input type="text" className="w-full h-full text-black"
+                <div className="w-full h-1/5 bg-purple-20">
+                    <textarea className="w-full h-full text-black p-2 whitespace-pre-wrap break-words"
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
                                 addToConversation(e.currentTarget.value);
                                 e.currentTarget.value = '';
+                                e.preventDefault(); 
                             }
                         }} />
                 </div>
