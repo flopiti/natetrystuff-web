@@ -17,7 +17,7 @@ const CodeCentral = () => {
     const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState('file'); // Default to showing file
     const [chatCodes, setChatCodes] = useState([]); // Change state to an array
-    const [highlightedFiles, setHighlightedFiles] = useState([]);
+    const [highlightedFiles, setHighlightedFiles] = useState<any>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState([]);
     const [selectedChatCode, setSelectedChatCode] = useState(''); // Add state to store selected chat code
 
@@ -37,6 +37,18 @@ const CodeCentral = () => {
             getProjectFiles(selectedProject, setProjectFiles);
         }
     }, [selectedProject]);
+
+    useEffect(() => {
+        console.log('he')
+        if (chatCodes.length > 0) {
+
+            setActiveTab('chat'); // Switch to Chat tab when new chat codes are added
+            const chatCode:any = chatCodes?.find((fileData:any) => fileData.fileName === selectedFileName);
+            if (chatCode) {
+                setSelectedChatCode(chatCode.code);
+            }
+        }
+    }, [chatCodes]);
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
