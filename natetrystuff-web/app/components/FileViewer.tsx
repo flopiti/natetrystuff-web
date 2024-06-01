@@ -1,27 +1,29 @@
 import { diffLines } from 'diff';
 import React from 'react';
 
-const FileViewer = ({
+interface FileViewerProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  selectedFileContent: string;
+  selectedChatCode: string;
+  selectedFileName: string;
+  replaceCode: () => void;
+}
+
+const FileViewer: React.FC<FileViewerProps> = ({
   activeTab,
   setActiveTab,
   selectedFileContent,
   selectedChatCode,
   selectedFileName,
   replaceCode
-}: {
-  activeTab: any,
-  setActiveTab: any,
-  selectedFileContent: any,
-  selectedChatCode: any,
-  selectedFileName: any,
-  replaceCode: any,
 }) => {
   const getHighlightedCode = () => {
     const diff = diffLines(selectedFileContent, selectedChatCode);
     return (
-      <pre>{diff.map((part: any, index: any) => {
+      <pre>{diff.map((part: any, index: number) => {
         const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-        return part.value.split('\n').map((line: any, lineIndex: any) => {
+        return part.value.split('\n').map((line: string, lineIndex: number) => {
           return <div key={lineIndex} style={style}>{line}</div>;
         });
       })}</pre>

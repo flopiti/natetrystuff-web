@@ -9,17 +9,17 @@ const CodeCentral = () => {
     answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] 
     the code snippet that you think is the answer}. You are allowed to create new files if necessary. If the code is not a coding solution, simply do not include the property in the JSON object.`;
     
-    const [projectFiles, setProjectFiles] = useState([]);
-    const [selectedFileName, setSelectedFileName] = useState('');
-    const [selectedFileContent, setSelectedFileContent] = useState('');
-    const [projects, setProjects] = useState([]);
+    const [projectFiles, setProjectFiles] = useState<string[]>([]);
+    const [selectedFileName, setSelectedFileName] = useState<string>('');
+    const [selectedFileContent, setSelectedFileContent] = useState<string>('');
+    const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
-    const [conversation, setConversation] = useState([{ content: PROMPT, role: 'system', type: 'text' }]);
-    const [activeTab, setActiveTab] = useState('file'); // Default to showing file
-    const [chatCodes, setChatCodes] = useState([]); // Change state to an array
-    const [highlightedFiles, setHighlightedFiles] = useState<any>([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any>([]);
-    const [selectedChatCode, setSelectedChatCode] = useState(''); // Add state to store selected chat code
+    const [conversation, setConversation] = useState<{ content: string, role: string, type: string }[]>([{ content: PROMPT, role: 'system', type: 'text' }]);
+    const [activeTab, setActiveTab] = useState<string>('file'); // Default to showing file
+    const [chatCodes, setChatCodes] = useState<any[]>([]); // Change state to an array
+    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
+    const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
 
     useEffect(() => {
         (async () => {
@@ -60,9 +60,9 @@ const CodeCentral = () => {
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
-    }
+    };
 
-    const handleFileSelect = async (fileName: SetStateAction<string>) => {
+    const handleFileSelect = async (fileName: string) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);

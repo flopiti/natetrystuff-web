@@ -25,7 +25,7 @@ export const getProjectFiles = async (selectedProject: any) => {
     return files.data;
 }
 
-export const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: never[]) => {
+export const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
     const messages = conversation.map((message: { role: any; content: any; }) => {
         return { role: message.role, content: message.content, type: 'text' };
     });
@@ -67,7 +67,7 @@ export const fetchHighlightedFilesContent = async (highlightedFiles: any[], proj
     return filesContent;
 };
 
-export const replaceCode = async (projectName: any, chatCodes: never[]) => {
+export const replaceCode = async (projectName: any, chatCodes: any[]) => {
     await fetch('/api/replace-code', {
         method: 'POST',
         headers: {
