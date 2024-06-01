@@ -115,7 +115,7 @@ const CodeCentral = () => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
-        const chatCode:any = chatCodes.find((fileData:any) => fileData.fileName === fileName);
+        const chatCode:any = chatCodes?.find((fileData:any) => fileData.fileName === fileName);
         if(chatCode){
             setSelectedChatCode(chatCode.code);
         }
@@ -178,7 +178,7 @@ const CodeCentral = () => {
                     {projectFiles.length > 0 && projectFiles.map((projectFile:any, index:number) => {
                         const isHighlighted = highlightedFiles.includes(projectFile);
 
-                        const doWeHaveChatCode = chatCodes.find((fileData:any) => fileData.fileName === projectFile);
+                        const doWeHaveChatCode = chatCodes?.find((fileData:any) => fileData.fileName === projectFile);
 
                         return (
                             <div
@@ -193,7 +193,7 @@ const CodeCentral = () => {
                             </div>
                         );
                     })}
-                    {chatCodes.length > 0 && chatCodes.filter(({fileName}) => !projectFiles.includes(fileName)).map(({fileName, code}, index) => (
+                    {chatCodes?.length > 0 && chatCodes?.filter(({fileName}) => !projectFiles.includes(fileName)).map(({fileName, code}, index) => (
                         <div
                             key={projectFiles.length + index}
                             onClick={() => setSelectedChatCode(code)}
