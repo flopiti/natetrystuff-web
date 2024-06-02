@@ -20,20 +20,20 @@ const Hub = () => {
             <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
         </div>
         {
-            // page === 'schedule' ? (
-            //     <Schedule /> 
-            // ) : 
+            page === 'schedule' ? (
+                <Schedule /> 
+            ) : 
             page === 'meals'? (
                 <Meals />
-            // ) : 
-            // page === 'code' ? (
-            //     <Code/>
-            // ) :
-            // page === '/dev-db' ? (
-            //     <DevDb/>
-            // ) : 
-            // page === '/code-central' ? (
-            //     <CodeCentral/>
+            ) : 
+            page === 'code' ? (
+                <Code/>
+            ) :
+            page === '/dev-db' ? (
+                <DevDb/>
+            ) : 
+            page === '/code-central' ? (
+                <CodeCentral/>
             ) : null
 
         }
