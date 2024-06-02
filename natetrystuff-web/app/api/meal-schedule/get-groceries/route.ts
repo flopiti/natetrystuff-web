@@ -1,14 +1,15 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const firstDate = searchParams.get('startDate');
     const lastDate = searchParams.get('endDate');
-
+    const token = (await getAccessToken()).accessToken;
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules/get-groceries?startDate=${firstDate}&endDate=${lastDate}`, {
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
     });
     const data = await res.json();
@@ -21,11 +22,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {  
+    const token = (await getAccessToken()).accessToken;
     const body = await request.json()
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meals-schedule`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(body)
     });

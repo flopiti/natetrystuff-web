@@ -1,4 +1,3 @@
-'use client';
 import Image from "next/image";
 import Hub from "./hub";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
