@@ -49,7 +49,7 @@ const CodeCentral = () => {
     }, [selectedProject]);
 
     useEffect(() => {
-        if (chatCodes.length > 0) {
+        if (chatCodes?.length > 0) {
             setActiveTab('chat'); // Switch to Chat tab when new chat codes are added
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
