@@ -13,12 +13,20 @@ const Schedule = () => {
     };
 
     const [mealsSchedule, setMealsSchedule] = useState<any[]>([]); 
+    const [groceries, setGroceries] = useState<any[]>([]);
 
     const getMealSchedules = async (): Promise<void> => {
         const response = await fetch('/api/meal-schedules');
         const data = (await response.json()).data;
         setMealsSchedule(data);
     };
+
+    const getGroceries = async (): Promise<void> => {
+        const response = await fetch('/api/meal-schedule/get-groceries');
+        const data = (await response.json()).data;
+        setGroceries(data);
+    };
+    console.log(groceries)
 
     const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>(getNextFourDays());
     const [isAddMealFormVisible, setIsAddMealFormVisible] = useState<boolean>(false);
@@ -57,6 +65,7 @@ const Schedule = () => {
     useEffect(() => {
         getMealSchedules();
         getMeals();
+        getGroceries();
     }, []);
 
     const [addMealsIndexes, setAddMealsIndexes] = useState<any[]>([]);
@@ -124,6 +133,17 @@ const Schedule = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+            {/* Display the groceries list somewhere on the page */}
+            <div className='mt-4 p-4 bg-yellow-100 rounded-lg shadow-lg'>
+                <h2 className='text-xl font-bold mb-2'>Groceries</h2>
+                {groceries.length > 0 ? (
+                    <ul>
+                        {groceries.map((grocery: any, index: number) => (
+                            <li key={index} className='text-gray-700'>{grocery.name}</li>
+                        ))}
+                    </ul>
+                ) : <p className='text-gray-500'>No groceries listed</p>}
             </div>
         </div>
     );
