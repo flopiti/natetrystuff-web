@@ -2,7 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/meals-schedule/get-groceries`, {
+    const { searchParams } = new URL(request.url);
+    const firstDate = searchParams.get('startDate');
+    const lastDate = searchParams.get('endDate');
+
+    const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules/get-groceries?startDate=${firstDate}&endDate=${lastDate}`, {
         headers: {
           'Content-Type': 'application/json',
         },

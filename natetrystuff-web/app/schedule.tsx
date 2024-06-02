@@ -12,21 +12,23 @@ const Schedule = () => {
         return fourDays;
     };
 
+    const formatISODate = (date: Date): string => {
+        return `${date.toISOString().split('T')[0]}T00:00:00`; // Returns 'YYYY-MM-DDT00:00:00'
+    };
+
     const [mealsSchedule, setMealsSchedule] = useState<any[]>([]); 
     const [groceries, setGroceries] = useState<any[]>([]);
-
     const getMealSchedules = async (): Promise<void> => {
         const response = await fetch('/api/meal-schedules');
         const data = (await response.json()).data;
         setMealsSchedule(data);
     };
 
-    const getGroceries = async (): Promise<void> => {
-        const response = await fetch('/api/meal-schedule/get-groceries');
+    const getGroceries = async (firstDate: string, lastDate: string): Promise<void> => {
+        const response = await fetch(`/api/meal-schedule/get-groceries?startDate=${firstDate}&endDate=${lastDate}`);
         const data = (await response.json()).data;
         setGroceries(data);
     };
-    console.log(groceries)
 
     const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>(getNextFourDays());
     const [isAddMealFormVisible, setIsAddMealFormVisible] = useState<boolean>(false);
@@ -38,10 +40,6 @@ const Schedule = () => {
         setMeals(data);
     };
 
-    const formatISODate = (date: Date): string => {
-        return `${date.toISOString().split('T')[0]}T00:00:00`; // Returns 'YYYY-MM-DDT00:00:00'
-    };
-    
     const setToMidnight = (date: Date): void => {
         date.setHours(0, 0, 0, 0);
     };
@@ -63,9 +61,11 @@ const Schedule = () => {
     };
 
     useEffect(() => {
+        const firstDate = formatISODate(fourDaysSchedule[0]);
+        const lastDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
         getMealSchedules();
         getMeals();
-        getGroceries();
+        getGroceries(firstDate, lastDate);
     }, []);
 
     const [addMealsIndexes, setAddMealsIndexes] = useState<any[]>([]);
@@ -136,11 +136,13 @@ const Schedule = () => {
             </div>
             {/* Display the groceries list somewhere on the page */}
             <div className='mt-4 p-4 bg-yellow-100 rounded-lg shadow-lg'>
-                <h2 className='text-xl font-bold mb-2'>Groceries</h2>
+                <h2 className='text-xl font-bold mb-2 text-black'>Groceries</h2>
                 {groceries.length > 0 ? (
                     <ul>
                         {groceries.map((grocery: any, index: number) => (
-                            <li key={index} className='text-gray-700'>{grocery.name}</li>
+                            <li key={index} className='text-gray-700'>
+                              <span>{grocery.quantity} {grocery.unit} of {grocery.ingredient.ingredientName}</span>
+                            </li>
                         ))}
                     </ul>
                 ) : <p className='text-gray-500'>No groceries listed</p>}
