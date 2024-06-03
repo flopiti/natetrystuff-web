@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState } from 'react';
+import { SetStateAction, use, useEffect, useState } from 'react';
 import { Callback, CallbackOptions, Change, LinesOptions, diffLines } from 'diff';
 import FileViewer from './components/FileViewer';
 import FileListDropdown from './components/FileListDropdown';
@@ -20,6 +20,8 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
+    const [splitFileData, setSplitFileData] = useState<string>(''); // Add state to store split file data
+    
 
     useEffect(() => {
         (async () => {
@@ -70,6 +72,14 @@ const CodeCentral = () => {
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
+        console.log('bruh')
+        const fileDataResponse = await fetch(`/api/get-file?fileName=${fileName}&project=${selectedProject.name}`);
+        console.log('received')
+        const { splitFileData } = await fileDataResponse.json();
+
+        console.log(splitFileData)
+        setSplitFileData(splitFileData);
+
         if (!highlightedFiles.includes(fileName)) {
             setHighlightedFiles([...highlightedFiles, fileName]);
         }
@@ -103,7 +113,8 @@ const CodeCentral = () => {
                 selectedFileContent={selectedFileContent} 
                 selectedChatCode={selectedChatCode} 
                 selectedFileName={selectedFileName} 
-                replaceCode={() => replaceCode(selectedProject.name, chatCodes)}
+                replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
+                splitFileData={splitFileData} // Pass split file data to FileViewer
             />
             <div className="w-[30%] bg-red-200 h-full flex flex-col">
                 <div className="w-full h-4/5 bg-yellow-200 overflow-scroll">
