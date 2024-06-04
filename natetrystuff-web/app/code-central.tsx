@@ -116,8 +116,8 @@ const CodeCentral = () => {
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 splitFileData={splitFileData} // Pass split file data to FileViewer
             />
-            <div className="w-[30%] bg-red-200 h-full flex flex-col">
-                <div className="w-full h-4/5 bg-yellow-200 overflow-scroll">
+            <div className="w-[40%] bg-red-200 h-full flex flex-col">
+                <div className="w-full flex-grow bg-yellow-200 overflow-scroll">
                     {conversation?.slice(1).map((message, index) => (
                         <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}> 
                             <p>{message.content}</p>

@@ -12,9 +12,8 @@ const FileViewer = ({ selectedFileContent, splitFileData, ...props }: any) => {
         }
     }, [splitFileData]);
 
-
     return (
-        <div>
+        <div className="flex-grow w-[60%] overflow-scroll">
             <h1>File Viewer</h1>
             <pre>{selectedFileContent}</pre>
             {parsedSplitFileData && (

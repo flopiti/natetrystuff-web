@@ -16,20 +16,20 @@ export async function GET(request: NextRequest) {
 
     const fullFile = JSON.stringify({ fileName: fileName, code: data });
 
-    const openai = new OpenAI({
-        apiKey: process.env.OPEN_AI_API_KEY
-    });
-    const chatData:any = await openai.chat.completions.create({
-        messages: [{
-            role: 'user', content: `Please split the file into the following structure and return a JSON that can be fully parsed with JSON.parse(): { file: 'fileName', functions: [{ functionName: 'name', code }], classes: [{ className: 'name', code }] }\n Content: ${fullFile}`
-        }],
-        model: 'gpt-4',
-        response_format: { "type": "json_object" },
-    });
+    // const openai = new OpenAI({
+    //     apiKey: process.env.OPEN_AI_API_KEY
+    // });
+    // const chatData:any = await openai.chat.completions.create({
+    //     messages: [{
+    //         role: 'user', content: `Please split the file into the following structure and return a JSON that can be fully parsed with JSON.parse(): { file: 'fileName', functions: [{ functionName: 'name', code }], classes: [{ className: 'name', code }] }\n Content: ${fullFile}`
+    //     }],
+    //     model: 'gpt-4',
+    //     response_format: { "type": "json_object" },
+    // });
 
-    const splitFileData = chatData.choices[0].message;
+    // const splitFileData = chatData.choices[0].message;
 
-    return new NextResponse(JSON.stringify({ data, splitFileData }), {
+    return new NextResponse(JSON.stringify({ data }), {
         status: 200,
         headers: {
             'Content-Type': 'application/json',
