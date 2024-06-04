@@ -1,4 +1,4 @@
-import { Driver, Session, driver , auth} from "neo4j-driver";
+import { Driver, Session, driver, auth } from "neo4j-driver";
 import path from "path";
 import { Project, SyntaxKind } from "ts-morph";
 
@@ -19,39 +19,63 @@ class CodeAnalyzer {
         await this.driver.close();
     }
 
-    async createFileNode(fileName: string, purpose: string) {
+    async createProjectNode(projectName: string) {
         await this.session.run(
-            "CREATE (f:File {name: $fileName, purpose: $purpose})",
-            { fileName, purpose }
+            "MERGE (p:Project {name: $projectName})",
+            { projectName }
         );
-        console.log("Created file node")
+        console.log("Created or found project node")
+    }
+
+    async createFileNode(fileName: string, projectName: string) {
+        await this.session.run(
+            "MATCH (p:Project {name: $projectName}) "+
+            "MERGE (f:File {name: $fileName})-[:BELONGS_TO]->(p)",
+            { fileName, projectName }
+        );
+        console.log("Created or found file node")
     }
 
     async createFunctionNode(functionName: string, fileName: string) {
         await this.session.run(
             "MATCH (f:File {name: $fileName}) " +
-            "CREATE (func:Function {name: $functionName})-[:DEFINED_IN]->(f)",
+            "MERGE (func:Function {name: $functionName})-[:DEFINED_IN]->(f)",
             { fileName, functionName }
         );
     }
 
-    async analyzeCode(projectPath: string, purpose: string) {
+    async analyzeCode(projectPath: string) {
         const project = new Project();
+        const projectName = path.basename(projectPath);
+        await this.createProjectNode(projectName);
+
         project.addSourceFilesAtPaths(path.join(projectPath, "**/*.ts"));
 
-        const sourceFiles = project.getSourceFiles();
+        const sourceFiles = project.getSourceFiles().filter(sf => !sf.getFilePath().includes("node_modules"));
         console.log(sourceFiles.length)
-        console.log(sourceFiles[0])
-        // for (const sourceFile of sourceFiles) {
-            
-        //     const filePath = sourceFile.getFilePath();
-        //     await this.createFileNode(filePath, purpose);
-
-        //     const functions = sourceFile.getFunctions();
-        //     for (const func of functions) {
-        //         await this.createFunctionNode(func.getName() || "", filePath);
+        console.log(sourceFiles.map(
+            (sf) => sf.getFilePath()
+        ))
+        // sourceFiles.forEach(
+        //     (sf) => {
+        //         sf.getFunctions().forEach(
+        //             async (func) => {
+        //                 console.log(func.getName());
+        //                 console.log(func.getStatements().map( (s) => s.getKindName()));
+        //                 await this.createFunctionNode(func.getName() || "", sf.getFilePath());
+        //             }
+        //         )
         //     }
-        // }
+        // )
+        for (const sourceFile of sourceFiles) {
+            const filePath = sourceFile.getFilePath();
+            await this.createFileNode(filePath, projectName);
+            
+            // const functions = sourceFile.getFunctions();
+            // for (const func of functions) {
+            //     await this.createFunctionNode(func.getName() || "", filePath);
+            // }
+        }
     }
 }
 
