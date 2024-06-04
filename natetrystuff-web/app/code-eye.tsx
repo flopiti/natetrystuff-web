@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 const CodeEye = () => {
     const [projects, setProjects] = useState<string[]>([]);
+    const [files, setFiles] = useState<string[]>([]);
+    const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -16,6 +18,17 @@ const CodeEye = () => {
 
         fetchProjects();
     }, []);
+
+    const fetchProjectFiles = async (projectName: string) => {
+        try {
+            const response = await fetch(`/api/project-files?projectName=${projectName}`);
+            const result = await response.json();
+            setFiles(result.files);
+            setSelectedProject(projectName);
+        } catch (error) {
+            console.error('Error fetching project files:', error);
+        }
+    };
 
     const runAnalysis = async () => {
         try {
@@ -39,10 +52,20 @@ const CodeEye = () => {
                 <h3 className="text-lg font-semibold mb-2">Projects:</h3>
                 <ul className="list-disc pl-5">
                     {projects.map((project, index) => (
-                        <li key={index}>{project}</li>
+                        <li key={index} onClick={() => fetchProjectFiles(project)} className="cursor-pointer">{project}</li>
                     ))}
                 </ul>
             </div>
+            {selectedProject && (
+                <div className="mt-4">
+                    <h3 className="text-lg font-semibold mb-2">Files in {selectedProject}:</h3>
+                    <ul className="list-disc pl-5">
+                        {files.map((file, index) => (
+                            <li key={index}>{file}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 };
