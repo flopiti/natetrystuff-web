@@ -1,3 +1,4 @@
+import CodeAnalyzer from "@/app/codeAnalyzer";
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
@@ -27,10 +28,18 @@ export async function GET(request: NextRequest) {
         response_format:{ "type": "json_object" },
       });
     // Split the file using ChatGPT and parse into JSON
-    console.log('allo')
-    console.log(chatData.choices[0].message)
+    // console.log('allo')
+    // console.log(chatData.choices[0].message)
 
     const splitFileData = chatData.choices[0].message;
+
+    const analyzer = new CodeAnalyzer("bolt://localhost:7687", "neo4j", "password");
+
+    // Analyze the code in your project directory and store the purpose
+    await analyzer.analyzeCode("/Users/nathanpieraut/projects/natetrystuff-web", "Describe the purpose of the project here");
+
+    // Close the connection
+    await analyzer.close();
 
     return new NextResponse(JSON.stringify({ data, splitFileData }), {
         status: 200,
