@@ -30,6 +30,9 @@ jobs:
          SPRING_BOOT_URL: http://localhost:8080
          CODE_HELPER_URL: http://localhost:1234
 
+     - name: Add secrets to .env.production
+       run: |
+         echo 'AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}' >> natetrystuff-web/.env.production
      - name: Setup SSH Known Hosts
        run: |
          mkdir -p ~/.ssh
