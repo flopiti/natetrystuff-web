@@ -32,13 +32,12 @@ const CodeEye = () => {
         }
     };
 
-
     return (
-        <div style={{ border: '1px solid black', padding: '20px', width: '200px', height: '100px' }}>
-            <button onClick={runAnalysis}>Run Analysis</button>
-            <div>
-                <h3>Projects:</h3>
-                <ul>
+        <div className="p-10 m-5 h-[65vh] bg-gray-500 border-2 border-black rounded-lg w-full h-screen text-black">
+            <button onClick={runAnalysis} className="mb-4 bg-blue-500 text-white p-2 rounded">Run Analysis</button>
+            <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Projects:</h3>
+                <ul className="list-disc pl-5">
                     {projects.map((project, index) => (
                         <li key={index}>{project}</li>
                     ))}
