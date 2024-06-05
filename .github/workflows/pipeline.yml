@@ -32,6 +32,7 @@ jobs:
 
      - name: Add secrets to .env.production
        run: |
+         echo '' >> natetrystuff-web/.env.production
          echo 'AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}' >> natetrystuff-web/.env.production
      - name: Setup SSH Known Hosts
        run: |
