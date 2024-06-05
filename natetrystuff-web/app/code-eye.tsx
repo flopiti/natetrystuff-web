@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 const CodeEye = () => {
     const [projects, setProjects] = useState<string[]>([]);
     const [files, setFiles] = useState<string[]>([]);
+    const [functions, setFunctions] = useState<string[]>([]);
     const [selectedProject, setSelectedProject] = useState<string | null>(null);
+    const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -15,7 +17,6 @@ const CodeEye = () => {
                 console.error('Error fetching projects:', error);
             }
         };
-
         fetchProjects();
     }, []);
 
@@ -27,6 +28,17 @@ const CodeEye = () => {
             setSelectedProject(projectName);
         } catch (error) {
             console.error('Error fetching project files:', error);
+        }
+    };
+
+    const fetchFileFunctions = async (fileName: string) => {
+        try {
+            const response = await fetch(`/api/file-functions?fileName=${fileName}`);
+            const result = await response.json();
+            setFunctions(result.functions);
+            setSelectedFile(fileName);
+        } catch (error) {
+            console.error('Error fetching file functions:', error);
         }
     };
 
@@ -61,7 +73,17 @@ const CodeEye = () => {
                     <h3 className="text-lg font-semibold mb-2">Files in {selectedProject}:</h3>
                     <ul className="list-disc pl-5">
                         {files.map((file, index) => (
-                            <li key={index}>{file}</li>
+                            <li key={index} onClick={() => fetchFileFunctions(file)} className="cursor-pointer">{file}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            {selectedFile && (
+                <div className="mt-4">
+                    <h3 className="text-lg font-semibold mb-2">Functions in {selectedFile}:</h3>
+                    <ul className="list-disc pl-5">
+                        {functions.map((func, index) => (
+                            <li key={index}>{func}</li>
                         ))}
                     </ul>
                 </div>

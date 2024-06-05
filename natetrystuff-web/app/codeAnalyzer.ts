@@ -1,7 +1,6 @@
 import { Driver, Session, driver, auth } from "neo4j-driver";
 import path from "path";
 import { Project as TSProject, SyntaxKind } from "ts-morph";
-import { parse as javaParse } from 'java-parser';
 import { readdirSync, statSync, readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -59,11 +58,13 @@ class CodeAnalyzer {
                     await this.createFileNode(fileSession, filePath, projectName);
 
                     const fileContent = readFileSync(filePath, 'utf-8');
-                    const parsedJava = javaParse(fileContent);
 
-                    const methods = this.getJavaMethods(parsedJava);
+                    const methods = this.getJavaMethods(fileContent);
+                    console.log(methods)
                     for (const method of methods) {
                         const funcSession = this.driver.session();
+                        console.log('Creating function node: ' + method);
+
                         await this.createFunctionNode(funcSession, method, filePath);
                         await funcSession.close();
                     }
@@ -114,20 +115,13 @@ class CodeAnalyzer {
         return foundFiles;
     }
 
-    private getJavaMethods(parsedJava: any): string[] {
-        const methods: string[] = [];
-        const visitNode = (node: any) => {
-            if (node.methodDeclaration) {
-                methods.push(node.methodDeclaration[0].name[0].identifier);
-            }
-            for (const key in node) {
-                if (Array.isArray(node[key])) {
-                    node[key].forEach((childNode: any) => visitNode(childNode));
-                }
-            }
-        };
-        visitNode(parsedJava);
-        return methods;
+    private getJavaMethods(fileContent: string): string[] {
+        const methodPattern = /\bpublic\b|\bprivate\b|\bprotected\b \b\w+\b .*?\(.*?\) {/g;
+        const methods = Array.from(fileContent.matchAll(methodPattern), m => m[0]);
+        return methods.map(method => {
+            const methodNameMatch = method.match(/\b(\w+)\b(?= \()/);
+            return methodNameMatch ? methodNameMatch[0] : ''; 
+        }).filter(name => name !== '');
     }
 }
 
