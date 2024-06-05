@@ -8,6 +8,7 @@ interface FileViewerProps {
   selectedChatCode: string;
   selectedFileName: string;
   replaceCode: () => void;
+  loading: boolean;
 }
 
 const FileViewer: React.FC<FileViewerProps> = ({
@@ -16,7 +17,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
   selectedFileContent,
   selectedChatCode,
   selectedFileName,
-  replaceCode
+  replaceCode,
+  loading
 }) => {
   const getHighlightedCode = () => {
     const diff = diffLines(selectedFileContent, selectedChatCode);
@@ -36,19 +38,22 @@ const FileViewer: React.FC<FileViewerProps> = ({
         <button
           className={`flex-1 text-center p-2 ${activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
           onClick={() => setActiveTab('file')}
+          disabled={loading} // Disable button when loading
         >
           File
         </button>
         <button
           className={`flex-1 text-center p-2 ${activeTab === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
           onClick={() => setActiveTab('chat')}
+          disabled={loading} // Disable button when loading
         >
           Chat
         </button>
       </div>
       <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
-        {activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
-        {activeTab === 'chat' && selectedChatCode && (
+        {loading && <p className="text-center text-black">Loading...</p>} {/* Show loading message */}
+        {!loading && activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
+        {!loading && activeTab === 'chat' && selectedChatCode && (
           <div>{getHighlightedCode()}
             <button
               className="bg-blue-500 text-white p-2"
