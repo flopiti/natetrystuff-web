@@ -21,7 +21,7 @@ const CodeCentral = () => {
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
     const [splitFileData, setSplitFileData] = useState<string>(''); // Add state to store split file data
-    
+    const [loading, setLoading] = useState<boolean>(false); // Loading state
 
     useEffect(() => {
         (async () => {
@@ -33,10 +33,12 @@ const CodeCentral = () => {
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
+            setLoading(true); // Start loading
             (async () => {
                 const response = await askChat(conversation, highlightedFiles, highlightedFilesContent);
                 setConversation([...conversation, { content: response.answer, role: 'assistant', type: 'text' }]);
                 setChatCodes(response.files);
+                setLoading(false); // End loading
             })();
         }
     }, [conversation]);
@@ -115,9 +117,11 @@ const CodeCentral = () => {
                 selectedFileName={selectedFileName} 
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 splitFileData={splitFileData} // Pass split file data to FileViewer
+                loading={loading} // Pass loading state to FileViewer
             />
             <div className="w-[40%] bg-red-200 h-full flex flex-col">
                 <div className="w-full flex-grow bg-yellow-200 overflow-scroll">
+                    {loading && <p className="text-center text-black">Loading...</p>} {/* Show loading message */}
                     {conversation?.slice(1).map((message, index) => (
                         <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}> 
                             <p>{message.content}</p>
