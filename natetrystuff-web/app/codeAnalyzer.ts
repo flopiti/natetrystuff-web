@@ -39,28 +39,31 @@ class CodeAnalyzer {
         );
     }
 
-    async analyzeCode(projectPath: string) {
-        const project = new Project();
-        const projectName = path.basename(projectPath);
+    async analyzeProjects(projectNames: string[]) {
+        for (const projectName of projectNames) {
+            console.log('doing project '  + projectName)
+            const projectPath = path.join('/Users/nathanpieraut/projects/', projectName);
+            const project = new Project();
+            
+            const session = this.driver.session();
+            await this.createProjectNode(session, projectName);
+            await session.close();
+            
+            project.addSourceFilesAtPaths(path.join(projectPath, "**/*.ts"));
+            const sourceFiles = project.getSourceFiles().filter(sf => !sf.getFilePath().includes("node_modules"));
+            console.log('source files: ' + sourceFiles.map(sf => sf.getFilePath()));
+            for (const sourceFile of sourceFiles) {
+                const filePath = sourceFile.getFilePath();
+                const fileSession = this.driver.session();
+                await this.createFileNode(fileSession, filePath, projectName);
 
-        const session = this.driver.session();
-        await this.createProjectNode(session, projectName);
-        await session.close();
-
-        project.addSourceFilesAtPaths(path.join(projectPath, "**/*.ts"));
-        const sourceFiles = project.getSourceFiles().filter(sf => !sf.getFilePath().includes("node_modules"));
-
-        for (const sourceFile of sourceFiles) {
-            const filePath = sourceFile.getFilePath();
-            const fileSession = this.driver.session();
-            await this.createFileNode(fileSession, filePath, projectName);
-
-            for (const func of sourceFile.getFunctions()) {
-                const funcSession = this.driver.session();
-                await this.createFunctionNode(funcSession, func.getName() || "", filePath);
-                await funcSession.close();
+                for (const func of sourceFile.getFunctions()) {
+                    const funcSession = this.driver.session();
+                    await this.createFunctionNode(funcSession, func.getName() || "", filePath);
+                    await funcSession.close();
+                }
+                await fileSession.close();
             }
-            await fileSession.close();
         }
     }
 }

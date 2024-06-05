@@ -4,8 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
     const analyzer = new CodeAnalyzer("bolt://localhost:7687", "neo4j", "password");
 
-    // Analyze the code in your project directory and store the purpose
-    await analyzer.analyzeCode("/Users/nathanpieraut/projects/code-helper");
+    const projectNames = [
+        'code-helper',
+        'natetrystuff-api',
+        'natetrystuff-web'
+    ];
+
+    // Analyze the code in the specified project directories
+    await analyzer.analyzeProjects(projectNames);
 
     // Close the connection
     await analyzer.close();
