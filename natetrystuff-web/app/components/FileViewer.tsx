@@ -9,6 +9,7 @@ interface FileViewerProps {
   selectedFileName: string;
   replaceCode: () => void;
   loading: boolean;
+  splitFileData : string;
 }
 
 const FileViewer: React.FC<FileViewerProps> = ({
