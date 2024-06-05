@@ -13,15 +13,19 @@ interface FileListDropdownProps {
 }
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+
     const handleSelectedProjectChange = (event: any) => {
         const pr = projects.find((project:any) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);
     };
 
+    const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
+
     return (
         <div className="w-1/5 bg-gray-100 text-black">
-            <div className="sticky top-0 bg-gray-100">
-                <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2">
+            <div className="sticky top-0 bg-gray-100 p-2">
+                <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
                     {projects.map((project:any) => (
                         <option key={project.name} value={project.name}>
@@ -29,9 +33,16 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                         </option>
                     ))}
                 </select>
+                <input
+                    type="text"
+                    className="w-full p-2 mb-2 border"
+                    placeholder="Search files..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
             <div className="h-full overflow-auto">
-                {projectFiles.length > 0 && projectFiles.map((projectFile: any, index: number) => {
+                {filteredFiles.length > 0 && filteredFiles.map((projectFile: any, index: number) => {
                     const isHighlighted = highlightedFiles.includes(projectFile);
                     const doWeHaveChatCode = chatCodes?.find((fileData: any) => fileData.fileName === projectFile);
                     return (

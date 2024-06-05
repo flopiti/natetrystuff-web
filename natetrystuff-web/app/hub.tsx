@@ -6,6 +6,7 @@ import Meals from "./meals";
 import Code from "./code";
 import DevDb from "./devdb";
 import CodeCentral from "./code-central";
+import CodeEye from "./code-eye";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -18,6 +19,7 @@ const Hub = () => {
             <button className="mx-2" onClick={() => setPage('code')}>Code</button>
             <button className="mx-2" onClick={() => setPage('/dev-db')}>Dev DB</button>
             <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
+            <button className="mx-2" onClick={() => setPage('code-eye')}>Code Eye</button>
         </div>
         {
             page === 'schedule' ? (
@@ -34,6 +36,9 @@ const Hub = () => {
             ) : 
             page === '/code-central' ? (
                 <CodeCentral/>
+            ) :
+            page === 'code-eye' ? (
+                <CodeEye/>
             ) : null
 
         }
