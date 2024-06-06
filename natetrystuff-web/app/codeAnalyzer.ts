@@ -3,13 +3,16 @@ import path from "path";
 import { Project as TSProject, SyntaxKind } from "ts-morph";
 import { readdirSync, statSync, readFileSync } from 'fs';
 import { join } from 'path';
+import OpenAI from "openai";
 
 class CodeAnalyzer {
     private driver: Driver;
+    private openai: OpenAI;
 
     constructor(uri: string, user: string, password: string) {
         console.log('building');
         this.driver = driver(uri, auth.basic(user, password));
+        this.openai = new OpenAI({ apiKey: process.env.OPEN_AI_API_KEY });
     }
 
     async close() {
@@ -59,7 +62,7 @@ class CodeAnalyzer {
 
                     const fileContent = readFileSync(filePath, 'utf-8');
 
-                    const methods = this.getJavaMethods(fileContent);
+                    const methods = await this.getJavaMethods(fileContent);
                     console.log(methods)
                     for (const method of methods) {
                         const funcSession = this.driver.session();
@@ -115,13 +118,34 @@ class CodeAnalyzer {
         return foundFiles;
     }
 
-    private getJavaMethods(fileContent: string): string[] {
-        const methodPattern = /\bpublic\b|\bprivate\b|\bprotected\b \b\w+\b .*?\(.*?\) {/g;
-        const methods = Array.from(fileContent.matchAll(methodPattern), m => m[0]);
-        return methods.map(method => {
-            const methodNameMatch = method.match(/\b(\w+)\b(?= \()/);
-            return methodNameMatch ? methodNameMatch[0] : ''; 
-        }).filter(name => name !== '');
+    private async getJavaMethods(fileContent: string): Promise<string[]> {
+        const prompt = `Extract the list of classes, properties, and functions from this Java file and output it as a JSON object with a structure { classes: [{ name: <className>, properties: [<propertyNames>], methods: [<methodNames>] }] }. File content: ${fileContent}`;
+
+        const response = await this.openai.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: 'gpt-4o',
+            max_tokens: 1500,
+            response_format:{ "type": "json_object" },
+
+        });
+        console.log(response.choices?.[0]?.message?.content)
+
+        const result = response.choices?.[0]?.message?.content;
+        if (!result) {
+            return [];
+        }
+
+        try {
+            const parsedResult = JSON.parse(result);
+            const methods: string[] = [];
+            for (const clazz of parsedResult.classes) {
+                methods.push(...clazz.methods);
+            }
+            return methods;
+        } catch (error) {
+            console.error("Error parsing OpenAI response: ", error);
+            return [];
+        }
     }
 }
 
