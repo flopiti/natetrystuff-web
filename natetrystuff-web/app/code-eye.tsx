@@ -58,7 +58,7 @@ const CodeEye = () => {
     };
 
     return (
-        <div className="p-10 m-5 h-[62vh] bg-gray-500 border-2 border-black rounded-lg w-full h-screen text-black overflow-scroll">
+        <div className="p-10 m-5 h-[60vh] bg-gray-500 border-2 border-black rounded-lg w-full h-screen text-black overflow-scroll">
             <button onClick={runAnalysis} className="mb-4 bg-blue-500 text-white p-2 rounded">Run Analysis</button>
             <div className="mt-4">
                 <h3 className="text-lg font-semibold mb-2">Projects:</h3>
