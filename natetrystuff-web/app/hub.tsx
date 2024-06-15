@@ -7,6 +7,7 @@ import Code from "./code";
 import DevDb from "./devdb";
 import CodeCentral from "./code-central";
 import CodeEye from "./code-eye";
+import SshConnect from './ssh-connect';
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -42,7 +43,7 @@ const Hub = () => {
                 <CodeEye/>
             ) : 
             page === 'ssh-connect' ? (
-                <div>SSH Connect Component Goes Here</div> 
+                <SshConnect /> 
             ) : null
 
         }

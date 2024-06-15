@@ -1,0 +1,83 @@
+'use client';
+
+import { useState } from 'react';
+
+const SshConnect = () => {
+    const [host, setHost] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [command, setCommand] = useState('');
+    const [output, setOutput] = useState('');
+    const [error, setError] = useState('');
+
+    const handleConnect = async () => {
+        try {
+            const response = await fetch('/api/ssh-connect', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ host, username, password, command }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                setOutput(result.stdout);
+                setError(result.stderr);
+            } else {
+                setError(result.error);
+            }
+        } catch (err) {
+            console.error('Failed to execute SSH command', err);
+            setError('Failed to execute SSH command');
+        }
+    };
+
+    return (
+        <div>
+            <h2>SSH Connect</h2>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Host"
+                    value={host}
+                    onChange={(e) => setHost(e.target.value)}
+                />
+            </div>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
+            </div>
+            <div>
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+            </div>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Command"
+                    value={command}
+                    onChange={(e) => setCommand(e.target.value)}
+                />
+            </div>
+            <button onClick={handleConnect}>Execute Command</button>
+            <div>
+                <h3>Output:</h3>
+                <pre>{output}</pre>
+                <h3>Error:</h3>
+                <pre>{error}</pre>
+            </div>
+        </div>
+    );
+};
+
+export default SshConnect;
