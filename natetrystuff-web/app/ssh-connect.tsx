@@ -40,9 +40,10 @@ const SshConnect = () => {
                     placeholder="Command"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
+                    className="text-black bg-white border border-gray-300 px-2 py-1 rounded"
                 />
             </div>
-            <button onClick={handleConnect}>Execute Command</button>
+            <button onClick={handleConnect} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Execute Command</button>
             <div>
                 <h3>Output:</h3>
                 <pre>{output}</pre>
