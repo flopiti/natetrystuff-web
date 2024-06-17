@@ -29,6 +29,9 @@ jobs:
        env:
          SPRING_BOOT_URL: http://localhost:8080
          CODE_HELPER_URL: http://localhost:1234
+         SSH_HOST: ${{ secrets.SSH_HOST }}
+         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
 
      - name: Add secrets to .env.production
        run: |

@@ -3,9 +3,6 @@
 import { useState } from 'react';
 
 const SshConnect = () => {
-    const [host, setHost] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [command, setCommand] = useState('');
     const [output, setOutput] = useState('');
     const [error, setError] = useState('');
@@ -17,7 +14,7 @@ const SshConnect = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ host, username, password, command }),
+                body: JSON.stringify({ command }),
             });
 
             const result = await response.json();
@@ -37,30 +34,6 @@ const SshConnect = () => {
     return (
         <div>
             <h2>SSH Connect</h2>
-            <div>
-                <input
-                    type="text"
-                    placeholder="Host"
-                    value={host}
-                    onChange={(e) => setHost(e.target.value)}
-                />
-            </div>
-            <div>
-                <input
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-            </div>
-            <div>
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
             <div>
                 <input
                     type="text"

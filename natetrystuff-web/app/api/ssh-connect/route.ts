@@ -6,7 +6,11 @@ const ssh = new NodeSSH();
 
 export async function POST(request: NextRequest) {
     try {
-        const { host, username, password, command } = await request.json();
+        const { command } = await request.json();
+        const host = process.env.SSH_HOST;
+        const username = process.env.SSH_USERNAME;
+        const password = process.env.SSH_PASSWORD;
+
         await ssh.connect({
             host,
             username,
