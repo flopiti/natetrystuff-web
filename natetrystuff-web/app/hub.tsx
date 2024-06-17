@@ -7,6 +7,7 @@ import Code from "./code";
 import DevDb from "./devdb";
 import CodeCentral from "./code-central";
 import CodeEye from "./code-eye";
+import SshConnect from './ssh-connect';
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -20,6 +21,7 @@ const Hub = () => {
             <button className="mx-2" onClick={() => setPage('/dev-db')}>Dev DB</button>
             <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
             <button className="mx-2" onClick={() => setPage('code-eye')}>Code Eye</button>
+            <button className="mx-2" onClick={() => setPage('ssh-connect')}>SSH Connect</button>
         </div>
         {
             page === 'schedule' ? (
@@ -39,10 +41,14 @@ const Hub = () => {
             ) :
             page === 'code-eye' ? (
                 <CodeEye/>
+            ) : 
+            page === 'ssh-connect' ? (
+                <SshConnect /> 
             ) : null
 
         }
         </>
     );
-    }
+}
+
 export default Hub;
