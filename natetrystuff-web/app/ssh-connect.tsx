@@ -6,8 +6,10 @@ const SshConnect = () => {
     const [command, setCommand] = useState('');
     const [output, setOutput] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleConnect = async () => {
+        setLoading(true);
         try {
             const response = await fetch('/api/ssh-connect', {
                 method: 'POST',
@@ -28,6 +30,8 @@ const SshConnect = () => {
         } catch (err) {
             console.error('Failed to execute SSH command', err);
             setError('Failed to execute SSH command');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -43,7 +47,9 @@ const SshConnect = () => {
                     className="text-black bg-white border border-gray-300 px-2 py-1 rounded"
                 />
             </div>
-            <button onClick={handleConnect} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Execute Command</button>
+            <button onClick={handleConnect} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded" disabled={loading}>
+                {loading ? 'Executing...' : 'Execute Command'}
+            </button>
             <div>
                 <h3>Output:</h3>
                 <pre>{output}</pre>

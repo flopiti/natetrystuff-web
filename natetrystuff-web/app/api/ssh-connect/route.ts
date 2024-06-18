@@ -7,6 +7,7 @@ const ssh = new NodeSSH();
 export async function POST(request: NextRequest) {
     try {
         const { command } = await request.json();
+        console.log('Received SSH command:', command);
         const host = process.env.SSH_HOST;
         const username = process.env.SSH_USERNAME;
         const password = process.env.SSH_PASSWORD;
@@ -17,7 +18,9 @@ export async function POST(request: NextRequest) {
             password,
         });
 
-        const result = await ssh.execCommand(command);
+        console.log('Executing command on SSH server...' + command);
+        const result = await ssh.execCommand(`bash -c "${command}"`);
+        console.log('Command executed. Output:', result);
 
         return new NextResponse(JSON.stringify({ stdout: result.stdout, stderr: result.stderr }), {
             status: 200,
