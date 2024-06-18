@@ -42,8 +42,10 @@ export async function POST(request: NextRequest) {
 
         let response = '';
         shell.on('data', (data:any) => {
-            const cleanData = data.toString().replace(/\x1B\[[0-9;]*[a-zA-Z]/g, ''); // Removing ANSI escape codes
-            console.log('---------------------------------- Data ----------------------------------')
+            const cleanData = data.toString()
+                .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')   // Removing ANSI escape codes
+                .replace(/\[\?2004[hl]/g, '');           // Removing bracketed-paste-mode codes
+            console.log('---------------------------------- Data ----------------------------------');
             console.log(cleanData);
             response += cleanData;
         });
