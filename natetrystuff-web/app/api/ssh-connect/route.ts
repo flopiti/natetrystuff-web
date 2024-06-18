@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
         }
 
         const currentSession = sessions[sessionId];
+
         if (!currentSession) {
             throw new Error('Invalid session');
         }
@@ -41,7 +42,10 @@ export async function POST(request: NextRequest) {
 
         let response = '';
         shell.on('data', (data:any) => {
-            response += data.toString();
+            const cleanData = data.toString().replace(/\x1B\[[0-9;]*[a-zA-Z]/g, ''); // Removing ANSI escape codes
+            console.log('---------------------------------- Data ----------------------------------')
+            console.log(cleanData);
+            response += cleanData;
         });
 
         shell.on('close', () => {

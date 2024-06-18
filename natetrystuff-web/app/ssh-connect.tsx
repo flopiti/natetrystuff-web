@@ -7,27 +7,41 @@ const SshConnect = () => {
     const [output, setOutput] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [sessionId, setSessionId] = useState(null);
+    const [sessionId, setSessionId] = useState();
 
     useEffect(() => {
-        const startSession = async () => {
+        console.log('running')
+        if (!sessionId) {
+            startNewSession();
+        }
+    }, []); // Run only once when component mounts
+
+    const startNewSession = async () => {
+        try {
             const response = await fetch('/api/ssh-connect', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ command: '', sessionId: null })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: '', sessionId: null }),
             });
+
             const result = await response.json();
+
             if (response.ok) {
                 setSessionId(result.sessionId);
-            } else { 
+            } else {
                 setError('Failed to start session');
             }
-        };
-        startSession();
-    }, []);
+        } catch (err) {
+            console.error('Failed to start session', err);
+            setError('Failed to start session');
+        }
+    }
 
-    const handleConnect = async () => {
+    const handleCommand = async () => {
         setLoading(true);
+        if (!sessionId) {
+            return;
+        }
         try {
             const response = await fetch('/api/ssh-connect', {
                 method: 'POST',
@@ -36,7 +50,7 @@ const SshConnect = () => {
             });
 
             const result = await response.json();
-
+            console.log('Result:', result)
             if (response.ok) {
                 setOutput((prevOutput) => prevOutput + '\n' + result.output);
                 setError(result.error);
@@ -56,14 +70,14 @@ const SshConnect = () => {
             <h2>SSH Connect</h2>
             <div>
                 <input
-                    type="text"
-                    placeholder="Command"
+                    type='text'
+                    placeholder='Command'
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
-                    className="text-black bg-white border border-gray-300 px-2 py-1 rounded"
+                    className='text-black bg-white border border-gray-300 px-2 py-1 rounded'
                 />
             </div>
-            <button onClick={handleConnect} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded" disabled={loading}>
+            <button onClick={handleCommand} className='mt-2 px-4 py-2 bg-blue-500 text-white rounded' disabled={loading}>
                 {loading ? 'Executing...' : 'Execute Command'}
             </button>
             <div>
