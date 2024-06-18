@@ -37,6 +37,10 @@ jobs:
        run: |
          echo '' >> natetrystuff-web/.env.production
          echo 'AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}' >> natetrystuff-web/.env.production
+         echo 'SSH_HOST=${{ secrets.SSH_HOST }}' >> natetrystuff-web/.env.production
+         echo 'SSH_USERNAME=${{ secrets.SSH_USERNAME }}' >> natetrystuff-web/.env.production
+         echo 'SSH_PASSWORD=${{ secrets.SSH_PASSWORD }}' >> natetrystuff-web/.env.production
+
      - name: Setup SSH Known Hosts
        run: |
          mkdir -p ~/.ssh
