@@ -1,29 +1,45 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const SshConnect = () => {
     const [command, setCommand] = useState('');
     const [output, setOutput] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [sessionId, setSessionId] = useState(null);
+
+    useEffect(() => {
+        const startSession = async () => {
+            const response = await fetch('/api/ssh-connect', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ command: '', sessionId: null })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                setSessionId(result.sessionId);
+            } else { 
+                setError('Failed to start session');
+            }
+        };
+        startSession();
+    }, []);
 
     const handleConnect = async () => {
         setLoading(true);
         try {
             const response = await fetch('/api/ssh-connect', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ command }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command, sessionId }),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                setOutput(result.stdout);
-                setError(result.stderr);
+                setOutput((prevOutput) => prevOutput + '\n' + result.output);
+                setError(result.error);
             } else {
                 setError(result.error);
             }

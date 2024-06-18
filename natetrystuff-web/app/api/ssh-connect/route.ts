@@ -1,28 +1,58 @@
 import { NextRequest } from 'next/dist/server/web/spec-extension/request';
 import { NextResponse } from 'next/server';
 import NodeSSH from 'node-ssh';
+import { v4 as uuidv4 } from 'uuid';
 
-const ssh = new NodeSSH();
+const sessions: Record<string, { ssh: NodeSSH; shell: any }> = {};
 
 export async function POST(request: NextRequest) {
     try {
-        const { command } = await request.json();
+        const { command, sessionId } = await request.json();
         console.log('Received SSH command:', command);
-        const host = process.env.SSH_HOST;
-        const username = process.env.SSH_USERNAME;
-        const password = process.env.SSH_PASSWORD;
 
-        await ssh.connect({
-            host,
-            username,
-            password,
-        });
+        if (!sessionId) {
+            const newSessionId = uuidv4();
+            const ssh = new NodeSSH();
+            await ssh.connect({
+                host: process.env.SSH_HOST,
+                username: process.env.SSH_USERNAME,
+                password: process.env.SSH_PASSWORD,
+            });
+            const shell = await ssh.requestShell();
+            sessions[newSessionId] = { ssh, shell };
+            console.log('New Session Started:', newSessionId);
+            return new NextResponse(JSON.stringify({ sessionId: newSessionId }), {
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+
+        const currentSession = sessions[sessionId];
+        if (!currentSession) {
+            throw new Error('Invalid session');
+        }
 
         console.log('Executing command on SSH server...' + command);
-        const result = await ssh.execCommand(`bash -c "${command}"`);
-        console.log('Command executed. Output:', result);
+        const { shell } = currentSession;
+        shell.write(`${command}
+`);
 
-        return new NextResponse(JSON.stringify({ stdout: result.stdout, stderr: result.stderr }), {
+        let response = '';
+        shell.on('data', (data:any) => {
+            response += data.toString();
+        });
+
+        shell.on('close', () => {
+            console.log('Stream :: Close');
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for the command to execute
+
+        console.log('Command executed. Output:', response);
+
+        return new NextResponse(JSON.stringify({ output: response }), {
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
