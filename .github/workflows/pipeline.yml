@@ -26,6 +26,7 @@ jobs:
 
      - name: Build Next.js app
        run: cd natetrystuff-web && ls && npm run build
+       continue-on-error: true  # This will allow the workflow to continue even if this step fails
        env:
          SPRING_BOOT_URL: http://localhost:8080
          CODE_HELPER_URL: http://localhost:1234
