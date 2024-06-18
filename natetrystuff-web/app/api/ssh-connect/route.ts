@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/dist/server/web/spec-extension/request';
 import { NextResponse } from 'next/server';
-import { NodeSSH } from 'node-ssh';
+import NodeSSH from 'node-ssh';
 
 const ssh = new NodeSSH();
 
