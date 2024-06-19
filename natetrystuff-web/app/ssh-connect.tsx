@@ -10,7 +10,6 @@ const SshConnect = () => {
     const [sessionId, setSessionId] = useState();
 
     useEffect(() => {
-        console.log('running')
         if (!sessionId) {
             startNewSession();
         }
@@ -35,22 +34,22 @@ const SshConnect = () => {
             console.error('Failed to start session', err);
             setError('Failed to start session');
         }
-    }
+    };
 
-    const handleCommand = async () => {
-        setLoading(true);
+    const handleCommand = async (newCommand = command) => {
         if (!sessionId) {
             return;
         }
+        setLoading(true);
         try {
             const response = await fetch('/api/ssh-connect', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ command, sessionId }),
+                body: JSON.stringify({ command: newCommand, sessionId }),
             });
 
             const result = await response.json();
-            console.log('Result:', result)
+            console.log('Result:', result);
             if (response.ok) {
                 setOutput((prevOutput) => prevOutput + '\n' + result.output);
                 setError(result.error);
@@ -65,6 +64,13 @@ const SshConnect = () => {
         }
     };
 
+    const moveToWebApp = async () => {
+        const newCommand = 'cd /dev-projects/natetrystuff-web/natetrystuff-web';
+        setCommand(newCommand);
+        await handleCommand(newCommand);
+        setCommand('');  // Clear the command text box
+    };
+
     return (
         <div>
             <h2>SSH Connect</h2>
@@ -77,14 +83,17 @@ const SshConnect = () => {
                     className='text-black bg-white border border-gray-300 px-2 py-1 rounded'
                 />
             </div>
-            <button onClick={handleCommand} className='mt-2 px-4 py-2 bg-blue-500 text-white rounded' disabled={loading}>
+            <button onClick={()=>handleCommand} className='mt-2 px-4 py-2 bg-blue-500 text-white rounded' disabled={loading}>
                 {loading ? 'Executing...' : 'Execute Command'}
+            </button>
+            <button onClick={moveToWebApp} className='mt-2 ml-2 px-4 py-2 bg-green-500 text-white rounded' disabled={loading || !sessionId}>
+                {loading ? 'Moving...' : 'Move to Web-App'}
             </button>
             <div>
                 <h3>Output:</h3>
-                <pre>{output}</pre>
+                <pre className='max-h-64 overflow-y-auto bg-gray-900 text-white p-3'>{output}</pre>
                 <h3>Error:</h3>
-                <pre>{error}</pre>
+                <pre className='max-h-64 overflow-y-auto bg-red-500 text-white p-3'>{error}</pre>
             </div>
         </div>
     );

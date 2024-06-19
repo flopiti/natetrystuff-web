@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
 
         console.log('Executing command on SSH server...' + command);
         const { shell } = currentSession;
-        shell.write(`${command}
-`);
+        shell.write(`${command}\n`);
 
         let response = '';
         shell.on('data', (data:any) => {
