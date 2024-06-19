@@ -68,7 +68,7 @@ const SshConnect = () => {
         const newCommand = 'cd /dev-projects/natetrystuff-web/natetrystuff-web';
         setCommand(newCommand);
         await handleCommand(newCommand);
-        setCommand('');  // Clear the command text box
+        setCommand('');
     };
 
     return (
