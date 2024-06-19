@@ -83,7 +83,7 @@ const SshConnect = () => {
                     className='text-black bg-white border border-gray-300 px-2 py-1 rounded'
                 />
             </div>
-            <button onClick={()=>handleCommand} className='mt-2 px-4 py-2 bg-blue-500 text-white rounded' disabled={loading}>
+            <button onClick={() => handleCommand()} className='mt-2 px-4 py-2 bg-blue-500 text-white rounded' disabled={loading}>
                 {loading ? 'Executing...' : 'Execute Command'}
             </button>
             <button onClick={moveToWebApp} className='mt-2 ml-2 px-4 py-2 bg-green-500 text-white rounded' disabled={loading || !sessionId}>
