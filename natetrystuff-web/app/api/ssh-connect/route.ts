@@ -40,20 +40,28 @@ export async function POST(request: NextRequest) {
         shell.write(`${command}\n`);
 
         let response = '';
-        shell.on('data', (data:any) => {
+
+        const dataListener = (data: any) => {
             const cleanData = data.toString()
                 .replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')   // Removing ANSI escape codes
                 .replace(/\[\?2004[hl]/g, '');           // Removing bracketed-paste-mode codes
             console.log('---------------------------------- Data ----------------------------------');
             console.log(cleanData);
             response += cleanData;
-        });
+        };
 
-        shell.on('close', () => {
-            console.log('Stream :: Close');
-        });
+        const closeListener = () => {
+            shell.removeListener('data', dataListener);
+            shell.removeListener('close', closeListener);
+        };
+
+        shell.on('data', dataListener);
+        shell.on('close', closeListener);
 
         await new Promise((resolve) => setTimeout(resolve, 500)); // Wait for the command to execute
+
+        shell.removeListener('data', dataListener);
+        shell.removeListener('close', closeListener);
 
         console.log('Command executed. Output:', response);
 
