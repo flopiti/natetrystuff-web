@@ -11,7 +11,7 @@ const TerminalComponent = () => {
       const terminal = new Terminal();
       terminal.open(terminalRef.current!);
 
-      const ws = new WebSocket('ws://147.182.234.182:3001');
+      const ws = new WebSocket('wss://natetrystuff.com:3001');
       ws.onopen = () => {
         terminal.onData(data => {
           ws.send(data);
