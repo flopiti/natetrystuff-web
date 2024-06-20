@@ -22,7 +22,9 @@
     "openai": "^4.47.1",
     "react": "^18",
     "react-dom": "^18",
-    "uuid": "^10.0.0"
+    "socket.io-client": "^4.7.5",
+    "uuid": "^10.0.0",
+    "xterm": "^5.3.0"
   },
   "devDependencies": {
     "@types/diff": "^5.2.1",
