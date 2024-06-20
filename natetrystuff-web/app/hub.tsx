@@ -8,7 +8,7 @@ import DevDb from "./devdb";
 import CodeCentral from "./code-central";
 import CodeEye from "./code-eye";
 import SshConnect from './ssh-connect';
-import TerminalComponent from "./TerminalComponent";
+import TerminalDisplay from "./TerminalDisplay";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -48,7 +48,7 @@ const Hub = () => {
                 <SshConnect /> 
             ) : 
             page === 'terminal' ? (
-                <TerminalComponent />
+                <TerminalDisplay />
             ) : null
 
         }
