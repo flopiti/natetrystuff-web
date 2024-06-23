@@ -45,16 +45,20 @@ const TerminalDisplay = () => {
     }
   }, [terminalData]);
 
-  const sendCommandToTerminal = (command: string) => {
+  const sendCommandsToTerminal = (commands: string[]) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(command + '\n');
+      commands.forEach((command, index) => {
+        setTimeout(() => {
+          wsRef.current?.send(command + '\n');
+        }, index * 100);
+      });
     }
   };
 
   return (
     <div className="p-4">
       <div ref={terminalRef} className="h-40vh w-full" />
-      <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandToTerminal('cd /dev-projects')}>Send Command</button>
+      <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandsToTerminal(['cd /dev-projects/natetrystuff-web/natetrystuff-web', 'npm run dev'])}>Send Command</button>
     </div>
   );
 };
