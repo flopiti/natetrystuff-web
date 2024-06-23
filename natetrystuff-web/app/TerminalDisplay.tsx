@@ -5,6 +5,8 @@ import 'xterm/css/xterm.css';
 
 const TerminalDisplay = () => {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const terminalInstanceRef = useRef<any>(null);
+  const wsRef = useRef<WebSocket | null>(null);
   const [terminalData, setTerminalData] = useState('');
 
   useEffect(() => {
@@ -12,8 +14,11 @@ const TerminalDisplay = () => {
       const { Terminal } = await import('xterm');
       const terminal = new Terminal();
       terminal.open(terminalRef.current!);
+      terminalInstanceRef.current = terminal;
 
       const ws = new WebSocket('wss://natetrystuff.com:3001');
+      wsRef.current = ws;
+
       ws.onopen = () => {
         terminal.onData(data => {
           setTerminalData(prevData => prevData + data);
@@ -40,7 +45,18 @@ const TerminalDisplay = () => {
     }
   }, [terminalData]);
 
-  return <div ref={terminalRef} style={{ height: '40vh', width: '100%' }} />;
+  const sendCommandToTerminal = (command: string) => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(command + '\n');
+    }
+  };
+
+  return (
+    <div>
+      <div ref={terminalRef} style={{ height: '40vh', width: '100%' }} />
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandToTerminal('cd /dev-projects')}>Send Command</button>
+    </div>
+  );
 };
 
 export default dynamic(() => Promise.resolve(TerminalDisplay), { ssr: false });
