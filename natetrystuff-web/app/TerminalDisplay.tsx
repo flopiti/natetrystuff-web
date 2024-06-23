@@ -38,6 +38,7 @@ const TerminalDisplay = () => {
     }
     return () => {
       wsRef.current?.close();
+      terminalInstanceRef.current?.dispose();
     };
   }, [isTerminalVisible]);
 
@@ -64,6 +65,7 @@ const TerminalDisplay = () => {
         <div>
           <div ref={terminalRef} className="h-40vh w-full mb-4" />
           <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandsToTerminal(['cd /dev-projects/natetrystuff-web/natetrystuff-web', 'npm run dev'])}>Send Command</button>
+          <button className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => setIsTerminalVisible(false)}>Close Terminal</button>
         </div>
       )}
     </div>
