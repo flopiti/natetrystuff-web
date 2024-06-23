@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'xterm/css/xterm.css';
+import TerminalBar from './TerminalBar'; // Import the TerminalBar component
 
 const TerminalDisplay = () => {
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -9,6 +10,7 @@ const TerminalDisplay = () => {
   const wsRef = useRef<WebSocket | null>(null);
   const [terminalData, setTerminalData] = useState('');
   const [isTerminalVisible, setIsTerminalVisible] = useState(false);
+  const [terminals, setTerminals] = useState<number[]>([]);
 
   const loadTerminal = async () => {
     const { Terminal } = await import('xterm');
@@ -35,6 +37,9 @@ const TerminalDisplay = () => {
   useEffect(() => {
     if (isTerminalVisible) {
       loadTerminal();
+      setTerminals((prev) => [...prev, terminals.length + 1]);
+    } else {
+      setTerminals((prev) => prev.slice(0, -1));
     }
     return () => {
       wsRef.current?.close();
@@ -61,6 +66,7 @@ const TerminalDisplay = () => {
   return (
     <div className="p-4">
       <button className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => setIsTerminalVisible(true)}>Open Terminal</button>
+      <TerminalBar terminals={terminals} />
       {isTerminalVisible && (
         <div>
           <div ref={terminalRef} className="h-40vh w-full mb-4" />
