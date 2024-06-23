@@ -52,9 +52,9 @@ const TerminalDisplay = () => {
   };
 
   return (
-    <div>
-      <div ref={terminalRef} style={{ height: '40vh', width: '100%' }} />
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandToTerminal('cd /dev-projects')}>Send Command</button>
+    <div className="p-4">
+      <div ref={terminalRef} className="h-40vh w-full" />
+      <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandToTerminal('cd /dev-projects')}>Send Command</button>
     </div>
   );
 };
