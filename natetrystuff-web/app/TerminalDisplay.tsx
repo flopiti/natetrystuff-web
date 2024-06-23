@@ -8,36 +8,38 @@ const TerminalDisplay = () => {
   const terminalInstanceRef = useRef<any>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const [terminalData, setTerminalData] = useState('');
+  const [isTerminalVisible, setIsTerminalVisible] = useState(false);
+
+  const loadTerminal = async () => {
+    const { Terminal } = await import('xterm');
+    const terminal = new Terminal();
+    terminal.open(terminalRef.current!);
+    terminalInstanceRef.current = terminal;
+
+    const ws = new WebSocket('wss://natetrystuff.com:3001');
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      terminal.onData(data => {
+        setTerminalData(prevData => prevData + data);
+        ws.send(data);
+      });
+
+      ws.onmessage = (event) => {
+        terminal.write(event.data.toString());
+      };
+      ws.send('su developer\n');
+    };
+  };
 
   useEffect(() => {
-    const loadTerminal = async () => {
-      const { Terminal } = await import('xterm');
-      const terminal = new Terminal();
-      terminal.open(terminalRef.current!);
-      terminalInstanceRef.current = terminal;
-
-      const ws = new WebSocket('wss://natetrystuff.com:3001');
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        terminal.onData(data => {
-          setTerminalData(prevData => prevData + data);
-          ws.send(data);
-        });
-
-        ws.onmessage = (event) => {
-          terminal.write(event.data.toString());
-        };
-        ws.send('su developer\n');
-      };
-
-      return () => {
-        ws.close();
-      };
+    if (isTerminalVisible) {
+      loadTerminal();
+    }
+    return () => {
+      wsRef.current?.close();
     };
-
-    loadTerminal();
-  }, []);
+  }, [isTerminalVisible]);
 
   useEffect(() => {
     if (terminalData) {
@@ -57,8 +59,13 @@ const TerminalDisplay = () => {
 
   return (
     <div className="p-4">
-      <div ref={terminalRef} className="h-40vh w-full" />
-      <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandsToTerminal(['cd /dev-projects/natetrystuff-web/natetrystuff-web', 'npm run dev'])}>Send Command</button>
+      <button className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => setIsTerminalVisible(true)}>Open Terminal</button>
+      {isTerminalVisible && (
+        <div>
+          <div ref={terminalRef} className="h-40vh w-full mb-4" />
+          <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => sendCommandsToTerminal(['cd /dev-projects/natetrystuff-web/natetrystuff-web', 'npm run dev'])}>Send Command</button>
+        </div>
+      )}
     </div>
   );
 };
