@@ -1,11 +1,11 @@
-// components/TerminalDisplay.tsx
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'xterm/css/xterm.css';
-import TerminalBar from './TerminalBar'; // Import the TerminalBar component
+import TerminalBar from './TerminalBar';
 
 const TerminalDisplay = () => {
   const [terminals, setTerminals] = useState<{ id: number, terminalInstance: any, ws: WebSocket | null }[]>([]);
+  const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
 
   const loadTerminal = async (id: number) => {
     const { Terminal } = await import('xterm');
@@ -37,13 +37,14 @@ const TerminalDisplay = () => {
 
   const closeTerminal = (id: number) => {
     setTerminals(prev => prev.filter(t => t.id !== id));
+    if(selectedTerminal === id) setSelectedTerminal(null);
   };
 
   return (
     <div className="p-4">
-      <TerminalBar terminals={terminals.map(t => t.id)} openTerminal={openTerminal} />
+      <TerminalBar terminals={terminals.map(t => t.id)} selectedTerminal={selectedTerminal} setSelectedTerminal={setSelectedTerminal} openTerminal={openTerminal} />
       {terminals.map(t => (
-        <div key={t.id}>
+        <div key={t.id} className={`${selectedTerminal === t.id ? '' : 'hidden'}`}>
           <div id={`terminal-${t.id}`} className="h-40vh w-full mb-4" />
           <button className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => closeTerminal(t.id)}>Close Terminal {t.id}</button>
         </div>

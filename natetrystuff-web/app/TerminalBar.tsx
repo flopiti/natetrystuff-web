@@ -1,11 +1,15 @@
 import React from 'react';
 
-const TerminalBar = ({ terminals, openTerminal }: { terminals: number[], openTerminal: () => void }) => {
+const TerminalBar = ({ terminals, selectedTerminal, setSelectedTerminal, openTerminal }: { terminals: number[], selectedTerminal: number | null, setSelectedTerminal: (id: number) => void, openTerminal: () => void }) => {
   return (
     <div className="bg-gray-200 p-2 mb-4">
       {terminals.length === 0 && <p>No open terminals</p>}
       {terminals.map((terminal, idx) => (
-        <span key={idx} className="mr-2 bg-gray-300 p-2 rounded">
+        <span
+          key={idx}
+          className={`mr-2 p-2 rounded cursor-pointer ${selectedTerminal === terminal ? 'bg-blue-300' : 'bg-gray-300'}`}
+          onClick={() => setSelectedTerminal(terminal)}
+        >
           Terminal {terminal}
         </span>
       ))}
