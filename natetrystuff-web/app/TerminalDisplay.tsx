@@ -1,36 +1,56 @@
-// components/TerminalDisplay.tsx
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import 'xterm/css/xterm.css';
+import TerminalBar from './TerminalBar';
 
 const TerminalDisplay = () => {
-  const terminalRef = useRef<HTMLDivElement>(null);
+  const [terminals, setTerminals] = useState<{ id: number, terminalInstance: any, ws: WebSocket | null }[]>([]);
+  const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
 
-  useEffect(() => {
-    const loadTerminal = async () => {
-      const { Terminal } = await import('xterm');
-      const terminal = new Terminal();
-      terminal.open(terminalRef.current!);
+  const loadTerminal = async (id: number) => {
+    const { Terminal } = await import('xterm');
+    const terminal = new Terminal();
+    const terminalElement = document.getElementById(`terminal-${id}`);
+    terminal.open(terminalElement!);
 
-      const ws = new WebSocket('wss://natetrystuff.com:3001');
-      ws.onopen = () => {
-        terminal.onData(data => {
-          ws.send(data);
-        });
+    const ws = new WebSocket('wss://natetrystuff.com:3001');
 
-        ws.onmessage = (event) => {
-          terminal.write(event.data.toString());
-        };
+    ws.onopen = () => {
+      terminal.onData(data => {
+        ws.send(data);
+      });
+
+      ws.onmessage = (event) => {
+        terminal.write(event.data.toString());
       };
-
-      return () => {
-        ws.close();
-      };
+      ws.send('su developer\n');
     };
 
-    loadTerminal();
-  }, []);
+    setTerminals(prev => prev.map(t => t.id === id ? { id, terminalInstance: terminal, ws } : t));
+  };
 
-  return <div ref={terminalRef} style={{ height: '100vh', width: '100%' }} />;
+  const openTerminal = () => {
+    const newId = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
+    setTerminals(prev => [...prev, { id: newId, terminalInstance: null, ws: null }]);
+    loadTerminal(newId);
+  };
+
+  const closeTerminal = (id: number) => {
+    setTerminals(prev => prev.filter(t => t.id !== id));
+    if(selectedTerminal === id) setSelectedTerminal(null);
+  };
+
+  return (
+    <div className="p-4">
+      <TerminalBar terminals={terminals.map(t => t.id)} selectedTerminal={selectedTerminal} setSelectedTerminal={setSelectedTerminal} openTerminal={openTerminal} />
+      {terminals.map(t => (
+        <div key={t.id} className={`${selectedTerminal === t.id ? '' : 'hidden'}`}>
+          <div id={`terminal-${t.id}`} className="h-40vh w-full mb-4" />
+          <button className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => closeTerminal(t.id)}>Close Terminal {t.id}</button>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default dynamic(() => Promise.resolve(TerminalDisplay), { ssr: false });
