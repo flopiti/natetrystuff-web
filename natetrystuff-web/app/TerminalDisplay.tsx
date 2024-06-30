@@ -41,7 +41,7 @@ const TerminalDisplay = () => {
   };
 
   const closeTerminal = (id: number) => {
-    setTermials(prev => prev.filter(t => t.id !== id));
+    setTerminals(prev => prev.filter(t => t.id !== id));
     if(selectedTerminal === id) setSelectedTerminal(null);
   };
 
@@ -52,7 +52,7 @@ const TerminalDisplay = () => {
         <div key={t.id} className={`${selectedTerminal === t.id ? '' : 'hidden'}`}>
           <div id={`terminal-${t.id}`} className="h-40vh w-full mb-4" />
           <button className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => closeTerminal(t.id)}>Close Terminal {t.id}</button>
-          <button className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => runCommand('cd /dev-projects/natetrystuff-web')}>Run CD Command</button>
+          <button className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => runCommand('cd /dev-projects/natetrystuff-web/natetrystuff-web && npm run dev')}>Run dev environment</button>
         </div>
       ))}
     </div>
