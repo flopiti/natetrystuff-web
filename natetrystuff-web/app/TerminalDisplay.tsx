@@ -29,7 +29,7 @@ const TerminalDisplay = () => {
     setTerminals(prev => prev.map(t => t.id === id ? { id, terminalInstance: terminal, ws } : t));
   };
 
-  const runCommand = (command) => {
+  const runCommand = (command:any) => {
     const terminal = terminals.find(t => t.id === selectedTerminal);
     terminal?.ws?.send(command + '\n');
   };
