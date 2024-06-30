@@ -29,6 +29,11 @@ const TerminalDisplay = () => {
     setTerminals(prev => prev.map(t => t.id === id ? { id, terminalInstance: terminal, ws } : t));
   };
 
+  const runCommand = (command) => {
+    const terminal = terminals.find(t => t.id === selectedTerminal);
+    terminal?.ws?.send(command + '\n');
+  };
+
   const openTerminal = () => {
     const newId = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     setTerminals(prev => [...prev, { id: newId, terminalInstance: null, ws: null }]);
@@ -36,7 +41,7 @@ const TerminalDisplay = () => {
   };
 
   const closeTerminal = (id: number) => {
-    setTerminals(prev => prev.filter(t => t.id !== id));
+    setTermials(prev => prev.filter(t => t.id !== id));
     if(selectedTerminal === id) setSelectedTerminal(null);
   };
 
@@ -47,6 +52,7 @@ const TerminalDisplay = () => {
         <div key={t.id} className={`${selectedTerminal === t.id ? '' : 'hidden'}`}>
           <div id={`terminal-${t.id}`} className="h-40vh w-full mb-4" />
           <button className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => closeTerminal(t.id)}>Close Terminal {t.id}</button>
+          <button className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => runCommand('cd /dev-projects/natetrystuff-web')}>Run CD Command</button>
         </div>
       ))}
     </div>
