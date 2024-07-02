@@ -27,7 +27,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
             <div className="sticky top-0 bg-gray-100 p-2">
                 <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
-                    {projects.map((project:any) => (
+                    {projects?.map((project:any) => (
                         <option key={project.name} value={project.name}>
                             {project.name}
                         </option>

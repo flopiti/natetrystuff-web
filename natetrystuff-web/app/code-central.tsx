@@ -24,11 +24,14 @@ const CodeCentral = () => {
     const [loading, setLoading] = useState<boolean>(false); // Loading state
 
     useEffect(() => {
-        (async () => {
-            const data = await getProjects();
-            setProjects(data);
-        })();
-    }, []);
+        getProjects().then((data) => {
+                setProjects(data);
+            }
+        ).catch((error) => {
+            console.error('Error:', error);
+        }
+    )}
+    , []);
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
