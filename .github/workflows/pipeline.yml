@@ -40,6 +40,7 @@ jobs:
          echo 'SSH_HOST=${{ secrets.SSH_HOST }}' >> natetrystuff-web/.env.production
          echo 'SSH_USERNAME=${{ secrets.SSH_USERNAME }}' >> natetrystuff-web/.env.production
          echo 'SSH_PASSWORD=${{ secrets.SSH_PASSWORD }}' >> natetrystuff-web/.env.production
+         echo 'OPEN_AI_API_KEY=${{ secrets.OPENAI_KEY }}' >> natetrystuff-web/.env.production
 
      - name: Setup SSH Known Hosts
        run: |
