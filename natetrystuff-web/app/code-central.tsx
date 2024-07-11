@@ -3,6 +3,7 @@ import { Callback, CallbackOptions, Change, LinesOptions, diffLines } from 'diff
 import FileViewer from './components/FileViewer';
 import FileListDropdown from './components/FileListDropdown';
 import { getProjects, getProjectFiles, askChat, getFile, fetchHighlightedFilesContent, replaceCode, handleFlightClick } from './utils';
+import TerminalDisplay from './TerminalDisplay';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -22,6 +23,8 @@ const CodeCentral = () => {
     const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
     const [splitFileData, setSplitFileData] = useState<string>(''); // Add state to store split file data
     const [loading, setLoading] = useState<boolean>(false); // Loading state
+    const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false); // State to track terminal visibility
+    const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); // Function to toggle terminal visibility
 
     useEffect(() => {
         getProjects().then((data) => {
@@ -142,6 +145,12 @@ const CodeCentral = () => {
                         }} />
                 </div>
             </div>
+            <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
+                <TerminalDisplay/>
+            </div>
+            
+            <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
+ 
         </div>
     );
 }
