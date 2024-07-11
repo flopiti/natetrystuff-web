@@ -47,6 +47,7 @@ export const askChat = async (conversation: any[], highlightedFiles: any[], high
     });
 
     const response = await res.json();
+    console.log(response.chatCompletion);
     return JSON.parse(response.chatCompletion.choices[0].message.content);
 }
 
