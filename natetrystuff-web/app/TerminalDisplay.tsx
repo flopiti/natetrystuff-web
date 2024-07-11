@@ -44,6 +44,7 @@ const TerminalDisplay = () => {
     const newId = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     setTerminals(prev => [...prev, { id: newId, terminalInstance: null, ws: null }]);
     loadTerminal(newId);
+    setSelectedTerminal(newId);
   };
 
   const closeTerminal = (id: number) => {
