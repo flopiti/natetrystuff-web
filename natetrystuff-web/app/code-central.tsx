@@ -23,6 +23,8 @@ const CodeCentral = () => {
     const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
     const [splitFileData, setSplitFileData] = useState<string>(''); // Add state to store split file data
     const [loading, setLoading] = useState<boolean>(false); // Loading state
+    const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false); // State to track terminal visibility
+    const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); // Function to toggle terminal visibility
 
     useEffect(() => {
         getProjects().then((data) => {
@@ -143,7 +145,12 @@ const CodeCentral = () => {
                         }} />
                 </div>
             </div>
-            <TerminalDisplay />
+            <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
+                <TerminalDisplay/>
+            </div>
+            
+            <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
+ 
         </div>
     );
 }
