@@ -7,6 +7,12 @@ const TerminalDisplay = () => {
   const [terminals, setTerminals] = useState<{ id: number, terminalInstance: any, ws: WebSocket | null }[]>([]);
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (terminals.length === 0) {
+      openTerminal();
+    }
+  }, []);
+
   const loadTerminal = async (id: number) => {
     const { Terminal } = await import('xterm');
     const terminal = new Terminal();
@@ -38,6 +44,7 @@ const TerminalDisplay = () => {
     const newId = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     setTerminals(prev => [...prev, { id: newId, terminalInstance: null, ws: null }]);
     loadTerminal(newId);
+    setSelectedTerminal(newId);
   };
 
   const closeTerminal = (id: number) => {
