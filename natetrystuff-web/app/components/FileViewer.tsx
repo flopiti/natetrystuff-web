@@ -23,29 +23,46 @@ const FileViewer: React.FC<FileViewerProps> = ({
   loading,
   setSelectedChatCode
 }) => {
+
+  const splitStringByNewLine = (str: string) => {
+    return str.split('\n');
+  }
+
+  const removeLine = (lineToRemove: number) => {
+    console.log('removing line', lineToRemove)
+    console.log(selectedChatCode.toString())
+    const splitSelected = splitStringByNewLine(selectedChatCode.toString());
+    const newCode = splitSelected.filter((line, index) => index !== lineToRemove - 1).join('\n');
+    setSelectedChatCode(newCode);
+  };
+
+  const addLine = (lineToAdd: string, lineNumber: number) => {
+    const lines = selectedChatCode.split('\n');
+    lines.splice(lineNumber - 1, 0, lineToAdd);
+    return lines.join('\n');
+  }
   
-  const [originalContentByLine, setOriginalContentByLine] = useState(selectedFileContent.split('\n'));
-  const revertLine = (lineNumber: number) => {
-    console.log('reverting line', lineNumber)
-    console.log(originalContentByLine)
-    const updatedCodeLines = selectedChatCode.split('\n');
-    updatedCodeLines[lineNumber] = originalContentByLine[lineNumber];
-    setSelectedChatCode(updatedCodeLines.join('\n'));
+  const revertLine = (lineNumber: number, diff:any) => {
+    const newCode = removeLine(lineNumber);
+    console.log('newCode', newCode)
+
   };
 
   const getHighlightedCode = () => {
     const diff = diffLines(selectedFileContent, selectedChatCode);
     let lineNumber = 0;
-
+    console.log(diff)
     return (
       <pre>{diff.map((part, index) => {
-        return part.value.split('\n').slice(0, -1).map((line, lineIndex) => {
+        const lines = part.value.split('\n').slice(0, -1);
+        const lineElements = lines.map((line, lineIndex) => {
           const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
           const lineContent = <span key={lineIndex} style={style}>{line}</span>;
           const revertButton = part.added ? (
-            <button onClick={() => revertLine(lineNumber)}>Revert</button>
+            <button onClick={(function(currentLineNumber) {
+                return () => removeLine(currentLineNumber);
+              })(lineNumber)}>Revert</button>
           ) : null;
-          lineNumber += 1;
           return (
             <div key={lineIndex} style={{ display: 'flex', justifyContent: 'space-between' }}>
               {lineContent}
@@ -53,6 +70,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
             </div>
           );
         });
+        lineNumber += lines.length; // Increment lineNumber by the number of actual lines processed
+        return lineElements;
       })}</pre>
     );
   };
