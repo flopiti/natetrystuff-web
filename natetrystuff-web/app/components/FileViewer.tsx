@@ -1,5 +1,5 @@
 import { diffLines } from 'diff';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface FileViewerProps {
   activeTab: string;
@@ -20,15 +20,38 @@ const FileViewer: React.FC<FileViewerProps> = ({
   selectedChatCode,
   selectedFileName,
   replaceCode,
-  loading
+  loading,
+  setSelectedChatCode
 }) => {
+  
+  const [originalContentByLine, setOriginalContentByLine] = useState(selectedFileContent.split('\n'));
+  const revertLine = (lineNumber: number) => {
+    console.log('reverting line', lineNumber)
+    console.log(originalContentByLine)
+    const updatedCodeLines = selectedChatCode.split('\n');
+    updatedCodeLines[lineNumber] = originalContentByLine[lineNumber];
+    setSelectedChatCode(updatedCodeLines.join('\n'));
+  };
+
   const getHighlightedCode = () => {
     const diff = diffLines(selectedFileContent, selectedChatCode);
+    let lineNumber = 0;
+
     return (
-      <pre>{diff.map((part: any, index: number) => {
-        const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-        return part.value.split('\n').map((line: string, lineIndex: number) => {
-          return <div key={lineIndex} style={style}>{line}</div>;
+      <pre>{diff.map((part, index) => {
+        return part.value.split('\n').slice(0, -1).map((line, lineIndex) => {
+          const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
+          const lineContent = <span key={lineIndex} style={style}>{line}</span>;
+          const revertButton = part.added ? (
+            <button onClick={() => revertLine(lineNumber)}>Revert</button>
+          ) : null;
+          lineNumber += 1;
+          return (
+            <div key={lineIndex} style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {lineContent}
+              {revertButton}
+            </div>
+          );
         });
       })}</pre>
     );
@@ -56,7 +79,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
         {loading && <p className="text-center text-black">Loading...</p>} {/* Show loading message */}
         {!loading && activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
         {!loading && activeTab === 'chat' && selectedChatCode && (
-          <div>{getHighlightedCode()}
+          <div>
+            {getHighlightedCode()}
             <button
               className="bg-blue-500 text-white p-2"
               onClick={() => replaceCode()}
