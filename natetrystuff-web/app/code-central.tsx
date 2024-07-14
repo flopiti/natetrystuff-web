@@ -8,7 +8,9 @@ import TerminalDisplay from './TerminalDisplay';
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
     answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] 
-    the code snippet that you think is the answer}. You are allowed to create new files if necessary. If the code is not a coding solution, simply do not include the property in the JSON object.`;
+    the code snippet that you think is the answer}. You are allowed to create new files if necessary.
+    If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
+    If the code is not a coding solution, simply do not include the property in the JSON object.`;
     
     const [projectFiles, setProjectFiles] = useState<string[]>([]);
     const [selectedFileName, setSelectedFileName] = useState<string>('');
