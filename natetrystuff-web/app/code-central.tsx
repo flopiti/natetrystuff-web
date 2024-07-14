@@ -117,7 +117,8 @@ const CodeCentral = () => {
                 chatCodes={chatCodes}
                 setSelectedChatCode={setSelectedChatCode}
             />
-            <FileViewer 
+            <FileViewer
+                setSelectedChatCode={setSelectedChatCode} // Pass the state function down to FileViewer
                 activeTab={activeTab} 
                 setActiveTab={setActiveTab} 
                 selectedFileContent={selectedFileContent} 

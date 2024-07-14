@@ -10,6 +10,7 @@ interface FileViewerProps {
   replaceCode: () => void;
   loading: boolean;
   splitFileData : string;
+  setSelectedChatCode: (code: string) => void;
 }
 
 const FileViewer: React.FC<FileViewerProps> = ({
