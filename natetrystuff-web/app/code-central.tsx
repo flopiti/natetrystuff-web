@@ -117,14 +117,14 @@ const CodeCentral = () => {
                 chatCodes={chatCodes}
                 setSelectedChatCode={setSelectedChatCode}
             />
-            <FileViewer 
+            <FileViewer
+                setSelectedChatCode={setSelectedChatCode} // Pass the state function down to FileViewer
                 activeTab={activeTab} 
                 setActiveTab={setActiveTab} 
                 selectedFileContent={selectedFileContent} 
                 selectedChatCode={selectedChatCode} 
                 selectedFileName={selectedFileName} 
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
-                splitFileData={splitFileData} // Pass split file data to FileViewer
                 loading={loading} // Pass loading state to FileViewer
             />
             <div className="w-[40%] bg-red-200 h-full flex flex-col">
