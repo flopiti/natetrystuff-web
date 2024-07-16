@@ -1,7 +1,10 @@
+
+
 import { useEffect, useState } from 'react';
 
 const Schedule = () => {
-    const getNextFourDays = (): any[] => {
+    'use server'
+    const getNextFourDays = async() => {
         const today = new Date();
         const fourDays: any[] = [];
         for (let i = 0; i < 4; i++) {
@@ -11,6 +14,7 @@ const Schedule = () => {
         }
         return fourDays;
     };
+
 
     const formatISODate = (date: Date): string => {
         return `${date.toISOString().split('T')[0]}T00:00:00`; // Returns 'YYYY-MM-DDT00:00:00'
@@ -30,7 +34,7 @@ const Schedule = () => {
         setGroceries(data);
     };
 
-    const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>(getNextFourDays());
+    const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>([]);
     const [isAddMealFormVisible, setIsAddMealFormVisible] = useState<boolean>(false);
     const [meals, setMeals] = useState<any[]>([]);
 
@@ -61,12 +65,17 @@ const Schedule = () => {
     };
 
     useEffect(() => {
+        getNextFourDays().then((days) => setFourDaysSchedule(days))
+    }, []);
+
+    useEffect(() => {
+        if (fourDaysSchedule.length === 0) return;
         const firstDate = formatISODate(fourDaysSchedule[0]);
         const lastDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
         getMealSchedules();
         getMeals();
         getGroceries(firstDate, lastDate);
-    }, []);
+    }, [fourDaysSchedule]);
 
     const [addMealsIndexes, setAddMealsIndexes] = useState<any[]>([]);
 
