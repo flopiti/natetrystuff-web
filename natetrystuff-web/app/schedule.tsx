@@ -51,7 +51,12 @@ const Schedule = () => {
             body: mealz,
         });
         const data = await response.json();
-        setMealsSchedule([...mealsSchedule, data.data]);
+        if (response.ok) {
+            setMealsSchedule([...mealsSchedule, data.data]);
+            const startDate = formatISODate(fourDaysSchedule[0]);
+            const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
+            await getGroceries(startDate, endDate); // Refresh groceries list after adding a schedule
+        }
     };
 
     useEffect(() => {
@@ -88,7 +93,12 @@ const Schedule = () => {
             method: 'DELETE',
         });
         const data = await response.json();
-        setMealsSchedule(mealsSchedule.filter((meal: any) => meal.scheduleId !== mealSched));
+        if (response.ok) {
+            setMealsSchedule(mealsSchedule.filter((meal: any) => meal.scheduleId !== mealSched));
+            const startDate = formatISODate(fourDaysSchedule[0]);
+            const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
+            await getGroceries(startDate, endDate); // Refresh groceries list after deleting a scheduled meal
+        }
     };
 
     const formatDate = (date: Date): string => {
