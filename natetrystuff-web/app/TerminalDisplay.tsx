@@ -17,22 +17,23 @@ const TerminalDisplay = () => {
     const { Terminal } = await import('xterm');
     const terminal = new Terminal();
     const terminalElement = document.getElementById(`terminal-${id}`);
-    terminal.open(terminalElement!);
+    if (terminalElement) { 
+        terminal.open(terminalElement);
+        const ws = new WebSocket('wss://natetrystuff.com:3001');
 
-    const ws = new WebSocket('wss://natetrystuff.com:3001');
+        ws.onopen = () => {
+          terminal.onData(data => {
+            ws.send(data);
+          });
 
-    ws.onopen = () => {
-      terminal.onData(data => {
-        ws.send(data);
-      });
+          ws.onmessage = (event) => {
+            terminal.write(event.data.toString());
+          };
+          ws.send('su developer\n');
+        };
 
-      ws.onmessage = (event) => {
-        terminal.write(event.data.toString());
-      };
-      ws.send('su developer\n');
-    };
-
-    setTerminals(prev => prev.map(t => t.id === id ? { id, terminalInstance: terminal, ws } : t));
+        setTerminals(prev => prev.map(t => t.id === id ? { id, terminalInstance: terminal, ws } : t));
+    }
   };
 
   const runCommand = (command: any) => {
