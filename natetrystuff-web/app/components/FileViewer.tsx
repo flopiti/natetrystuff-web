@@ -126,9 +126,7 @@ const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:
 }
 
 const removeLine = (lineToRemove: number,length:number, file:string, updateFile:any) => {
-  console.log('removeLine', lineToRemove);
   const newCode = file.split('\n');
-  console.log(newCode.length)
   newCode.splice(lineToRemove, length);
   updateFile(newCode.join('\n'));
 };
