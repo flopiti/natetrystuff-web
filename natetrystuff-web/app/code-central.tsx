@@ -38,6 +38,21 @@ const CodeCentral = () => {
     )}
     , []);
 
+
+    useEffect(() => {
+        setChatCodes((prevChatCodes) => {
+            const newChatCodes = prevChatCodes.map((chatCode) => {
+                if (chatCode.fileName === selectedFileName) {
+                    return { fileName: selectedFileName, code: selectedChatCode };
+                }
+                return chatCode;
+            });
+            return newChatCodes;
+        }
+        );
+
+    }, [selectedChatCode] );
+
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
