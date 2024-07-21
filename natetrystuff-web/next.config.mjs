@@ -2,20 +2,19 @@
 const nextConfig = {
   reactStrictMode: false,
   webpack: (config, { isServer, dev, webpack }) => {
-    if (dev && !isServer) {
-      config.watchOptions = {
-        poll: 1000,
-      };
-    }
+    console.log('Is in development mode:', dev);
+    console.log('Is server configuration:', isServer);
     if (!isServer) {
       config.resolve.fallback.fs = false;
     }
-
     config.externals.push('@ts-morph/common');
-
-    config.plugins.push(
-      new webpack.IgnorePlugin({ resourceRegExp: /^cpu-features$/ })
-    );
+    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /^cpu-features$/ }));
+    if (dev && !isServer) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        poll: 1000,
+      };
+    }
 
     return config;
   },
