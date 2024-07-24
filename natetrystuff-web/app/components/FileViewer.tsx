@@ -122,15 +122,10 @@ const RemoveButton: React.FC<any> = ({ lineNumber, number, file, updateFile}) =>
 
 const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:any) => {
 
-  console.log(file)
   const newCode = file.split('\n');
-  console.log(newCode)
-  console.log(lineToAdd.toString())
-
   newCode.splice(lineNumber, 0, lineToAdd);
-  console.log(newCode)
-  updateFile(newCode);
-}
+  updateFile(newCode.join('\n'));
+};
 
 const removeLine = (lineToRemove: number,length:number, file:string, updateFile:any) => {
   const newCode = file.split('\n');
