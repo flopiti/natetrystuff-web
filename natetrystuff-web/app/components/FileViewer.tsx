@@ -22,7 +22,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
   loading,
   setSelectedChatCode
 }) => {
-  const diff = diffLines(selectedFileContent, selectedChatCode).filter((part) => part.value !== '\n')
+  const diff = diffLines(selectedFileContent, selectedChatCode);
   let lineNumber = 0;
   return (
     <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
@@ -54,9 +54,9 @@ const FileViewer: React.FC<FileViewerProps> = ({
                 {
                   lines.map((line, lineIndex) => {
                     const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-                    const lineContent = <span style={style}>{line}</span>;
+                    const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>;
                     return (
-                      <div key={lineIndex} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
                         {lineContent}
                       </div>
                     );
@@ -66,7 +66,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
                    part.removed ? (
                     <AddButton
                       lineNumber={lineNumber}
-                      value={part.value}
+                      value={part.value.split('\n').slice(0, -1)}
                       file={selectedChatCode}
                       updateFile={setSelectedChatCode}
                     />
@@ -101,6 +101,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
 };
 
 const AddButton: React.FC<any> = ({ lineNumber, value, file, updateFile }) => {
+
   return <button
     key={lineNumber}
     className="bg-blue-500 text-white p-2"
@@ -120,9 +121,15 @@ const RemoveButton: React.FC<any> = ({ lineNumber, number, file, updateFile}) =>
 }
 
 const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:any) => {
+
+  console.log(file)
   const newCode = file.split('\n');
+  console.log(newCode)
+  console.log(lineToAdd.toString())
+
   newCode.splice(lineNumber, 0, lineToAdd);
-  updateFile(newCode.join('\n'));
+  console.log(newCode)
+  updateFile(newCode);
 }
 
 const removeLine = (lineToRemove: number,length:number, file:string, updateFile:any) => {
