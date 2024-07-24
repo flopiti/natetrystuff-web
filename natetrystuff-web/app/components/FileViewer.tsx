@@ -66,7 +66,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
                    part.removed ? (
                     <AddButton
                       lineNumber={lineNumber}
-                      value={part.value.split('\n').slice(0, -1)}
+                      value={part.value.split('\n').slice(0, -1).join('\n')}
                       file={selectedChatCode}
                       updateFile={setSelectedChatCode}
                     />
@@ -121,7 +121,6 @@ const RemoveButton: React.FC<any> = ({ lineNumber, number, file, updateFile}) =>
 }
 
 const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:any) => {
-
   const newCode = file.split('\n');
   newCode.splice(lineNumber, 0, lineToAdd);
   updateFile(newCode.join('\n'));
