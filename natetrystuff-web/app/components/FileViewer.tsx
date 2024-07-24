@@ -22,7 +22,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
   loading,
   setSelectedChatCode
 }) => {
-  const diff = diffLines(selectedFileContent, selectedChatCode).filter((part) => part.value !== '\n')
+  const diff = diffLines(selectedFileContent, selectedChatCode);
   let lineNumber = 0;
   return (
     <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
@@ -54,9 +54,9 @@ const FileViewer: React.FC<FileViewerProps> = ({
                 {
                   lines.map((line, lineIndex) => {
                     const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-                    const lineContent = <span style={style}>{line}</span>;
+                    const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>;
                     return (
-                      <div key={lineIndex} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
                         {lineContent}
                       </div>
                     );
