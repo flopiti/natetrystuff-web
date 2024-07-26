@@ -41,7 +41,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="h-full overflow-auto">
+            <div className="h-[500px] overflow-auto">
                 {filteredFiles.length > 0 && filteredFiles.map((projectFile: any, index: number) => {
                     const isHighlighted = highlightedFiles.includes(projectFile);
                     const doWeHaveChatCode = chatCodes?.find((fileData: any) => fileData.fileName === projectFile);
