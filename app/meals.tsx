@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import AddMealForm from './AddMealForm';
+import AddMealForm from './components/AddMealForm';
 import MealList from './MealList';
 import { getMeals, addMeal, deleteMeal, updateMeal } from './mealService';
 import { MealIngredient } from './types';

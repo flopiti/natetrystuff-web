@@ -1,9 +1,10 @@
 import { SetStateAction, use, useEffect, useState } from 'react';
 import { Callback, CallbackOptions, Change, LinesOptions, diffLines } from 'diff';
-import FileViewer from './components/FileViewer';
-import FileListDropdown from './components/FileListDropdown';
-import { getProjects, getProjectFiles, askChat, getFile, fetchHighlightedFilesContent, replaceCode, handleFlightClick } from './utils';
-import TerminalDisplay from './TerminalDisplay';
+
+import FileViewer from './FileViewer';
+import FileListDropdown from './FileListDropdown';
+import TerminalDisplay from '../TerminalDisplay';
+import { askChat, fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, handleFlightClick, replaceCode } from '../utils';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
