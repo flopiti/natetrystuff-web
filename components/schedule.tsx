@@ -1,7 +1,7 @@
 
 
 import { useEffect, useState } from 'react';
-import getNextFourDays from './nextFourDays';
+import getNextFourDays from '../utils/nextFourDays';
 
 const Schedule = () => {
 
@@ -39,7 +39,7 @@ const Schedule = () => {
     };
 
     const addMealToSchedule = async (meal: any, date: Date): Promise<void> => {
-        setToMidnight(date); // Ensure the meal is scheduled at midnight
+        setToMidnight(date);
         const formattedDate = formatISODate(date);
         meal = { meal: meal, scheduledTime: formattedDate };
         const mealz = JSON.stringify(meal);

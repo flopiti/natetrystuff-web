@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from "react";
-import Schedule from "../schedule";
-import Meals from "../meals";
+import Schedule from "./schedule";
+import Meals from "./meals";
 import Code from "./code";
 import DevDb from "./devdb";
 import CodeCentral from "./code-central";
 import CodeEye from "./code-eye";
-import SshConnect from '../ssh-connect';
-import TerminalDisplay from "../TerminalDisplay";
+import SshConnect from './ssh-connect';
+import TerminalDisplay from "./TerminalDisplay";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')

@@ -2,8 +2,6 @@
 const nextConfig = {
   reactStrictMode: false,
   webpack: (config, { isServer, dev, webpack }) => {
-    console.log('Is in development mode:', dev);
-    console.log('Is server configuration:', isServer);
     if (!isServer) {
       config.resolve.fallback.fs = false;
     }
