@@ -37,7 +37,7 @@ jobs:
        run: |
          echo '' >> .env.production
          echo 'AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}' >> .env.production
-         echo 'SSH_HOST=${{ secrets.SSH_HOST }}' >> natetrystuff-web/.env.production
+         echo 'SSH_HOST=${{ secrets.SSH_HOST }}' >> .env.production
          echo 'SSH_USERNAME=${{ secrets.SSH_USERNAME }}' >> env.production
          echo 'SSH_PASSWORD=${{ secrets.SSH_PASSWORD }}' >> env.production
          echo 'OPEN_AI_API_KEY=${{ secrets.OPENAI_KEY }}' >> .env.production
