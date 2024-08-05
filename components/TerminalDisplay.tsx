@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'xterm/css/xterm.css';
 import TerminalBar from './TerminalBar';
@@ -11,7 +11,7 @@ const TerminalDisplay = () => {
     if (terminals.length === 0) {
       openTerminal();
     }
-  }, []);
+  });
 
   const loadTerminal = async (id: number) => {
     const { Terminal } = await import('xterm');

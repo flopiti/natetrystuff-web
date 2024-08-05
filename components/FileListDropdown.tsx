@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface FileListDropdownProps {
@@ -54,7 +55,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                             <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
                                 {projectFile}
                             </p>
-                            {doWeHaveChatCode && <img width={30} height={30} src="/openai.svg" alt="Open" />}
+                            {doWeHaveChatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
                         </div>
                     );
                 })}

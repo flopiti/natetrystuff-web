@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import AddMealForm from './AddMealForm';
 import MealList from './MealList';
-import { getMeals, addMeal, deleteMeal, updateMeal } from './mealService';
-import { MealIngredient } from './types';
-import { useFormState } from './useFormState';
+import { getMeals, addMeal, deleteMeal, updateMeal } from '../utils/mealService';
+import { MealIngredient } from '../utils/types';
+import { useFormState } from '../utils/useFormState';
 
 const Meals = () => {
   const [meals, setMeals] = useState<any[]>([]);

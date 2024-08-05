@@ -13,7 +13,7 @@ const SshConnect = () => {
         if (!sessionId) {
             startNewSession();
         }
-    }, []); // Run only once when component mounts
+    }, [sessionId]);
 
     const startNewSession = async () => {
         try {

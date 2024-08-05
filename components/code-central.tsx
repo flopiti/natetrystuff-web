@@ -1,9 +1,8 @@
-import { SetStateAction, use, useEffect, useState } from 'react';
-import { Callback, CallbackOptions, Change, LinesOptions, diffLines } from 'diff';
-import FileViewer from './components/FileViewer';
-import FileListDropdown from './components/FileListDropdown';
-import { getProjects, getProjectFiles, askChat, getFile, fetchHighlightedFilesContent, replaceCode, handleFlightClick } from './utils';
+import { useEffect, useState } from 'react';
+import FileViewer from './FileViewer';
+import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
+import { askChat, fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, handleFlightClick, replaceCode } from '../app/utils';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -51,7 +50,7 @@ const CodeCentral = () => {
         }
         );
 
-    }, [selectedChatCode] );
+    }, [selectedChatCode,selectedFileName] );
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
@@ -64,7 +63,7 @@ const CodeCentral = () => {
                 setLoading(false); // End loading
             })();
         }
-    }, [conversation]);
+    }, [conversation, highlightedFiles, highlightedFilesContent]);
 
     useEffect(() => {
         if (selectedProject) {
@@ -83,7 +82,7 @@ const CodeCentral = () => {
                 setSelectedChatCode(chatCode.code);
             }
         }
-    }, [chatCodes]);
+    }, [chatCodes, selectedFileName]);
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
@@ -117,7 +116,7 @@ const CodeCentral = () => {
                 setHighlightedFilesContent(content);
             })();
         }
-    }, [highlightedFiles]);
+    }, [highlightedFiles,selectedProject.name]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">

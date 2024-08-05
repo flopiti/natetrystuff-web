@@ -1,4 +1,4 @@
-import CodeAnalyzer from "@/app/codeAnalyzer";
+import CodeAnalyzer from "@/utils/codeAnalyzer";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {

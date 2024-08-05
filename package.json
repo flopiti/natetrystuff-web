@@ -7,7 +7,8 @@
     "build": "next build",
     "local": "next start -p 3040",
     "start": "next start -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev-local": "next dev -p 3000"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
