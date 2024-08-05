@@ -55,7 +55,7 @@ jobs:
 
      - name: Copy built files and configuration to server
        run: |
-         scp -r .next .env.production package.json ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/apps/natetrystuff-web/app/
+         scp -r public .next .env.production package.json ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/apps/natetrystuff-web/app/
          ssh ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "cd /apps/natetrystuff-web/app && npm install"
 
      - name: Restart Service
