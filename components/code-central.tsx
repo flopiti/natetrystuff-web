@@ -116,7 +116,7 @@ const CodeCentral = () => {
                 setHighlightedFilesContent(content);
             })();
         }
-    }, [highlightedFiles,selectedProject.name]);
+    }, [highlightedFiles,selectedProject]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
