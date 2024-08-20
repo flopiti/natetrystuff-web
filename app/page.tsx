@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default withPageAuthRequired(async function Home() {
   return (
     <UserProvider>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-24">
         <Hub />
       </main>
     </UserProvider>
