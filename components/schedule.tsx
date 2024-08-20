@@ -107,10 +107,10 @@ const Schedule = () => {
     };
 
     return (
-        <div className='h-[70vh] border-2 border-white w-full p-4 bg-gray-100 rounded-lg'>
-            <div className='flex flex-row h-full space-x-4'>
+        <div className='md:h-[70vh] border-2 border-white w-full p-4 bg-gray-100 rounded-lg mt-5'>
+            <div className='flex flex-col md:flex-row h-full md:space-x-4'>
                 {fourDaysSchedule.map((day, index) => (
-                    <div key={index} className='w-1/4 flex flex-col bg-sky-100 shadow-lg rounded-lg p-6'>
+                    <div key={index} className='md:w-1/4 w-full flex flex-col bg-sky-100 shadow-lg rounded-lg p-3 md:p-6'>
                         <h1 className='text-xl font-extrabold mb-2 text-gray-800'>{formatDate(day)}</h1>
                         <div className='bg-green-300 flex flex-col flex-grow p-2 rounded-lg'>
                             {mealsSchedule.filter((mealSched: any) => {
