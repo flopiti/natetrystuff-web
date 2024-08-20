@@ -107,29 +107,29 @@ const Schedule = () => {
     };
 
     return (
-        <div className='md:h-[70vh] border-2 border-white w-full p-4 bg-gray-100 rounded-lg mt-5'>
+        <div className='md:h-[70vh] w-full p-4 rounded-lg mt-5'>
             <div className='flex flex-col md:flex-row h-full md:space-x-4'>
                 {fourDaysSchedule.map((day, index) => (
-                    <div key={index} className='md:w-1/4 w-full flex flex-col bg-sky-100 shadow-lg rounded-lg p-3 md:p-6'>
-                        <h1 className='text-xl font-extrabold mb-2 text-gray-800'>{formatDate(day)}</h1>
-                        <div className='bg-green-300 flex flex-col flex-grow p-2 rounded-lg'>
+                    <div key={index} className='md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center'>
+                        <h1 className='text-xl font-extrabold mb-2 text-gray-800 m-4'>{formatDate(day)}</h1>
+                        <div className='flex flex-col items-center flex-grow rounded-lg w-full'>
                             {mealsSchedule.filter((mealSched: any) => {
                                 const mealDate = new Date(mealSched.scheduledTime);
                                 return mealDate.toLocaleDateString() === day.toLocaleDateString();
                             }).length > 0 ? (
-                                <ul className='m-2 border-gray-300 border-2 p-2 rounded-lg bg-white'>
+                                <ul className='m-2 rounded-lg'>
                                     {mealsSchedule.filter((mealSched: any) => {
                                         const mealDate = new Date(mealSched.scheduledTime);
                                         return mealDate.toLocaleDateString() === day.toLocaleDateString();
                                     }).map((mealSched: any, idx: any) => (
-                                        <li key={idx} className='flex justify-between items-center mb-2 text-gray-700'>
+                                        <li key={idx} className='flex justify-between items-center text-gray-500'>
                                             <span className='font-medium'>{mealSched.meal.mealName}</span>
-                                            <button className='bg-red-500 text-white rounded px-2 py-1' onClick={() => deleteScheduledMeal(mealSched.scheduleId)}>X</button>
+                                            <button className='bg-red-800 opacity-50 text-white rounded px-2 py-1 m-2' onClick={() => deleteScheduledMeal(mealSched.scheduleId)}>X</button>
                                         </li>
                                     ))}
                                 </ul> 
-                            ) : <p className='text-gray-500'>No meals scheduled</p>}
-                            <button className='bg-blue-500 text-white mt-2 py-1 px-4 rounded hover:bg-blue-600' onClick={() => showAddMeal(index)}>
+                            ) : <p className='text-gray-500 m-2'>No meals scheduled</p>}
+                            <button className= 'text-white mt-2 py-1 px-4 rounded hover:bg-blue-600' onClick={() => showAddMeal(index)}>
                                 Add Meal to Schedule
                             </button>
                             {addMealsIndexes.includes(index) && (
