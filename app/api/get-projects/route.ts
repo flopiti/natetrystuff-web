@@ -1,9 +1,10 @@
-import { NextRequest } from "next/dist/server/web/spec-extension/request";
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   try {
-    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-projects`, {
+    const { searchParams } = new URL(request.url);
+    const dirPath = searchParams.get("dirPath");
+    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-projects?dirPath=${dirPath}`, {
       headers: {
         'Content-Type': 'application/json',
       },

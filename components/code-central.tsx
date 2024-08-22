@@ -26,16 +26,17 @@ const CodeCentral = () => {
     const [loading, setLoading] = useState<boolean>(false); // Loading state
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false); // State to track terminal visibility
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); // Function to toggle terminal visibility
+    const[dirPath, setDirPath] = useState<string>('');
 
     useEffect(() => {
-        getProjects().then((data) => {
+        getProjects(dirPath).then((data) => {
                 setProjects(data);
             }
         ).catch((error) => {
             console.error('Error:', error);
         }
     )}
-    , []);
+    , [dirPath]);
 
 
     useEffect(() => {
@@ -121,6 +122,8 @@ const CodeCentral = () => {
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <FileListDropdown
+                dirPath={dirPath}
+                setDirPath={setDirPath}
                 projects={projects}
                 selectedProject={selectedProject}
                 setSelectedProject={setSelectedProject}

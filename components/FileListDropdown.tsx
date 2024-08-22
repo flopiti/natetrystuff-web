@@ -10,10 +10,12 @@ interface FileListDropdownProps {
     selectedFileName: string,
     highlightedFiles: any[],
     chatCodes: any[],
-    setSelectedChatCode: (code: any) => void
+    setSelectedChatCode: (code: any) => void, 
+    dirPath: string,
+    setDirPath: (dirPath: string) => void
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode,dirPath,  setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleSelectedProjectChange = (event: any) => {
@@ -25,6 +27,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
 
     return (
         <div className="w-1/5 bg-gray-100 text-black">
+            <textarea className="text-black p-2 whitespace-pre-wrap break-words" value={dirPath} onChange={(e) => setDirPath(e.target.value)} /> 
+
             <div className="sticky top-0 bg-gray-100 p-2">
                 <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
