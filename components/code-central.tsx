@@ -36,7 +36,7 @@ const CodeCentral = () => {
             console.error('Error:', error);
         }
     )}
-    , []);
+    , [dirPath]);
 
 
     useEffect(() => {
@@ -121,8 +121,9 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
-            <textarea className="w-[60%] h-full text-black p-2 whitespace-pre-wrap break-words" value={dirPath} onChange={(e) => setDirPath(e.target.value)} /> 
             <FileListDropdown
+                dirPath={dirPath}
+                setDirPath={setDirPath}
                 projects={projects}
                 selectedProject={selectedProject}
                 setSelectedProject={setSelectedProject}
