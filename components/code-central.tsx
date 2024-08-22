@@ -26,7 +26,7 @@ const CodeCentral = () => {
     const [loading, setLoading] = useState<boolean>(false); // Loading state
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false); // State to track terminal visibility
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); // Function to toggle terminal visibility
-    const[dirPath, setDirPath] = useState<string>('/Users/nathanpieraut/projects/');
+    const[dirPath, setDirPath] = useState<string>('');
 
     useEffect(() => {
         getProjects(dirPath).then((data) => {
@@ -121,6 +121,7 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
+            <textarea className="w-[60%] h-full text-black p-2 whitespace-pre-wrap break-words" value={dirPath} onChange={(e) => setDirPath(e.target.value)} /> 
             <FileListDropdown
                 projects={projects}
                 selectedProject={selectedProject}
