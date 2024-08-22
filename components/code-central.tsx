@@ -26,9 +26,10 @@ const CodeCentral = () => {
     const [loading, setLoading] = useState<boolean>(false); // Loading state
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false); // State to track terminal visibility
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); // Function to toggle terminal visibility
+    const[dirPath, setDirPath] = useState<string>('/Users/nathanpieraut/projects/');
 
     useEffect(() => {
-        getProjects().then((data) => {
+        getProjects(dirPath).then((data) => {
                 setProjects(data);
             }
         ).catch((error) => {
