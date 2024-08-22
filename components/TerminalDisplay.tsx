@@ -60,7 +60,7 @@ const TerminalDisplay = () => {
         <div key={t.id} className={`${selectedTerminal === t.id ? '' : 'hidden'}`}>
           <div id={`terminal-${t.id}`} className="h-40vh w-full mb-4" />
           <button className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => closeTerminal(t.id)}>Close Terminal {t.id}</button>
-          <button className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => runCommand('cd /dev-projects/natetrystuff-web/natetrystuff-web && exec npm run dev')}>Run dev environment</button>
+          <button className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => runCommand('cd /dev-projects/natetrystuff-web && exec npm run dev')}>Run dev environment</button>
           <button className="mt-4 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded" onClick={() => runCommand('cd /dev-projects/natetrystuff-api/natetrystuff && exec mvn spring-boot:run -Dspring-boot.run.profiles=local')}>Run API in dev</button>
         </div>
       ))}
