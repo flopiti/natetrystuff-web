@@ -8,7 +8,7 @@ import CodeCentral from "./code-central";
 import CodeEye from "./code-eye";
 import SshConnect from './ssh-connect';
 import TerminalDisplay from "./TerminalDisplay";
-import Schedule from "./schedule";
+import Schedule from "./Schedule";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
