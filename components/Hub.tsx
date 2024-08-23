@@ -2,13 +2,10 @@
 
 import { useState } from "react";
 import Meals from "./meals";
-import Code from "./code";
-import DevDb from "./devdb";
-import CodeCentral from "./code-central";
-import CodeEye from "./code-eye";
 import SshConnect from './ssh-connect';
 import TerminalDisplay from "./TerminalDisplay";
 import Schedule from "./Schedule";
+import CodeCentral from "./CodeCentral";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -32,18 +29,9 @@ const Hub = () => {
             page === 'meals'? (
                 <Meals />
             ) : 
-            page === 'code' ? (
-                <Code/>
-            ) :
-            page === '/dev-db' ? (
-                <DevDb/>
-            ) : 
             page === '/code-central' ? (
                 <CodeCentral/>
             ) :
-            page === 'code-eye' ? (
-                <CodeEye/>
-            ) : 
             page === 'ssh-connect' ? (
                 <SshConnect /> 
             ) : 
