@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import getNextFourDays from '../utils/nextFourDays';
 
 const Schedule = () => {
-
-
     const formatISODate = (date: Date): string => {
         return `${date.toISOString().split('T')[0]}T00:00:00`; // Returns 'YYYY-MM-DDT00:00:00'
     };
