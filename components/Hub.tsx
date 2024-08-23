@@ -15,10 +15,7 @@ const Hub = () => {
         <div>
             <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
             <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
-            <button className="mx-2" onClick={() => setPage('code')}>Code</button>
-            <button className="mx-2" onClick={() => setPage('/dev-db')}>Dev DB</button>
             <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
-            <button className="mx-2" onClick={() => setPage('code-eye')}>Code Eye</button>
             <button className="mx-2" onClick={() => setPage('ssh-connect')}>SSH Connect</button>
             <button className="mx-2" onClick={() => setPage('terminal')}>Terminal</button>
         </div>

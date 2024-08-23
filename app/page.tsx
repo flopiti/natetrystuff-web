@@ -1,5 +1,4 @@
-import Image from "next/image";
-import Hub from "../components/hub";
+import Hub from "../components/Hub";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { Metadata } from "next";
