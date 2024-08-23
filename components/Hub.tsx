@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import Meals from "./meals";
-import SshConnect from './ssh-connect';
-import TerminalDisplay from "./TerminalDisplay";
+import Meals from "./Meals";
 import Schedule from "./Schedule";
 import CodeCentral from "./CodeCentral";
 
@@ -16,8 +14,6 @@ const Hub = () => {
             <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
             <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
             <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
-            <button className="mx-2" onClick={() => setPage('ssh-connect')}>SSH Connect</button>
-            <button className="mx-2" onClick={() => setPage('terminal')}>Terminal</button>
         </div>
         {
             page === 'schedule' ? (
@@ -28,14 +24,7 @@ const Hub = () => {
             ) : 
             page === '/code-central' ? (
                 <CodeCentral/>
-            ) :
-            page === 'ssh-connect' ? (
-                <SshConnect /> 
-            ) : 
-            page === 'terminal' ? (
-                <TerminalDisplay />
             ) : null
-
         }
         </>
     );
