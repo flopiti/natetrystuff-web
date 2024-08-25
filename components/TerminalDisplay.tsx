@@ -25,16 +25,20 @@ const TerminalDisplay = () => {
       const ws = new WebSocket("wss://natetrystuff.com:3001");
 
       ws.onopen = () => {
+        const sessionId = `session-${id}`;
+        ws.send(JSON.stringify({ type: 'create', data: sessionId }));
+  
         terminal.onData((data) => {
-          ws.send(data);
+          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
-
+  
         ws.onmessage = (event) => {
-          terminal.write(event.data.toString());
+          const message = JSON.parse(event.data);
+          if (message.type === 'output') {
+            terminal.write(message.data.toString());
+          }
         };
-        ws.send("su developer\n");
       };
-
       setTerminals((prev) =>
         prev.map((t) =>
           t.id === id ? { id, terminalInstance: terminal, ws } : t
