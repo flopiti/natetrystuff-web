@@ -9,12 +9,17 @@ const TerminalDisplay = () => {
     { id: number; terminalInstance: any; ws: WebSocket | null }[]
   >([]);
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
+  const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
 
   useEffect(() => {
-    if (terminals.length === 0) {
-      openTerminal();
-    }
-  });
+    listSessions();
+  },[]);
+
+  useEffect(() => {    
+    prexistingTerminals.forEach((id) => {
+      openTerminal(id);
+    });
+  }, [prexistingTerminals]);
 
   const loadTerminal = async (id: number) => {
     const { Terminal } = await import("xterm");
@@ -46,21 +51,39 @@ const TerminalDisplay = () => {
       );
     }
   };
+  const listSessions = async () => {
+    const alreadyRunningTerminals:any[] = [];
+    const ws = new WebSocket("wss://natetrystuff.com:3001");
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: 'list' }));
+    };
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'sessions') {
+        message.data.forEach((sessionId:any) => {
+          const id = parseInt(sessionId.split('-')[1]);
+          alreadyRunningTerminals.push(id);        });
+      }
+      setPrexistingTerminals(alreadyRunningTerminals);
+      ws.close();
+    }
+  };
 
   const runCommand = (command: any) => {
     const terminal = terminals.find((t) => t.id === selectedTerminal);
     terminal?.ws?.send(command + "\n");
   };
 
-  const openTerminal = () => {
-    const newId =
-      (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
+  const openTerminal = (id_: number | null) => {
+    if(id_ === null){
+      id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
+    }
     setTerminals((prev) => [
       ...prev,
-      { id: newId, terminalInstance: null, ws: null },
+      { id: id_, terminalInstance: null, ws: null },
     ]);
-    loadTerminal(newId);
-    setSelectedTerminal(newId);
+    loadTerminal(id_);
+    setSelectedTerminal(id_);
   };
 
   const closeTerminal = (id: number) => {
