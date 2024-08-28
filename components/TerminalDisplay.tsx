@@ -5,9 +5,7 @@ import TerminalBar from "./TerminalBar";
 import TerminalInstance from "./TerminalInstance";
 
 const TerminalDisplay = () => {
-  const [terminals, setTerminals] = useState<
-    { id: number; terminalInstance: any; ws: WebSocket | null }[]
-  >([]);
+  const [terminals, setTerminals] = useState<{ id: number; terminalInstance: any; ws: WebSocket | null }[]>([]);
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
 
@@ -17,18 +15,17 @@ const TerminalDisplay = () => {
 
   useEffect(() => {    
     prexistingTerminals.forEach((id) => {
-      openTerminal(id);
+      reconnectTerminal(id);
     });
   }, [prexistingTerminals]);
 
-  const loadTerminal = async (id: number) => {
+  const createTerminalSession = async (id: number) => {
     const { Terminal } = await import("xterm");
     const terminal = new Terminal();
     const terminalElement = document.getElementById(`terminal-${id}`);
     if (terminalElement) {
       terminal.open(terminalElement);
       const ws = new WebSocket("wss://natetrystuff.com:3001");
-
       ws.onopen = () => {
         const sessionId = `session-${id}`;
         ws.send(JSON.stringify({ type: 'create', data: sessionId }));
@@ -51,6 +48,7 @@ const TerminalDisplay = () => {
       );
     }
   };
+  
   const listSessions = async () => {
     const alreadyRunningTerminals:any[] = [];
     const ws = new WebSocket("wss://natetrystuff.com:3001");
@@ -74,22 +72,53 @@ const TerminalDisplay = () => {
     terminal?.ws?.send(command + "\n");
   };
 
-  const openTerminal = (id_: number | null) => {
-    if(id_ === null){
-      id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
-    }
+  const openTerminal = () => {   
+    const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     setTerminals((prev) => [
       ...prev,
       { id: id_, terminalInstance: null, ws: null },
     ]);
-    loadTerminal(id_);
+    createTerminalSession(id_);
     setSelectedTerminal(id_);
   };
 
   const closeTerminal = (id: number) => {
+    const terminal = terminals.find((t) => t.id === id);
+    console.log(terminal)
+    terminal?.ws?.close();
     setTerminals((prev) => prev.filter((t) => t.id !== id));
     if (selectedTerminal === id) setSelectedTerminal(null);
   };
+
+  const reconnectTerminal = async (id: number) => {
+    setTerminals((prev) =>[
+      ...prev,
+      { id: id, terminalInstance: null, ws: null },
+    ]);
+    const { Terminal } = await import("xterm");
+    const terminal = new Terminal();
+    const terminalElement = document.getElementById(`terminal-${id}`);
+    if (terminalElement) {
+      terminal.open(terminalElement);
+      const ws = new WebSocket("wss://natetrystuff.com:3001");
+      ws.onopen = () => {
+        const sessionId = `session-${id}`;
+        ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
+        ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
+
+        terminal.onData((data) => {
+          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
+        });
+  
+        ws.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          if (message.type === 'output') {
+            terminal.write(message.data.toString());
+          }
+        };
+      };
+  }
+};
 
   return (
     <div className="p-4">

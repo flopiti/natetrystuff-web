@@ -9,7 +9,7 @@ const TerminalBar = ({
   terminals: number[];
   selectedTerminal: number | null;
   setSelectedTerminal: (id: number) => void;
-  openTerminal: (id: number | null) => void;
+  openTerminal: () => void;
 }) => {
   return (
     <div className="bg-gray-200 p-2 mb-4">
@@ -27,7 +27,7 @@ const TerminalBar = ({
       ))}
       <button
         className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={()=>openTerminal(null)}
+        onClick={()=>openTerminal()}
       >
         Open another Terminal
       </button>
