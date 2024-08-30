@@ -70,6 +70,7 @@ const CodeCentral = () => {
         if (selectedProject) {
             (async () => {
                 const data = await getProjectFiles(selectedProject);
+                console.log(data)
                 setProjectFiles(data);
             })();
         }
@@ -97,12 +98,10 @@ const CodeCentral = () => {
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
-        console.log('bruh')
         const fileDataResponse = await fetch(`/api/get-file?fileName=${fileName}&project=${selectedProject.name}`);
         console.log('received')
         const { splitFileData } = await fileDataResponse.json();
 
-        console.log(splitFileData)
         setSplitFileData(splitFileData);
 
         if (!highlightedFiles.includes(fileName)) {
