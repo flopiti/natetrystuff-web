@@ -5,41 +5,65 @@ import TerminalBar from "./TerminalBar";
 import TerminalInstance from "./TerminalInstance";
 
 const TerminalDisplay = () => {
-  const [terminals, setTerminals] = useState<
-    { id: number; terminalInstance: any; ws: WebSocket | null }[]
-  >([]);
+  const [terminals, setTerminals] = useState<{ id: number; terminalInstance: any; ws: WebSocket | null }[]>([]);
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
+  const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
 
   useEffect(() => {
-    if (terminals.length === 0) {
-      openTerminal();
-    }
-  });
+    listSessions();
+  },[]);
 
-  const loadTerminal = async (id: number) => {
+  useEffect(() => {    
+    prexistingTerminals.forEach((id) => {
+      reconnectTerminal(id);
+    });
+  }, [prexistingTerminals]);
+
+  const createTerminalSession = async (id: number) => {
     const { Terminal } = await import("xterm");
     const terminal = new Terminal();
     const terminalElement = document.getElementById(`terminal-${id}`);
     if (terminalElement) {
       terminal.open(terminalElement);
       const ws = new WebSocket("wss://natetrystuff.com:3001");
-
       ws.onopen = () => {
+        const sessionId = `session-${id}`;
+        ws.send(JSON.stringify({ type: 'create', data: sessionId }));
+  
         terminal.onData((data) => {
-          ws.send(data);
+          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
-
+  
         ws.onmessage = (event) => {
-          terminal.write(event.data.toString());
+          const message = JSON.parse(event.data);
+          if (message.type === 'output') {
+            terminal.write(message.data.toString());
+          }
         };
-        ws.send("su developer\n");
       };
-
       setTerminals((prev) =>
         prev.map((t) =>
           t.id === id ? { id, terminalInstance: terminal, ws } : t
         )
       );
+    }
+  };
+  
+  const listSessions = async () => {
+    const alreadyRunningTerminals:any[] = [];
+    const ws = new WebSocket("wss://natetrystuff.com:3001");
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: 'list' }));
+    };
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'sessions') {
+        message.data.forEach((sessionId:any) => {
+          const id = parseInt(sessionId.split('-')[1]);
+          alreadyRunningTerminals.push(id);        });
+      }
+      setPrexistingTerminals(alreadyRunningTerminals);
+      ws.close();
     }
   };
 
@@ -48,21 +72,53 @@ const TerminalDisplay = () => {
     terminal?.ws?.send(command + "\n");
   };
 
-  const openTerminal = () => {
-    const newId =
-      (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
+  const openTerminal = () => {   
+    const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     setTerminals((prev) => [
       ...prev,
-      { id: newId, terminalInstance: null, ws: null },
+      { id: id_, terminalInstance: null, ws: null },
     ]);
-    loadTerminal(newId);
-    setSelectedTerminal(newId);
+    createTerminalSession(id_);
+    setSelectedTerminal(id_);
   };
 
   const closeTerminal = (id: number) => {
+    const terminal = terminals.find((t) => t.id === id);
+    console.log(terminal)
+    terminal?.ws?.close();
     setTerminals((prev) => prev.filter((t) => t.id !== id));
     if (selectedTerminal === id) setSelectedTerminal(null);
   };
+
+  const reconnectTerminal = async (id: number) => {
+    setTerminals((prev) =>[
+      ...prev,
+      { id: id, terminalInstance: null, ws: null },
+    ]);
+    const { Terminal } = await import("xterm");
+    const terminal = new Terminal();
+    const terminalElement = document.getElementById(`terminal-${id}`);
+    if (terminalElement) {
+      terminal.open(terminalElement);
+      const ws = new WebSocket("wss://natetrystuff.com:3001");
+      ws.onopen = () => {
+        const sessionId = `session-${id}`;
+        ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
+        ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
+
+        terminal.onData((data) => {
+          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
+        });
+  
+        ws.onmessage = (event) => {
+          const message = JSON.parse(event.data);
+          if (message.type === 'output') {
+            terminal.write(message.data.toString());
+          }
+        };
+      };
+  }
+};
 
   return (
     <div className="p-4">
