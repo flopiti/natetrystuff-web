@@ -59,4 +59,4 @@ jobs:
          ssh ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "cd /apps/natetrystuff-web/app && npm install"
 
      - name: Restart Service
-       run: ssh ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} 'systemctl restart natetrystuff-web.service'
+       run: ssh ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} 'sudo systemctl restart natetrystuff-web.service'
