@@ -5,40 +5,23 @@ import getNextFourDays from '../utils/nextFourDays';
 import { fetchAPI, formatISODate, setToMidnight } from '@/app/utils';
 
 const Schedule = () => {
-
-
     const [mealsSchedule, setMealsSchedule] = useState<any[]>([]); 
     const [groceries, setGroceries] = useState<any[]>([]);
-
-
-    const getGroceries = async (firstDate: string, lastDate: string): Promise<void> => {
-        const response = await fetch(`/api/meal-schedule/get-groceries?startDate=${firstDate}&endDate=${lastDate}`);
-        const data = (await response.json()).data;
-        setGroceries(data);
-    };
-
     const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>([]);
     const [meals, setMeals] = useState<any[]>([]);
 
 
-    const addMealToSchedule = async (meal: any, date: Date): Promise<void> => {
-        setToMidnight(date);
+    const addMealToSchedule = async (meal: any, date: Date) => {
         const formattedDate = formatISODate(date);
-        meal = { meal: meal, scheduledTime: formattedDate };
-        const mealz = JSON.stringify(meal);
-        const response = await fetch('/api/meal-schedules', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: mealz,
-        });
-        const data = await response.json();
+        const mealPayload = { meal: meal, scheduledTime: formattedDate };
+        const response = await fetchAPI('/api/meal-schedules', 'POST', mealPayload);
+
         if (response.ok) {
-            setMealsSchedule([...mealsSchedule, data.data]);
+            setMealsSchedule([...mealsSchedule, response.data]);
             const startDate = formatISODate(fourDaysSchedule[0]);
             const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
-            await getGroceries(startDate, endDate);
+            const groceriesUpdate = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`);
+            setGroceries(groceriesUpdate.data);
         }
     };
 
@@ -73,16 +56,14 @@ const Schedule = () => {
         });
     };
 
-    const deleteScheduledMeal = async (mealSched: any): Promise<void> => {
-        const response = await fetch(`/api/meal-schedules/${mealSched}`, {
-            method: 'DELETE',
-        });
-        const data = await response.json();
+    const deleteScheduledMeal = async (mealSched: any) => {
+        const response = await fetchAPI(`/api/meal-schedules/${mealSched}`, 'DELETE');
         if (response.ok) {
-            setMealsSchedule(mealsSchedule.filter((meal: any) => meal.scheduleId !== mealSched));
+            setMealsSchedule(mealsSchedule.filter((meal) => meal.scheduleId !== mealSched));
             const startDate = formatISODate(fourDaysSchedule[0]);
             const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
-            await getGroceries(startDate, endDate); // Refresh groceries list after deleting a scheduled meal
+            const groceriesUpdate = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`);
+            setGroceries(groceriesUpdate.data);
         }
     };
 
