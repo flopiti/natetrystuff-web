@@ -1,92 +1,159 @@
-import { useEffect, useState } from 'react';
-import getNextFourDays from '../utils/nextFourDays';
-import { fetchAPI, formatDate, formatISODate } from '@/app/utils';
-import { setFourDaysScheduleDisplay, useScheduleState } from '@/hooks/useScheduleHooks';
-import GroceryList from './GroceryList';
+import { useEffect, useState } from "react";
+import getNextFourDays from "../utils/nextFourDays";
+import { fetchAPI, formatDate, formatISODate } from "@/app/utils";
+import {
+  setFourDaysScheduleDisplay,
+  useScheduleState,
+} from "@/hooks/useScheduleHooks";
+import GroceryList from "./GroceryList";
 
 const Schedule = () => {
-    const { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals, addMealsIndexes, setAddMealsIndexes } = useScheduleState();
-    
-    useEffect(() => {
-        getNextFourDays().then(setFourDaysSchedule);
-    }, []);
+  const {
+    mealsSchedule,
+    setMealsSchedule,
+    groceries,
+    setGroceries,
+    fourDaysSchedule,
+    setFourDaysSchedule,
+    meals,
+    setMeals,
+    addMealsIndexes,
+    setAddMealsIndexes,
+  } = useScheduleState();
 
-    setFourDaysScheduleDisplay(fourDaysSchedule, setMeals, setMealsSchedule, setGroceries);
-    
-    const addMealToSchedule = async (meal: any, date: Date) => {
-        const formattedDate = formatISODate(date);
-        const mealPayload = { meal: meal, scheduledTime: formattedDate };
-        const response = await fetchAPI('/api/meal-schedules', 'POST', mealPayload);
-        if (response) {
-            setMealsSchedule([...mealsSchedule, response.data]);
-            const startDate = formatISODate(fourDaysSchedule[0]);
-            const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
-            const groceriesUpdate = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`);
-            setGroceries(groceriesUpdate.data);
-        }
-    };
+  useEffect(() => {
+    getNextFourDays().then(setFourDaysSchedule);
+  }, []);
 
-    const showAddMeal = (index: number): void => {
-        setAddMealsIndexes((prevIndexes: any) => {
-            if (prevIndexes.includes(index)) {
-                return prevIndexes.filter((idx: any) => idx !== index);
-            } else {
-                return [...prevIndexes, index];
-            }
-        });
-    };
+  setFourDaysScheduleDisplay(
+    fourDaysSchedule,
+    setMeals,
+    setMealsSchedule,
+    setGroceries
+  );
 
-    const deleteScheduledMeal = async (mealSched: any) => {
-        const response = await fetchAPI(`/api/meal-schedules/${mealSched}`, 'DELETE');
-        if (response) {
-            setMealsSchedule(mealsSchedule.filter((meal:any) => meal.scheduleId !== mealSched));
-            const startDate = formatISODate(fourDaysSchedule[0]);
-            const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
-            const groceriesUpdate = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`);
-            setGroceries(groceriesUpdate.data);
-        }
-    };
+  const addMealToSchedule = async (meal: any, date: Date) => {
+    const formattedDate = formatISODate(date);
+    const mealPayload = { meal: meal, scheduledTime: formattedDate };
+    const response = await fetchAPI("/api/meal-schedules", "POST", mealPayload);
+    if (response) {
+      setMealsSchedule([...mealsSchedule, response.data]);
+      const startDate = formatISODate(fourDaysSchedule[0]);
+      const endDate = formatISODate(
+        fourDaysSchedule[fourDaysSchedule.length - 1]
+      );
+      const groceriesUpdate = await fetchAPI(
+        `/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`
+      );
+      setGroceries(groceriesUpdate.data);
+    }
+  };
 
-    return (
-        <div className='md:h-[70vh] w-full p-4 rounded-lg mt-5'>
-            <div className='flex flex-col md:flex-row h-full md:space-x-4'>
-                {fourDaysSchedule.map((day:any, index:any) => (
-                    <div key={index} className='md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center'>
-                        <h1 className='text-xl font-extrabold mb-2 text-gray-800 m-4'>{formatDate(day)}</h1>
-                        <div className='flex flex-col items-center flex-grow rounded-lg w-full'>
-                            {mealsSchedule.filter((mealSched: any) => {
-                                const mealDate = new Date(mealSched.scheduledTime);
-                                return mealDate.toLocaleDateString() === day.toLocaleDateString();
-                            }).length > 0 ? (
-                                <ul className='m-2 rounded-lg'>
-                                    {mealsSchedule.filter((mealSched: any) => {
-                                        const mealDate = new Date(mealSched.scheduledTime);
-                                        return mealDate.toLocaleDateString() === day.toLocaleDateString();
-                                    }).map((mealSched: any, idx: any) => (
-                                        <li key={idx} className='flex justify-between items-center text-gray-500'>
-                                            <span className='font-medium'>{mealSched.meal.mealName}</span>
-                                            <button className='bg-red-800 opacity-50 text-white rounded px-2 py-1 m-2' onClick={() => deleteScheduledMeal(mealSched.scheduleId)}>X</button>
-                                        </li>
-                                    ))}
-                                </ul> 
-                            ) : <p className='text-gray-500 m-2'>No meals scheduled</p>}
-                            <button className= 'text-white mt-2 py-1 px-4 rounded hover:bg-blue-600' onClick={() => showAddMeal(index)}>
-                                Add Meal to Schedule
-                            </button>
-                            {addMealsIndexes.includes(index) && (
-                                <ul className='mt-2'>
-                                    {meals.map((meal: any, idx: any) => (
-                                        <li className='m-2 text-sm bg-yellow-500 p-2 rounded hover:bg-yellow-600 cursor-pointer text-black' key={idx} onClick={() => addMealToSchedule(meal, day)}>{meal.mealName}</li>  
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <GroceryList groceries={groceries}/>
-        </div>
+  const showAddMeal = (index: number): void => {
+    setAddMealsIndexes((prevIndexes: any) => {
+      if (prevIndexes.includes(index)) {
+        return prevIndexes.filter((idx: any) => idx !== index);
+      } else {
+        return [...prevIndexes, index];
+      }
+    });
+  };
+
+  const deleteScheduledMeal = async (mealSched: any) => {
+    const response = await fetchAPI(
+      `/api/meal-schedules/${mealSched}`,
+      "DELETE"
     );
+    if (response) {
+      setMealsSchedule(
+        mealsSchedule.filter((meal: any) => meal.scheduleId !== mealSched)
+      );
+      const startDate = formatISODate(fourDaysSchedule[0]);
+      const endDate = formatISODate(
+        fourDaysSchedule[fourDaysSchedule.length - 1]
+      );
+      const groceriesUpdate = await fetchAPI(
+        `/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`
+      );
+      setGroceries(groceriesUpdate.data);
+    }
+  };
+
+  return (
+    <div className="md:h-[70vh] w-full p-4 rounded-lg mt-5">
+      <div className="flex flex-col md:flex-row h-full md:space-x-4">
+        {fourDaysSchedule.map((day: any, index: any) => (
+          <div
+            key={index}
+            className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center"
+          >
+            <h1 className="text-xl font-extrabold mb-2 text-gray-800 m-4">
+              {formatDate(day)}
+            </h1>
+            <div className="flex flex-col items-center flex-grow rounded-lg w-full">
+              {mealsSchedule.filter((mealSched: any) => {
+                const mealDate = new Date(mealSched.scheduledTime);
+                return (
+                  mealDate.toLocaleDateString() === day.toLocaleDateString()
+                );
+              }).length > 0 ? (
+                <ul className="m-2 rounded-lg">
+                  {mealsSchedule
+                    .filter((mealSched: any) => {
+                      const mealDate = new Date(mealSched.scheduledTime);
+                      return (
+                        mealDate.toLocaleDateString() ===
+                        day.toLocaleDateString()
+                      );
+                    })
+                    .map((mealSched: any, idx: any) => (
+                      <li
+                        key={idx}
+                        className="flex justify-between items-center text-gray-500"
+                      >
+                        <span className="font-medium">
+                          {mealSched.meal.mealName}
+                        </span>
+                        <button
+                          className="bg-red-800 opacity-50 text-white rounded px-2 py-1 m-2"
+                          onClick={() =>
+                            deleteScheduledMeal(mealSched.scheduleId)
+                          }
+                        >
+                          X
+                        </button>
+                      </li>
+                    ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 m-2">No meals scheduled</p>
+              )}
+              <button
+                className="text-white mt-2 py-1 px-4 rounded hover:bg-blue-600"
+                onClick={() => showAddMeal(index)}
+              >
+                Add Meal to Schedule
+              </button>
+              {addMealsIndexes.includes(index) && (
+                <ul className="mt-2">
+                  {meals.map((meal: any, idx: any) => (
+                    <li
+                      className="m-2 text-sm bg-yellow-500 p-2 rounded hover:bg-yellow-600 cursor-pointer text-black"
+                      key={idx}
+                      onClick={() => addMealToSchedule(meal, day)}
+                    >
+                      {meal.mealName}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <GroceryList groceries={groceries} />
+    </div>
+  );
 };
 
 export default Schedule;
