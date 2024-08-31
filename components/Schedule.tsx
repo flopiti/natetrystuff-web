@@ -17,7 +17,9 @@ const Schedule = () => {
     fourDaysSchedule,
     setFourDaysSchedule,
     meals,
-    setMeals
+    setMeals,
+    inOfficeDays,
+    setInOfficeDays,
   } = useScheduleState();
 
   useEffect(() => {
@@ -28,7 +30,8 @@ const Schedule = () => {
     fourDaysSchedule,
     setMeals,
     setMealsSchedule,
-    setGroceries
+    setGroceries,
+    setInOfficeDays
   );
 
   const addMealToSchedule = async (meal: any, date: Date) => {
@@ -72,16 +75,19 @@ const Schedule = () => {
   return (
     <div className="md:h-[70vh] w-full p-4 rounded-lg mt-5">
       <div className="flex flex-col md:flex-row h-full md:space-x-4">
-        {fourDaysSchedule.map((day: any, index: any) => (
-          <DaySchedule 
-            day={day} 
-            mealsSchedule={mealsSchedule} 
-            deleteScheduledMeal={deleteScheduledMeal} 
-            addMealToSchedule={addMealToSchedule} 
-            meals={meals}
-            key={index}
-            />
-        ))}
+        {fourDaysSchedule.map((day: any, index: any) => {
+          return (
+            <DaySchedule 
+              day={day} 
+              inOffice={inOfficeDays.map((inOfficeDay: any) => inOfficeDay.date).includes(day.toISOString().slice(0, 10))}
+              mealsSchedule={mealsSchedule} 
+              deleteScheduledMeal={deleteScheduledMeal} 
+              addMealToSchedule={addMealToSchedule} 
+              meals={meals}
+              key={index}
+              />
+          );
+        })}
       </div>
       <GroceryList groceries={groceries} />
     </div>
