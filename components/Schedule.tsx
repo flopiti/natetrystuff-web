@@ -23,7 +23,6 @@ const Schedule = () => {
     };
 
     const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>([]);
-    const [isAddMealFormVisible, setIsAddMealFormVisible] = useState<boolean>(false);
     const [meals, setMeals] = useState<any[]>([]);
 
     const getMeals = async (): Promise<void> => {
@@ -53,7 +52,7 @@ const Schedule = () => {
             setMealsSchedule([...mealsSchedule, data.data]);
             const startDate = formatISODate(fourDaysSchedule[0]);
             const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
-            await getGroceries(startDate, endDate); // Refresh groceries list after adding a schedule
+            await getGroceries(startDate, endDate);
         }
     };
 
@@ -73,14 +72,10 @@ const Schedule = () => {
     const [addMealsIndexes, setAddMealsIndexes] = useState<any[]>([]);
 
     const showAddMeal = (index: number): void => {
-        setIsAddMealFormVisible(prevVisible => !prevVisible);  // Toggles visibility state
-    
         setAddMealsIndexes((prevIndexes: any) => {
             if (prevIndexes.includes(index)) {
-                // If the index is already included, remove it
                 return prevIndexes.filter((idx: any) => idx !== index);
             } else {
-                // Otherwise, add this index to the array
                 return [...prevIndexes, index];
             }
         });
@@ -141,7 +136,6 @@ const Schedule = () => {
                     </div>
                 ))}
             </div>
-            {/* Display the groceries list somewhere on the page */}
             <div className='mt-4 p-4 bg-yellow-100 rounded-lg shadow-lg'>
                 <h2 className='text-xl font-bold mb-2 text-black'>Groceries</h2>
                 {groceries.length > 0 ? (
