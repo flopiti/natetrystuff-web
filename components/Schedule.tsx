@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import getNextFourDays from '../utils/nextFourDays';
-import { fetchAPI, formatISODate, setToMidnight } from '@/app/utils';
+import { fetchAPI, formatDate, formatISODate, setToMidnight } from '@/app/utils';
 
 const Schedule = () => {
     const [mealsSchedule, setMealsSchedule] = useState<any[]>([]); 
@@ -63,11 +63,6 @@ const Schedule = () => {
             const groceriesUpdate = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`);
             setGroceries(groceriesUpdate.data);
         }
-    };
-
-    const formatDate = (date: Date): string => {
-        const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        return date.toLocaleDateString(undefined, options);
     };
 
     return (
