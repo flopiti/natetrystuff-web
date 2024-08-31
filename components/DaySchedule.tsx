@@ -10,7 +10,6 @@ const DaySchedule = ({
   inOffice
 }: any) => {
 
-    console.log(inOffice)
   const setDayInOffice = () => {
     console.log(day);
   };
@@ -18,12 +17,23 @@ const DaySchedule = ({
   const [showAddMeal, setShowAddMeal] = useState(false);
   return (
     <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
-      <button
-        className="absolute top-0 right-0 m-4 py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-        onClick={() => setDayInOffice()}
-      >
-        hello
-      </button>
+      {
+        inOffice && (
+          <div className="bg-green-500 text-white text-xs rounded-lg p-1 m-5 w-4/5">
+            In Office
+          </div>
+        )
+      }
+      {
+        !inOffice && (
+          <button
+          className="self-end m-4 py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={() => setDayInOffice()}
+        >
+          hello
+        </button>
+        )
+      }
       <h1 className="text-xl font-extrabold mb-2 text-gray-800 m-4">
         {formatDate(day)}
       </h1>
