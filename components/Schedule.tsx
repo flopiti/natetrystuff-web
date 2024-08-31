@@ -50,15 +50,6 @@ const Schedule = () => {
     }
   };
 
-  const showAddMeal = (index: number): void => {
-    setAddMealsIndexes((prevIndexes: any) => {
-      if (prevIndexes.includes(index)) {
-        return prevIndexes.filter((idx: any) => idx !== index);
-      } else {
-        return [...prevIndexes, index];
-      }
-    });
-  };
 
   const deleteScheduledMeal = async (mealSched: any) => {
     const response = await fetchAPI(
@@ -85,15 +76,11 @@ const Schedule = () => {
       <div className="flex flex-col md:flex-row h-full md:space-x-4">
         {fourDaysSchedule.map((day: any, index: any) => (
           <DaySchedule 
-            key={index} 
             day={day} 
             mealsSchedule={mealsSchedule} 
             deleteScheduledMeal={deleteScheduledMeal} 
             addMealToSchedule={addMealToSchedule} 
-            showAddMeal={showAddMeal} 
-            addMealsIndexes={addMealsIndexes} 
             meals={meals} 
-            index={index}
             />
         ))}
       </div>

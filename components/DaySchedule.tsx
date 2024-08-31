@@ -1,9 +1,10 @@
 import { formatDate } from "@/app/utils";
+import { useState } from "react";
 
-const DaySchedule = ({ day, index, meals, mealsSchedule, addMealsIndexes, showAddMeal, addMealToSchedule, deleteScheduledMeal }: any) => {
+const DaySchedule = ({ day, meals, mealsSchedule, addMealToSchedule, deleteScheduledMeal }: any) => {
 
+    const[showAddMeal, setShowAddMeal] = useState(false);
     return <div
-    key={index}
     className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center"
   >
     <h1 className="text-xl font-extrabold mb-2 text-gray-800 m-4">
@@ -49,11 +50,11 @@ const DaySchedule = ({ day, index, meals, mealsSchedule, addMealsIndexes, showAd
       )}
       <button
         className="text-white mt-2 py-1 px-4 rounded hover:bg-blue-600"
-        onClick={() => showAddMeal(index)}
+        onClick={() => setShowAddMeal(!showAddMeal)}
       >
         Add Meal to Schedule
       </button>
-      {addMealsIndexes.includes(index) && (
+      {showAddMeal && (
         <ul className="mt-2">
           {meals.map((meal: any, idx: any) => (
             <li
