@@ -1,32 +1,8 @@
 import { useEffect, useState } from 'react';
 import getNextFourDays from '../utils/nextFourDays';
-import { fetchAPI, formatDate, formatISODate, setToMidnight } from '@/app/utils';
-const useScheduleState = () => {
-    const [mealsSchedule, setMealsSchedule] = useState<any>([]);
-    const [groceries, setGroceries] = useState<any>([]);
-    const [fourDaysSchedule, setFourDaysSchedule] = useState<any>([]);
-    const [meals, setMeals] = useState<any>([]);
-    const [addMealsIndexes, setAddMealsIndexes] = useState<any>([]);
+import { fetchAPI, formatDate, formatISODate } from '@/app/utils';
+import { setFourDaysScheduleDisplay, useScheduleState } from '@/hooks/useScheduleHooks';
 
-    return { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals, addMealsIndexes, setAddMealsIndexes };
-};
-
-const useFetchInitialData = (fourDaysSchedule:any, setMeals:any, setMealsSchedule:any, setGroceries:any) => {
-    useEffect(() => {
-        const fetchInitialData = async () => {
-            if (fourDaysSchedule.length === 0) return;
-            const [mealsData, mealSchedulesData, groceriesData] = await Promise.all([
-                fetchAPI('/api/meals'),
-                fetchAPI('/api/meal-schedules'),
-                fetchAPI(`/api/meal-schedule/get-groceries?startDate=${formatISODate(fourDaysSchedule[0])}&endDate=${formatISODate(fourDaysSchedule.at(-1))}`)
-            ]);
-            setMeals(mealsData.data);
-            setMealsSchedule(mealSchedulesData.data);
-            setGroceries(groceriesData.data);
-        };
-        fetchInitialData();
-    }, [fourDaysSchedule]);
-};
 const Schedule = () => {
     const { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals, addMealsIndexes, setAddMealsIndexes } = useScheduleState();
     
@@ -34,7 +10,7 @@ const Schedule = () => {
         getNextFourDays().then(setFourDaysSchedule);
     }, []);
 
-    useFetchInitialData(fourDaysSchedule, setMeals, setMealsSchedule, setGroceries);
+    setFourDaysScheduleDisplay(fourDaysSchedule, setMeals, setMealsSchedule, setGroceries);
     
     const addMealToSchedule = async (meal: any, date: Date) => {
         const formattedDate = formatISODate(date);

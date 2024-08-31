@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { fetchAPI, formatISODate } from '@/app/utils';
+import { useEffect, useState } from 'react';
 import { MealSchedule, Grocery, Meal } from '@/types/types';
+import { fetchAPI, formatISODate } from '@/app/utils';
 
 export const useScheduleState = () => {
     const [mealsSchedule, setMealsSchedule] = useState<MealSchedule[]>([]);
@@ -12,19 +12,14 @@ export const useScheduleState = () => {
     return { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals, addMealsIndexes, setAddMealsIndexes };
 };
 
-export const useFetchInitialData = (
-    fourDaysSchedule: Date[],
-    setMeals: React.Dispatch<React.SetStateAction<Meal[]>>,
-    setMealsSchedule: React.Dispatch<React.SetStateAction<MealSchedule[]>>,
-    setGroceries: React.Dispatch<React.SetStateAction<Grocery[]>>
-) => {
+export const setFourDaysScheduleDisplay = (fourDaysSchedule:any, setMeals:any, setMealsSchedule:any, setGroceries:any) => {
     useEffect(() => {
         const fetchInitialData = async () => {
             if (fourDaysSchedule.length === 0) return;
             const [mealsData, mealSchedulesData, groceriesData] = await Promise.all([
                 fetchAPI('/api/meals'),
                 fetchAPI('/api/meal-schedules'),
-                fetchAPI(`/api/meal-schedule/get-groceries?startDate=${formatISODate(fourDaysSchedule[0])}&endDate=${formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1])}`)
+                fetchAPI(`/api/meal-schedule/get-groceries?startDate=${formatISODate(fourDaysSchedule[0])}&endDate=${formatISODate(fourDaysSchedule.at(-1))}`)
             ]);
             setMeals(mealsData.data);
             setMealsSchedule(mealSchedulesData.data);
