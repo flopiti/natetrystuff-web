@@ -12,6 +12,11 @@ export const getProjects = async (dirPath:string) => {
     return projects_.data;
 }
 
+
+export const formatISODate = (date: Date): string => {
+    return `${date.toISOString().split('T')[0]}T00:00:00`;
+};
+
 export const getProjectFiles = async (selectedProject: any) => {
     if (!selectedProject) return [];
     const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
