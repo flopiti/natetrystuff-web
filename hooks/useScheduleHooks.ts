@@ -7,9 +7,8 @@ export const useScheduleState = () => {
     const [groceries, setGroceries] = useState<Grocery[]>([]);
     const [fourDaysSchedule, setFourDaysSchedule] = useState<Date[]>([]);
     const [meals, setMeals] = useState<Meal[]>([]);
-    const [addMealsIndexes, setAddMealsIndexes] = useState<number[]>([]);
 
-    return { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals, addMealsIndexes, setAddMealsIndexes };
+    return { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals };
 };
 
 export const setFourDaysScheduleDisplay = (fourDaysSchedule:any, setMeals:any, setMealsSchedule:any, setGroceries:any) => {

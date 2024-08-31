@@ -17,9 +17,7 @@ const Schedule = () => {
     fourDaysSchedule,
     setFourDaysSchedule,
     meals,
-    setMeals,
-    addMealsIndexes,
-    setAddMealsIndexes,
+    setMeals
   } = useScheduleState();
 
   useEffect(() => {
