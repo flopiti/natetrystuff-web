@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import getNextFourDays from '../utils/nextFourDays';
 import { fetchAPI, formatDate, formatISODate } from '@/app/utils';
 import { setFourDaysScheduleDisplay, useScheduleState } from '@/hooks/useScheduleHooks';
+import GroceryList from './GroceryList';
 
 const Schedule = () => {
     const { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals, addMealsIndexes, setAddMealsIndexes } = useScheduleState();
@@ -83,18 +84,7 @@ const Schedule = () => {
                     </div>
                 ))}
             </div>
-            <div className='mt-4 p-4 bg-yellow-100 rounded-lg shadow-lg'>
-                <h2 className='text-xl font-bold mb-2 text-black'>Groceries</h2>
-                {groceries.length > 0 ? (
-                    <ul>
-                        {groceries.map((grocery: any, index: number) => (
-                            <li key={index} className='text-gray-700'>
-                              <span>{grocery.quantity} {grocery.unit} of {grocery.ingredient.ingredientName}</span>
-                            </li>
-                        ))}
-                    </ul>
-                ) : <p className='text-gray-500'>No groceries listed</p>}
-            </div>
+            <GroceryList groceries={groceries}/>
         </div>
     );
 };
