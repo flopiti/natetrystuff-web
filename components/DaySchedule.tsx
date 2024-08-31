@@ -1,4 +1,4 @@
-import { formatDate } from "@/app/utils";
+import { fetchAPI, formatDate } from "@/app/utils";
 import { useState } from "react";
 
 const DaySchedule = ({
@@ -7,11 +7,18 @@ const DaySchedule = ({
   mealsSchedule,
   addMealToSchedule,
   deleteScheduledMeal,
-  inOffice
+  inOffice, 
+  setInOfficeDays,
+  inOfficeDays,
 }: any) => {
 
-  const setDayInOffice = () => {
-    console.log(day);
+  const setDayInOffice = async () => {
+    const formattedDate = day.toISOString().slice(0, 10)
+    const inOfficePayload = { date: formattedDate, inOffice };
+    const response = await fetchAPI("/api/days", "POST", inOfficePayload);
+    if (response) {
+      setInOfficeDays([...inOfficeDays, response.data]);
+    }
   };
   
   const [showAddMeal, setShowAddMeal] = useState(false);
@@ -30,7 +37,7 @@ const DaySchedule = ({
           className="self-end m-4 py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
           onClick={() => setDayInOffice()}
         >
-          hello
+          Make it an Office Day
         </button>
         )
       }

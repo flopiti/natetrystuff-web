@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     });
     const data = await res.json();
     return new NextResponse(JSON.stringify({ data }), {
-        status: res.status, // Using the response status from the fetch call
+        status: res.status,
         headers: {
             'Content-Type': 'application/json',
         },
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
 
-    const apiUrl = `${process.env.SPRING_BOOT_URL}/days`; // Adjust if your base URL is different
+    const apiUrl = `${process.env.SPRING_BOOT_URL}/days`;
     const res = await fetch(apiUrl, {
         method: 'GET',
         headers: {

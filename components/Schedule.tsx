@@ -80,6 +80,8 @@ const Schedule = () => {
             <DaySchedule 
               day={day} 
               inOffice={inOfficeDays.map((inOfficeDay: any) => inOfficeDay.date).includes(day.toISOString().slice(0, 10))}
+              inOfficeDays={inOfficeDays}
+              setInOffice={setInOfficeDays}
               mealsSchedule={mealsSchedule} 
               deleteScheduledMeal={deleteScheduledMeal} 
               addMealToSchedule={addMealToSchedule} 
