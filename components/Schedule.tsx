@@ -9,21 +9,7 @@ const Schedule = () => {
     const [groceries, setGroceries] = useState<any[]>([]);
     const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>([]);
     const [meals, setMeals] = useState<any[]>([]);
-
-
-    const addMealToSchedule = async (meal: any, date: Date) => {
-        const formattedDate = formatISODate(date);
-        const mealPayload = { meal: meal, scheduledTime: formattedDate };
-        const response = await fetchAPI('/api/meal-schedules', 'POST', mealPayload);
-
-        if (response.ok) {
-            setMealsSchedule([...mealsSchedule, response.data]);
-            const startDate = formatISODate(fourDaysSchedule[0]);
-            const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
-            const groceriesUpdate = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`);
-            setGroceries(groceriesUpdate.data);
-        }
-    };
+    const [addMealsIndexes, setAddMealsIndexes] = useState<any[]>([]);
 
     useEffect(() => {
         getNextFourDays().then((days) => setFourDaysSchedule(days))
@@ -43,8 +29,20 @@ const Schedule = () => {
         };
         fetchInitialData();
     }, [fourDaysSchedule]);
+    
+    const addMealToSchedule = async (meal: any, date: Date) => {
+        const formattedDate = formatISODate(date);
+        const mealPayload = { meal: meal, scheduledTime: formattedDate };
+        const response = await fetchAPI('/api/meal-schedules', 'POST', mealPayload);
 
-    const [addMealsIndexes, setAddMealsIndexes] = useState<any[]>([]);
+        if (response.ok) {
+            setMealsSchedule([...mealsSchedule, response.data]);
+            const startDate = formatISODate(fourDaysSchedule[0]);
+            const endDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
+            const groceriesUpdate = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`);
+            setGroceries(groceriesUpdate.data);
+        }
+    };
 
     const showAddMeal = (index: number): void => {
         setAddMealsIndexes((prevIndexes: any) => {
