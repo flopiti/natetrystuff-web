@@ -78,7 +78,8 @@ const Schedule = () => {
             mealsSchedule={mealsSchedule} 
             deleteScheduledMeal={deleteScheduledMeal} 
             addMealToSchedule={addMealToSchedule} 
-            meals={meals} 
+            meals={meals}
+            key={index}
             />
         ))}
       </div>
