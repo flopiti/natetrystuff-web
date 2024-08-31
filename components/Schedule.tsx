@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from 'react';
 import getNextFourDays from '../utils/nextFourDays';
 import { fetchAPI, formatDate, formatISODate, setToMidnight } from '@/app/utils';
