@@ -30,7 +30,6 @@ const useFetchInitialData = (fourDaysSchedule:any, setMeals:any, setMealsSchedul
 const Schedule = () => {
     const { mealsSchedule, setMealsSchedule, groceries, setGroceries, fourDaysSchedule, setFourDaysSchedule, meals, setMeals, addMealsIndexes, setAddMealsIndexes } = useScheduleState();
     
-    console.log(mealsSchedule);
     useEffect(() => {
         getNextFourDays().then(setFourDaysSchedule);
     }, []);
