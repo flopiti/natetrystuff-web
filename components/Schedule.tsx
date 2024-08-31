@@ -2,18 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import getNextFourDays from '../utils/nextFourDays';
-import { formatISODate } from '@/app/utils';
+import { fetchAPI, formatISODate, setToMidnight } from '@/app/utils';
 
 const Schedule = () => {
 
 
     const [mealsSchedule, setMealsSchedule] = useState<any[]>([]); 
     const [groceries, setGroceries] = useState<any[]>([]);
-    const getMealSchedules = async (): Promise<void> => {
-        const response = await fetch('/api/meal-schedules');
-        const data = (await response.json()).data;
-        setMealsSchedule(data);
-    };
+
 
     const getGroceries = async (firstDate: string, lastDate: string): Promise<void> => {
         const response = await fetch(`/api/meal-schedule/get-groceries?startDate=${firstDate}&endDate=${lastDate}`);
@@ -24,15 +20,6 @@ const Schedule = () => {
     const [fourDaysSchedule, setFourDaysSchedule] = useState<any[]>([]);
     const [meals, setMeals] = useState<any[]>([]);
 
-    const getMeals = async (): Promise<void> => {
-        const response = await fetch('/api/meals');
-        const data = (await response.json()).data;
-        setMeals(data);
-    };
-
-    const setToMidnight = (date: Date): void => {
-        date.setHours(0, 0, 0, 0);
-    };
 
     const addMealToSchedule = async (meal: any, date: Date): Promise<void> => {
         setToMidnight(date);
@@ -60,12 +47,18 @@ const Schedule = () => {
     }, []);
 
     useEffect(() => {
-        if (fourDaysSchedule.length === 0) return;
-        const firstDate = formatISODate(fourDaysSchedule[0]);
-        const lastDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
-        getMealSchedules();
-        getMeals();
-        getGroceries(firstDate, lastDate);
+        const fetchInitialData = async () => {
+            if (fourDaysSchedule.length === 0) return;
+            const firstDate = formatISODate(fourDaysSchedule[0]);
+            const lastDate = formatISODate(fourDaysSchedule[fourDaysSchedule.length - 1]);
+            const mealsData = await fetchAPI('/api/meals');
+            const mealSchedulesData = await fetchAPI('/api/meal-schedules');
+            const groceriesData = await fetchAPI(`/api/meal-schedule/get-groceries?startDate=${firstDate}&endDate=${lastDate}`);
+            setMeals(mealsData.data);
+            setMealsSchedule(mealSchedulesData.data);
+            setGroceries(groceriesData.data);
+        };
+        fetchInitialData();
     }, [fourDaysSchedule]);
 
     const [addMealsIndexes, setAddMealsIndexes] = useState<any[]>([]);
