@@ -9,6 +9,7 @@ const TerminalDisplay = () => {
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
 
+  console.log('prexistingTerminals:', prexistingTerminals);
   useEffect(() => {
     listSessions();
   },[]);
@@ -90,6 +91,7 @@ const TerminalDisplay = () => {
     }
   };
   const reconnectTerminal = async (id: number) => {
+    console.log('reconnecting terminal:', id);
     setTerminals((prev) =>[
       ...prev,
       { id: id, terminalInstance: null, ws: null },
