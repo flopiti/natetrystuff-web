@@ -7,26 +7,47 @@ const DaySchedule = ({
   mealsSchedule,
   addMealToSchedule,
   deleteScheduledMeal,
-  inOffice, 
+  day_, 
   setDays,
   days,
 }: any) => {
-
   const setDayInOffice = async () => {
     const formattedDate = day.toISOString().slice(0, 10)
-    const inOfficePayload = { date: formattedDate, inOffice:true };
-    const response = await fetchAPI("/api/days", "POST", inOfficePayload);
-    if (response) {
-      setDays([...days, response.data]);
+    if(day_){
+      console.log('day exists')
+      day_.inOffice = true
+      const response = await fetchAPI(`/api/days/${day_.id}`, "PUT", day_);
+      if (response) {
+        setDays([...days.filter((day: any) => day.date !== formattedDate), response.data]);
+      }
+    }
+    else{
+      console.log('day does not exist')
+      const inOfficePayload = { date: formattedDate, inOffice:true };
+      const response = await fetchAPI("/api/days", "POST", inOfficePayload);
+      if (response) {
+        setDays([...days, response.data
+      ]);
+      }
     }
   };
 
-  const setDayRemote = async () => {  
+  const setDayRemote = async () => {
     const formattedDate = day.toISOString().slice(0, 10)
-    const inOfficePayload = { date: formattedDate, inOffice:false };
-    const response = await fetchAPI("/api/days", "POST", inOfficePayload);
-    if (response) {
-      setDays([...days.filter((day: any) => day.date !== formattedDate)]);
+    if(day_){
+      console.log('day exists')
+      day_.inOffice = false
+      const response = await fetchAPI(`/api/days/${day_.id}`, "PUT", day_);
+      if (response) {
+        setDays([...days.filter((day: any) => day.date !== formattedDate), response.data]);
+      }
+    }
+    else{
+      const inOfficePayload = { date: formattedDate, inOffice:false };
+      const response = await fetchAPI("/api/days", "POST", inOfficePayload);
+      if (response) {
+        setDays([...days.filter((day: any) => day.date !== formattedDate), response.data]);
+      }
     }
   }
   
@@ -34,7 +55,7 @@ const DaySchedule = ({
   return (
     <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
       {
-        inOffice && (
+        day_?.inOffice && (
           <div className="flex flex-row items-center justify-between bg-green-500 text-white text-xs rounded-lg p-1 m-5 w-4/5">
             In Office <button
             onClick={setDayRemote}
@@ -45,7 +66,7 @@ const DaySchedule = ({
         )
       }
       {
-        !inOffice && (
+        !day_?.inOffice && (
           <button
           className="self-end m-4 py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
           onClick={() => setDayInOffice()}

@@ -41,23 +41,3 @@ export async function GET(request: NextRequest) {
         },
     });
 }
-
-export async function PUT(request: NextRequest) {
-    const token = (await getAccessToken()).accessToken;
-    const body = await request.json();
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/days`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    return new NextResponse(JSON.stringify({ data }), {
-        status: res.status,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-}
