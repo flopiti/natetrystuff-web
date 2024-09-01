@@ -14,12 +14,14 @@ const TerminalDisplay = () => {
     listSessions();
   },[]);
 
-  useEffect(() => {    
-    prexistingTerminals.forEach((id) => {
-      reconnectTerminal(id);
-    });
-  }, [prexistingTerminals]);
-
+  useEffect(() => {
+    if (prexistingTerminals.length > 0) {
+      prexistingTerminals.forEach((id) => {
+        reconnectTerminal(id);
+      });
+    }
+  }, [prexistingTerminals, terminals]); // Also ensure that it re-runs if terminals changes
+  
   
   const listSessions = async () => {
     const alreadyRunningTerminals:any[] = [];
