@@ -102,7 +102,7 @@ const TerminalDisplay = () => {
     const terminalElement = document.getElementById(`terminal-${id}`);
     if (terminalElement) {
       terminal.open(terminalElement);
-      const ws = new WebSocket("wss://natetrystuff.com:3001");
+      const ws = new WebSocket("wss://natetrystuff.com:3001?nocache=${Date.now()}");
       ws.onopen = () => {
         console.log('opening ws');
         const sessionId = `session-${id}`;
