@@ -102,6 +102,7 @@ const TerminalDisplay = () => {
     const terminalElement = document.getElementById(`terminal-${id}`);
     if (terminalElement) {
       terminal.open(terminalElement);
+      console.log('chouchou');
       const ws = new WebSocket(`wss://natetrystuff.com:3001?nocache=${Date.now()}`);
       ws.onopen = () => {
         console.log('opening ws');
