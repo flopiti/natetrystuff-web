@@ -8,26 +8,39 @@ const DaySchedule = ({
   addMealToSchedule,
   deleteScheduledMeal,
   inOffice, 
-  setInOfficeDays,
-  inOfficeDays,
+  setDays,
+  days,
 }: any) => {
 
   const setDayInOffice = async () => {
     const formattedDate = day.toISOString().slice(0, 10)
-    const inOfficePayload = { date: formattedDate, inOffice };
+    const inOfficePayload = { date: formattedDate, inOffice:true };
     const response = await fetchAPI("/api/days", "POST", inOfficePayload);
     if (response) {
-      setInOfficeDays([...inOfficeDays, response.data]);
+      setDays([...days, response.data]);
     }
   };
+
+  const setDayRemote = async () => {  
+    const formattedDate = day.toISOString().slice(0, 10)
+    const inOfficePayload = { date: formattedDate, inOffice:false };
+    const response = await fetchAPI("/api/days", "POST", inOfficePayload);
+    if (response) {
+      setDays([...days.filter((day: any) => day.date !== formattedDate)]);
+    }
+  }
   
   const [showAddMeal, setShowAddMeal] = useState(false);
   return (
     <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
       {
         inOffice && (
-          <div className="bg-green-500 text-white text-xs rounded-lg p-1 m-5 w-4/5">
-            In Office
+          <div className="flex flex-row items-center justify-between bg-green-500 text-white text-xs rounded-lg p-1 m-5 w-4/5">
+            In Office <button
+            onClick={setDayRemote}
+            className="py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">
+              Remote
+            </button>
           </div>
         )
       }

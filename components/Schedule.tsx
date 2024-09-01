@@ -18,8 +18,8 @@ const Schedule = () => {
     setFourDaysSchedule,
     meals,
     setMeals,
-    inOfficeDays,
-    setInOfficeDays,
+    days,
+    setDays,
   } = useScheduleState();
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const Schedule = () => {
     setMeals,
     setMealsSchedule,
     setGroceries,
-    setInOfficeDays
+    setDays
   );
 
   const addMealToSchedule = async (meal: any, date: Date) => {
@@ -50,7 +50,6 @@ const Schedule = () => {
       setGroceries(groceriesUpdate.data);
     }
   };
-
 
   const deleteScheduledMeal = async (mealSched: any) => {
     const response = await fetchAPI(
@@ -79,9 +78,9 @@ const Schedule = () => {
           return (
             <DaySchedule 
               day={day} 
-              inOffice={inOfficeDays.map((inOfficeDay: any) => inOfficeDay.date).includes(day.toISOString().slice(0, 10))}
-              inOfficeDays={inOfficeDays}
-              setInOffice={setInOfficeDays}
+              inOffice={days.find((inOfficeDay: any) => inOfficeDay.date)?.inOffice || false}
+              days={days}
+              setDays={setDays}
               mealsSchedule={mealsSchedule} 
               deleteScheduledMeal={deleteScheduledMeal} 
               addMealToSchedule={addMealToSchedule} 
