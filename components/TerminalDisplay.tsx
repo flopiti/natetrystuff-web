@@ -100,6 +100,7 @@ const TerminalDisplay = () => {
     const { Terminal } = await import("xterm");
     const terminal = new Terminal();
     const terminalElement = document.getElementById(`terminal-${id}`);
+    console.log('terminalElement:', terminalElement);
     if (terminalElement) {
       terminal.open(terminalElement);
       console.log('chouchou');
