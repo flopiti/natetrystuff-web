@@ -95,6 +95,7 @@ const TerminalDisplay = () => {
       ...prev,
       { id: id, terminalInstance: null, ws: null },
     ]);
+    setSelectedTerminal(id); // This line has been added to set the reconnected terminal as selected
     const { Terminal } = await import("xterm");
     const terminal = new Terminal();
     const terminalElement = document.getElementById(`terminal-${id}`);
