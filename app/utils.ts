@@ -11,6 +11,13 @@ export const getProjects = async (dirPath:string) => {
     const projects_ = await res.json();
     return projects_.data;
 }
+export const setToMidnight = (date: Date): void => {
+    date.setHours(0, 0, 0, 0);
+};
+
+export const formatISODate = (date: Date): string => {
+    return `${date.toISOString().split('T')[0]}T00:00:00`;
+};
 
 export const getProjectFiles = async (selectedProject: any) => {
     if (!selectedProject) return [];
@@ -50,6 +57,22 @@ export const askChat = async (conversation: any[], highlightedFiles: any[], high
     console.log(response.chatCompletion);
     return JSON.parse(response.chatCompletion.choices[0].message.content);
 }
+
+
+export const fetchAPI = async (url: string, method: string = 'GET', body?: any) => {
+    const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.json();
+};
+
+export const formatDate = (date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+};
 
 export const getFile = async (fileName: any, project: any) => {
     const res = await fetch(`api/get-file?fileName=${fileName}&project=${project}`, {
