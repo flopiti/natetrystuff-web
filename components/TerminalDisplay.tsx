@@ -104,6 +104,7 @@ const TerminalDisplay = () => {
       terminal.open(terminalElement);
       const ws = new WebSocket("wss://natetrystuff.com:3001");
       ws.onopen = () => {
+        console.log('opening ws');
         const sessionId = `session-${id}`;
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
         ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
