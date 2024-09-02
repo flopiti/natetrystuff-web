@@ -52,7 +52,7 @@ const DaySchedule = ({
   }
   
   const [showAddMeal, setShowAddMeal] = useState(false);
-  // Modify this section
+  const [showAddLunch, setShowAddLunch] = useState(false);
   const lunchMeals = mealsSchedule.filter((mealSched: any) => {
     const mealDate = new Date(mealSched.scheduledTime);
     return mealDate.toLocaleDateString() === day.toLocaleDateString() && mealSched.occasion === 'lunch';
@@ -83,7 +83,32 @@ const DaySchedule = ({
       </h1>
       {day_?.inOffice && (
         <div className="bg-green-500 text-white text-sm rounded-lg p-1 mb-2 w-4/5 text-center">
-          LUNCH
+          <div>LUNCH</div>
+          {
+            lunchMeals.length > 0 ? (
+              <span className="text-white text-sm">{lunchMeals[0].meal.mealName}</span>
+            ) : (<>
+              <button className="text-blue-500 text-sm" onClick={() => setShowAddLunch(!showAddLunch)}
+              >Add a lunch
+              </button>
+              
+              {showAddLunch && (
+                <ul className="mt-2">
+                  {meals.map((meal: any, idx: any) => (
+                    <li
+                      className="m-2 text-sm bg-yellow-500 p-2 rounded hover:bg-yellow-600 cursor-pointer text-black"
+                      key={idx}
+                      onClick={() => addMealToSchedule(meal, day, 'lunch')}
+                    >
+                      {meal.mealName}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              </>
+            )
+
+          }
         </div>
       )}
       <div className="flex flex-col items-center flex-grow rounded-lg w-full">
