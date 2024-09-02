@@ -52,6 +52,12 @@ const DaySchedule = ({
   }
   
   const [showAddMeal, setShowAddMeal] = useState(false);
+  // Modify this section
+  const lunchMeals = mealsSchedule.filter((mealSched: any) => {
+    const mealDate = new Date(mealSched.scheduledTime);
+    return mealDate.toLocaleDateString() === day.toLocaleDateString() && mealSched.occasion === 'lunch';
+  });
+
   return (
     <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
       {
@@ -134,6 +140,11 @@ const DaySchedule = ({
           </ul>
         )}
       </div>
+      {!day_?.inOffice && lunchMeals.length > 0 && (
+        <div className="bg-orange-500 text-white text-sm rounded-lg p-1 mb-2 w-4/5 text-center">
+          LUNCH
+        </div>
+      )}
     </div>
   );
 };
