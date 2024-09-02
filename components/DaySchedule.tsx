@@ -61,7 +61,7 @@ const DaySchedule = ({
   return (
     <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
       {
-        day_?.inOffice && (
+        day_?.inOffice ? (
           <div className="flex flex-row items-center justify-between bg-green-500 text-white text-xs rounded-lg p-1 m-5 w-4/5">
             In Office <button
             onClick={setDayRemote}
@@ -69,10 +69,7 @@ const DaySchedule = ({
               Remote
             </button>
           </div>
-        )
-      }
-      {
-        !day_?.inOffice && (
+        ) : (
           <button
           className="self-end m-4 py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
           onClick={() => setDayInOffice()}
