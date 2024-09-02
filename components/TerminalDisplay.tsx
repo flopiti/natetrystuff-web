@@ -9,19 +9,15 @@ const TerminalDisplay = () => {
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
 
-  console.log('prexistingTerminals:', prexistingTerminals);
   useEffect(() => {
     listSessions();
   },[]);
 
-  useEffect(() => {
-    if (prexistingTerminals.length > 0) {
-      prexistingTerminals.forEach((id) => {
-        reconnectTerminal(id);
-      });
-    }
-  }, [prexistingTerminals, terminals]); // Also ensure that it re-runs if terminals changes
-  
+  useEffect(() => {    
+    prexistingTerminals.forEach((id) => {
+      reconnectTerminal(id);
+    });
+  }, [prexistingTerminals]);
   
   const listSessions = async () => {
     const alreadyRunningTerminals:any[] = [];
@@ -83,7 +79,6 @@ const TerminalDisplay = () => {
           }
         };
       };
-
       setSelectedTerminal(id);
       setTerminals((prev) =>
         prev.map((t) =>
@@ -92,16 +87,28 @@ const TerminalDisplay = () => {
       );
     }
   };
-  const reconnectTerminal = async (id: number) => {
+  const waitForElement = async (selector:any, timeout = 5000) => {
+    const pollInterval = 100;
+    let elapsedTime = 0;
+    while (elapsedTime < timeout) {
+      const element = document.getElementById(selector);
+      if (element) return element;
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+      elapsedTime += pollInterval;
+    }
+    throw new Error(`Element with selector "${selector}" not found after ${timeout}ms.`);
+  };
+  
+  const reconnectTerminal = async (id:number) => {
     console.log('reconnecting terminal:', id);
-    setTerminals((prev) =>[
+    setTerminals((prev) => [
       ...prev,
       { id: id, terminalInstance: null, ws: null },
     ]);
-    setSelectedTerminal(id); // This line has been added to set the reconnected terminal as selected
+    setSelectedTerminal(id);
     const { Terminal } = await import("xterm");
     const terminal = new Terminal();
-    const terminalElement = document.getElementById(`terminal-${id}`);
+    const terminalElement = await waitForElement(`terminal-${id}`);
     console.log('terminalElement:', terminalElement);
     if (terminalElement) {
       terminal.open(terminalElement);
@@ -112,7 +119,7 @@ const TerminalDisplay = () => {
         const sessionId = `session-${id}`;
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
         ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
-
+  
         terminal.onData((data) => {
           ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
@@ -124,13 +131,14 @@ const TerminalDisplay = () => {
           }
         };
       };
-      setTerminals((prev) =>  
+      setTerminals((prev) =>
         prev.map((t) =>
           t.id === id ? { id, terminalInstance: terminal, ws } : t
         )
       );
-  }
+    }
   };
+  
 
   return (
     <div className="p-4">
