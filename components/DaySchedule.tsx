@@ -78,6 +78,11 @@ const DaySchedule = ({
       <h1 className="text-xl font-extrabold mb-2 text-gray-800 m-4">
         {formatDate(day)}
       </h1>
+      {day_?.inOffice && (
+        <div className="bg-green-500 text-white text-sm rounded-lg p-1 mb-2 w-4/5 text-center">
+          LUNCH
+        </div>
+      )}
       <div className="flex flex-col items-center flex-grow rounded-lg w-full">
         {mealsSchedule.filter((mealSched: any) => {
           const mealDate = new Date(mealSched.scheduledTime);
