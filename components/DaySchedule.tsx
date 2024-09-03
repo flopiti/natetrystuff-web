@@ -58,6 +58,11 @@ const DaySchedule = ({
     return mealDate.toLocaleDateString() === day.toLocaleDateString() && mealSched.occasion === 'lunch';
   });
 
+  const nonLunchMeals = mealsSchedule.filter((mealSched: any) => {
+    const mealDate = new Date(mealSched.scheduledTime);
+    return mealDate.toLocaleDateString() === day.toLocaleDateString() && mealSched.occasion !== 'lunch';
+  });
+
   return (
     <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
       {
@@ -107,17 +112,16 @@ const DaySchedule = ({
               )}
               </>
             )
-
           }
         </div>
       )}
       <div className="flex flex-col items-center flex-grow rounded-lg w-full">
-        {mealsSchedule.filter((mealSched: any) => {
+        {nonLunchMeals.filter((mealSched: any) => {
           const mealDate = new Date(mealSched.scheduledTime);
           return mealDate.toLocaleDateString() === day.toLocaleDateString();
         }).length > 0 ? (
           <ul className="m-2 rounded-lg">
-            {mealsSchedule
+            {nonLunchMeals
               .filter((mealSched: any) => {
                 const mealDate = new Date(mealSched.scheduledTime);
                 return (

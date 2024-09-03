@@ -34,9 +34,9 @@ const Schedule = () => {
     setDays
   );
 
-  const addMealToSchedule = async (meal: any, date: Date) => {
+  const addMealToSchedule = async (meal: any, date: Date, occasion: string) => {
     const formattedDate = formatISODate(date);
-    const mealPayload = { meal: meal, scheduledTime: formattedDate };
+    const mealPayload = { meal: meal, scheduledTime: formattedDate , occasion: occasion };
     const response = await fetchAPI("/api/meal-schedules", "POST", mealPayload);
     if (response) {
       setMealsSchedule([...mealsSchedule, response.data]);
