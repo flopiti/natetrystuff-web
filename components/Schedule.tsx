@@ -36,7 +36,11 @@ const Schedule = () => {
 
   const addMealToSchedule = async (meal: any, date: Date, occasion: string) => {
     const formattedDate = formatISODate(date);
-    const mealPayload = { meal: meal, scheduledTime: formattedDate , occasion: occasion };
+    const mealPayload = {
+      meal: meal,
+      scheduledTime: formattedDate,
+      occasion: occasion,
+    };
     const response = await fetchAPI("/api/meal-schedules", "POST", mealPayload);
     if (response) {
       setMealsSchedule([...mealsSchedule, response.data]);
@@ -75,19 +79,21 @@ const Schedule = () => {
     <div className="md:h-[70vh] w-full p-4 rounded-lg mt-5">
       <div className="flex flex-col md:flex-row h-full md:space-x-4">
         {fourDaysSchedule.map((day: any, index: any) => {
-          const dayFound = days.find((dayx)=> dayx.date===day.toISOString().slice(0, 10))
+          const dayFound = days.find(
+            (dayx) => dayx.date === day.toISOString().slice(0, 10)
+          );
           return (
             <DaySchedule
               day={day}
-              day_={ dayFound}
+              day_={dayFound}
               days={days}
               setDays={setDays}
-              mealsSchedule={mealsSchedule} 
-              deleteScheduledMeal={deleteScheduledMeal} 
-              addMealToSchedule={addMealToSchedule} 
+              mealsSchedule={mealsSchedule}
+              deleteScheduledMeal={deleteScheduledMeal}
+              addMealToSchedule={addMealToSchedule}
               meals={meals}
               key={index}
-              />
+            />
           );
         })}
       </div>
