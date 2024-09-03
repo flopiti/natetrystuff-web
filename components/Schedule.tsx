@@ -22,9 +22,19 @@ const Schedule = () => {
     setDays,
   } = useScheduleState();
 
+  const[firstDay, setFirstDay] = useState(new Date());
+
   useEffect(() => {
-    getNextFourDays().then(setFourDaysSchedule);
-  }, []);
+    getNextFourDays(firstDay).then(setFourDaysSchedule);
+  }, [firstDay]);
+
+  const showNextDay = () => {
+    setFirstDay(new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + 1));
+  };
+
+  const showPreviousDay = () => {
+    setFirstDay(new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() - 1));
+  };
 
   setFourDaysScheduleDisplay(
     fourDaysSchedule,
@@ -77,6 +87,8 @@ const Schedule = () => {
 
   return (
     <div className="md:h-[70vh] w-full p-4 rounded-lg mt-5">
+      <button onClick={showPreviousDay}>Previous</button>
+      <button onClick={showNextDay}>Next</button>
       <div className="flex flex-col md:flex-row h-full md:space-x-4">
         {fourDaysSchedule.map((day: any, index: any) => {
           const dayFound = days.find(
