@@ -17,13 +17,33 @@ interface FileListDropdownProps {
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode,dirPath,  setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [projectPath, setProjectPath] = useState<string[]>([]);
 
     const handleSelectedProjectChange = (event: any) => {
         const pr = projects.find((project:any) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);
     };
 
+    async function getProjectPath() {
+        try {
+            const response = await fetch(`/api/project-paths`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data.data;
+            
+        } catch (error) {
+            console.error('Failed to fetch project paths:', error);
+        }
+    }
+
     const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
+    useEffect(() => {
+        getProjectPath().then((data:string[]) => {
+            setProjectPath(data);
+        });
+    }, []); 
 
     return (
         <div className="w-1/5 bg-gray-100 text-black">
