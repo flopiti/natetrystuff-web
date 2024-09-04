@@ -87,6 +87,7 @@ const TerminalDisplay = () => {
       );
     }
   };
+
   const waitForElement = async (selector:any, timeout = 5000) => {
     const pollInterval = 100;
     let elapsedTime = 0;
@@ -134,7 +135,6 @@ const TerminalDisplay = () => {
     }
   };
   
-
   return (
     <div className="p-4">
       <TerminalBar
