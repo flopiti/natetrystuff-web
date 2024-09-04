@@ -100,7 +100,6 @@ const TerminalDisplay = () => {
   };
   
   const reconnectTerminal = async (id:number) => {
-    console.log('reconnecting terminal:', id);
     setTerminals((prev) => [
       ...prev,
       { id: id, terminalInstance: null, ws: null },
@@ -109,17 +108,13 @@ const TerminalDisplay = () => {
     const { Terminal } = await import("xterm");
     const terminal = new Terminal();
     const terminalElement = await waitForElement(`terminal-${id}`);
-    console.log('terminalElement:', terminalElement);
     if (terminalElement) {
       terminal.open(terminalElement);
-      console.log('chouchou');
       const ws = new WebSocket(`wss://natetrystuff.com:3001?nocache=${Date.now()}`);
       ws.onopen = () => {
-        console.log('opening ws');
         const sessionId = `session-${id}`;
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
         ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
-  
         terminal.onData((data) => {
           ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
