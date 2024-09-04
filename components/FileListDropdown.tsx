@@ -17,8 +17,29 @@ interface FileListDropdownProps {
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode,dirPath,  setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [projectPath, setProjectPath] = useState<string[]>([]);
+    const [projectPaths, setProjectPaths] = useState<string[]>([]);
+    const [inputValue, setInputValue] = useState('');
+    const [showOptions, setShowOptions] = useState(false);
 
+    const handleInputChange = (event:any) => {
+      setInputValue(event.target.value);
+      setShowOptions(true);
+    };
+
+    const handleOptionClick = (option:any) => {
+        console.log('hey ')
+      setInputValue(option.path);
+      setShowOptions(false);
+      setDirPath(option.path);
+    };
+
+    const handleKeyDown = (event:any) => {
+      if (event.key === 'Enter' && inputValue.trim() !== '') {
+        setProjectPaths([...projectPaths, inputValue]);
+        setInputValue('');
+        setShowOptions(false);
+      }
+    };
     const handleSelectedProjectChange = (event: any) => {
         const pr = projects.find((project:any) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);
@@ -26,13 +47,13 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
 
     async function getProjectPath() {
         try {
-            const response = await fetch(`/api/project-paths`)
+            const response = await fetch(`/api/project-paths`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             return data.data;
-            
+
         } catch (error) {
             console.error('Failed to fetch project paths:', error);
         }
@@ -41,14 +62,32 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
     useEffect(() => {
         getProjectPath().then((data:string[]) => {
-            setProjectPath(data);
+            setProjectPaths(data);
         });
     }, []); 
 
+    console.log(selectedProject)
+    console.log(projectPaths)
     return (
         <div className="w-1/5 bg-gray-100 text-black">
-            <textarea className="text-black p-2 whitespace-pre-wrap break-words" value={dirPath} onChange={(e) => setDirPath(e.target.value)} /> 
-
+            <div>
+            <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onClick={() => setShowOptions(!showOptions)}
+            />
+            {showOptions && (
+                <ul>
+                {projectPaths.map((option:any, index) => (
+                    <li key={index} onClick={() => handleOptionClick(option)}>
+                    {option.path}
+                    </li>
+                ))}
+                </ul>
+            )}
+            </div>
             <div className="sticky top-0 bg-gray-100 p-2">
                 <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
@@ -74,7 +113,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                         <div
                             key={index}
                             onClick={event => handleFlightClick(projectFile, event)}
-                            className={`p-2 cursor-pointer hover:bg-gray-200', ${ isHighlighted ? `bg-yellow-300` : ''}`}
+                            className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''}`}
                         >
                             <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
                                 {projectFile}
