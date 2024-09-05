@@ -22,22 +22,21 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
-    const [splitFileData, setSplitFileData] = useState<string>(''); // Add state to store split file data
-    const [loading, setLoading] = useState<boolean>(false); // Loading state
-    const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false); // State to track terminal visibility
-    const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); // Function to toggle terminal visibility
+    const [splitFileData, setSplitFileData] = useState<string>(''); 
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
+    const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const[dirPath, setDirPath] = useState<string>('');
 
     useEffect(() => {
-        getProjects(dirPath).then((data) => {
+        if (dirPath.length > 1) {
+            getProjects(dirPath).then((data) => {
                 setProjects(data);
-            }
-        ).catch((error) => {
-            console.error('Error:', error);
+            }).catch((error) => {
+                console.error('Error:', error);
+            });
         }
-    )}
-    , [dirPath]);
-
+    }, [dirPath]);
 
     useEffect(() => {
         setChatCodes((prevChatCodes) => {
