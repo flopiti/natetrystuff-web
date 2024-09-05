@@ -77,6 +77,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     useEffect(() => {
         fetchProjectPaths().then((data: ProjectFile[]) => {
             setProjectPaths(data);
+            if (data.length === 1) {
+                setDirPath(data[0].path);
+                setInputValue(data[0].path);
+            }
         });
     }, []); 
 
