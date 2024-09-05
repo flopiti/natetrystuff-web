@@ -4,7 +4,6 @@ import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
 
 interface Project {
     name: string;
-    // Add other project properties here
 }
 
 interface ChatCode {
