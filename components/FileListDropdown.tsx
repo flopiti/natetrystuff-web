@@ -131,7 +131,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                     <ul>
                         {filteredOptions.map((option: any, index) => (
                             <li key={index} className="flex justify-between items-center">
-                                <span onClick={() => handleOptionClick(option)}>
+                                <span
+                                    onClick={() => handleOptionClick(option)}
+                                    className="truncate max-w-xs"
+                                >
                                     {option.path}
                                 </span>
                                 <button
