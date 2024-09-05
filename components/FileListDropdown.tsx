@@ -21,11 +21,10 @@ interface FileListDropdownProps {
     highlightedFiles: string[],
     chatCodes: ChatCode[],
     setSelectedChatCode: (code: string) => void, 
-    dirPath: string,
     setDirPath: (dirPath: string) => void
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, dirPath, setDirPath }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<ProjectFile[]>([]);
     const [inputValue, setInputValue] = useState('');

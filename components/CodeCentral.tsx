@@ -121,7 +121,6 @@ const CodeCentral = () => {
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <FileListDropdown
-                dirPath={dirPath}
                 setDirPath={setDirPath}
                 projects={projects}
                 selectedProject={selectedProject}
