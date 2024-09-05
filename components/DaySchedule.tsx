@@ -1,5 +1,7 @@
 import { fetchAPI, formatDate } from "@/app/utils";
 import { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 const DaySchedule = ({
   day,
@@ -77,7 +79,10 @@ const DaySchedule = ({
     <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
       {day_?.inOffice ? (
         <div className="flex flex-row items-center justify-between bg-green-500 text-white text-xs rounded-lg p-1 m-5 w-4/5">
-          In Office{" "}
+          <span className="flex items-center">
+            <FontAwesomeIcon icon={faBriefcase} className="mr-2" /> {/* Work icon */}
+            In Office
+          </span>
           <button
             onClick={setDayRemote}
             className="py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
