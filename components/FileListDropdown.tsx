@@ -143,11 +143,13 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                         <div
                             key={index}
                             onClick={event => handleFlightClick(projectFile, event)}
-                            className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''}`}
+                            className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
                         >
-                            <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
-                                {projectFile}
-                            </p>
+                            <div className="overflow-x-auto">
+                                <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`}>
+                                    {projectFile}
+                                </p>
+                            </div>
                             {doWeHaveChatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
                         </div>
                     );
@@ -156,11 +158,13 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                     <div
                         key={projectFiles.length + index}
                         onClick={() => setSelectedChatCode(code)}
-                        className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300"
+                        className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
-                        <p style={{ fontWeight: selectedFileName === fileName ? 'bold' : 'normal' }}>
-                            {fileName}
-                        </p>
+                        <div className="overflow-x-auto">
+                            <p className={`whitespace-nowrap ${selectedFileName === fileName ? 'font-bold' : 'font-normal'}`}>
+                                {fileName}
+                            </p>
+                        </div>
                     </div>
                 ))}
             </div>
