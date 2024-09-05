@@ -88,6 +88,27 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         });
     }, []); 
 
+
+    const handleRemoveOption = async (option: any) => {
+        try {
+            const response = await fetch('/api/project-paths', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ path: option.path }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const updatedPaths = await getProjectPath();
+            setProjectPaths(updatedPaths);
+        } catch (error) {
+            console.error('Failed to remove project path:', error);
+        }
+    };
     console.log(selectedProject)
     console.log(projectPaths)
     const filteredOptions = projectPaths.filter((option:any) =>
@@ -109,8 +130,16 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                 {showOptions && (
                     <ul>
                         {filteredOptions.map((option: any, index) => (
-                            <li key={index} onClick={() => handleOptionClick(option)}>
-                                {option.path}
+                            <li key={index} className="flex justify-between items-center">
+                                <span onClick={() => handleOptionClick(option)}>
+                                    {option.path}
+                                </span>
+                                <button
+                                    onClick={() => handleRemoveOption(option)}
+                                    className="ml-2 text-red-500"
+                                >
+                                    x
+                                </button>
                             </li>
                         ))}
                     </ul>
