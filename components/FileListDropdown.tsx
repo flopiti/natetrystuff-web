@@ -15,7 +15,7 @@ interface FileListDropdownProps {
     setDirPath: (dirPath: string) => void
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode,dirPath,  setDirPath }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, dirPath, setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -27,7 +27,6 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     };
 
     const handleOptionClick = (option: any) => {
-        console.log('hey ')
         setInputValue(option.path);
         setShowOptions(false);
         setDirPath(option.path);
@@ -62,7 +61,6 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     };
 
     const handleSelectedProjectChange = (event: any) => {
-        console.log('chanign')
         const pr = projects.find((project: any) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);
     };
@@ -75,19 +73,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
             }
             const data = await response.json();
             return data.data;
-
         } catch (error) {
             console.error('Failed to fetch project paths:', error);
         }
     }
-
-    const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
-    useEffect(() => {
-        getProjectPath().then((data: string[]) => {
-            setProjectPaths(data);
-        });
-    }, []); 
-
 
     const handleRemoveOption = async (option: any) => {
         try {
@@ -109,14 +98,18 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
             console.error('Failed to remove project path:', error);
         }
     };
-    console.log(selectedProject)
-    console.log(projectPaths)
-    const filteredOptions = projectPaths.filter((option:any) =>
+
+    const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
+    useEffect(() => {
+        getProjectPath().then((data: string[]) => {
+            setProjectPaths(data);
+        });
+    }, []); 
+
+    const filteredOptions = projectPaths.filter((option: any) =>
         option.path.toLowerCase().includes(inputValue.toLowerCase())
     );
 
-    
-    console.log(filteredOptions)
     return (
         <div className="w-1/5 bg-gray-100 text-black">
             <div>
