@@ -21,16 +21,16 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
 
-    const handleInputChange = (event:any) => {
-      setInputValue(event.target.value);
-      setShowOptions(true);
+    const handleInputChange = (event: any) => {
+        setInputValue(event.target.value);
+        setShowOptions(true);
     };
 
-    const handleOptionClick = (option:any) => {
+    const handleOptionClick = (option: any) => {
         console.log('hey ')
-      setInputValue(option.path);
-      setShowOptions(false);
-      setDirPath(option.path);
+        setInputValue(option.path);
+        setShowOptions(false);
+        setDirPath(option.path);
     };
 
     const handleKeyDown = async (event: any) => {
@@ -61,7 +61,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     };
 
     const handleSelectedProjectChange = (event: any) => {
-        const pr = projects.find((project:any) => project.name === event.target.value);
+        console.log('chanign')
+        const pr = projects.find((project: any) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);
     };
 
@@ -81,37 +82,43 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
 
     const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
     useEffect(() => {
-        getProjectPath().then((data:string[]) => {
+        getProjectPath().then((data: string[]) => {
             setProjectPaths(data);
         });
     }, []); 
 
     console.log(selectedProject)
     console.log(projectPaths)
+    const filteredOptions = projectPaths.filter((option:any) =>
+        option.path.toLowerCase().includes(inputValue.toLowerCase())
+    );
+
+    
+    console.log(filteredOptions)
     return (
         <div className="w-1/5 bg-gray-100 text-black">
             <div>
-            <input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                onClick={() => setShowOptions(!showOptions)}
-            />
-            {showOptions && (
-                <ul>
-                {projectPaths.map((option:any, index) => (
-                    <li key={index} onClick={() => handleOptionClick(option)}>
-                    {option.path}
-                    </li>
-                ))}
-                </ul>
-            )}
+                <input
+                    type="text"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    onClick={() => setShowOptions(!showOptions)}
+                />
+                {showOptions && (
+                    <ul>
+                        {filteredOptions.map((option: any, index) => (
+                            <li key={index} onClick={() => handleOptionClick(option)}>
+                                {option.path}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
             <div className="sticky top-0 bg-gray-100 p-2">
                 <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
-                    {projects?.map((project:any) => (
+                    {projects?.map((project: any) => (
                         <option key={project.name} value={project.name}>
                             {project.name}
                         </option>
@@ -142,7 +149,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                         </div>
                     );
                 })}
-                {chatCodes?.length > 0 && chatCodes?.filter(({fileName}) => !projectFiles.includes(fileName)).map(({fileName, code}, index) => (
+                {chatCodes?.length > 0 && chatCodes?.filter(({ fileName }) => !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
                     <div
                         key={projectFiles.length + index}
                         onClick={() => setSelectedChatCode(code)}
