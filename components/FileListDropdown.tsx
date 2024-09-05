@@ -1,40 +1,53 @@
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
+
+interface Project {
+    name: string;
+}
+
+interface ProjectFile {
+    path: string;
+}
+
+interface ChatCode {
+    fileName: string;
+    code: string;
+}
 
 interface FileListDropdownProps {
-    projects: any[],
-    selectedProject: any,
-    setSelectedProject: (project: any) => void,
-    projectFiles: any[],
-    handleFlightClick: (projectFile: any, event: any) => void,
+    projects: Project[],
+    selectedProject: Project | null,
+    setSelectedProject: (project: Project | null) => void,
+    projectFiles: string[],
+    handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
     selectedFileName: string,
-    highlightedFiles: any[],
-    chatCodes: any[],
-    setSelectedChatCode: (code: any) => void, 
+    highlightedFiles: string[],
+    chatCodes: ChatCode[],
+    setSelectedChatCode: (code: string) => void, 
     dirPath: string,
     setDirPath: (dirPath: string) => void
 }
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, dirPath, setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [projectPaths, setProjectPaths] = useState<string[]>([]);
+    const [projectPaths, setProjectPaths] = useState<ProjectFile[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
 
-    const handleInputChange = (event: any) => {
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setShowOptions(true);
     };
 
-    const handleOptionClick = (option: any) => {
+    const handleOptionClick = (option: ProjectFile) => {
         setInputValue(option.path);
         setShowOptions(false);
         setDirPath(option.path);
     };
 
-    const handleKeyDown = async (event: any) => {
+    const handleKeyDown = async (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter' && inputValue.trim() !== '') {
-            if (!projectPaths.includes(inputValue)) {
+            if (!projectPaths.some(p => p.path === inputValue)) {
                 try {
                     const response = await fetch('/api/project-paths', {
                         method: 'POST',
@@ -45,10 +58,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                     });
 
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`Failed to create project path: ${response.statusText}`);
                     }
 
-                    // Fetch the updated project paths after sending the input value to the backend
                     const updatedPaths = await getProjectPath();
                     setProjectPaths(updatedPaths);
                 } catch (error) {
@@ -60,8 +72,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         }
     };
 
-    const handleSelectedProjectChange = (event: any) => {
-        const pr = projects.find((project: any) => project.name === event.target.value);
+    const handleSelectedProjectChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        const pr = projects.find((project) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);
     };
 
@@ -69,7 +81,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         try {
             const response = await fetch(`/api/project-paths`);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`Failed to fetch project paths: ${response.statusText}`);
             }
             const data = await response.json();
             return data.data;
@@ -78,7 +90,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         }
     }
 
-    const handleRemoveOption = async (option: any) => {
+    const handleRemoveOption = async (option: ProjectFile) => {
         try {
             const response = await fetch('/api/project-paths', {
                 method: 'DELETE',
@@ -89,7 +101,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(`Failed to remove project path: ${response.statusText}`);
             }
 
             const updatedPaths = await getProjectPath();
@@ -101,12 +113,12 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
 
     const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
     useEffect(() => {
-        getProjectPath().then((data: string[]) => {
+        getProjectPath().then((data: ProjectFile[]) => {
             setProjectPaths(data);
         });
     }, []); 
 
-    const filteredOptions = projectPaths.filter((option: any) =>
+    const filteredOptions = projectPaths.filter((option) =>
         option.path.toLowerCase().includes(inputValue.toLowerCase())
     );
 
@@ -122,7 +134,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                 />
                 {showOptions && (
                     <ul>
-                        {filteredOptions.map((option: any, index) => (
+                        {filteredOptions.map((option, index) => (
                             <li key={index} className="flex justify-between items-center">
                                 <span
                                     onClick={() => handleOptionClick(option)}
@@ -144,7 +156,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
             <div className="sticky top-0 bg-gray-100 p-2">
                 <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
-                    {projects?.map((project: any) => (
+                    {projects?.map((project) => (
                         <option key={project.name} value={project.name}>
                             {project.name}
                         </option>
@@ -159,9 +171,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                 />
             </div>
             <div className="h-[500px] overflow-auto">
-                {filteredFiles.length > 0 && filteredFiles.map((projectFile: any, index: number) => {
+                {filteredFiles.length > 0 && filteredFiles.map((projectFile, index) => {
                     const isHighlighted = highlightedFiles.includes(projectFile);
-                    const doWeHaveChatCode = chatCodes?.find((fileData: any) => fileData.fileName === projectFile);
+                    const doWeHaveChatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
                     return (
                         <div
                             key={index}
