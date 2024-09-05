@@ -49,8 +49,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
 
-                    const newPath = await response.json();
-                    setProjectPaths([...projectPaths, newPath.path]);
+                    // Fetch the updated project paths after sending the input value to the backend
+                    const updatedPaths = await getProjectPath();
+                    setProjectPaths(updatedPaths);
                 } catch (error) {
                     console.error('Failed to create project path:', error);
                 }
