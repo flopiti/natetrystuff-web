@@ -33,13 +33,33 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
       setDirPath(option.path);
     };
 
-    const handleKeyDown = (event:any) => {
-      if (event.key === 'Enter' && inputValue.trim() !== '') {
-        setProjectPaths([...projectPaths, inputValue]);
-        setInputValue('');
-        setShowOptions(false);
-      }
+    const handleKeyDown = async (event: any) => {
+        if (event.key === 'Enter' && inputValue.trim() !== '') {
+            if (!projectPaths.includes(inputValue)) {
+                try {
+                    const response = await fetch('/api/project-paths', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ path: inputValue }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const newPath = await response.json();
+                    setProjectPaths([...projectPaths, newPath.path]);
+                } catch (error) {
+                    console.error('Failed to create project path:', error);
+                }
+            }
+            setInputValue('');
+            setShowOptions(false);
+        }
     };
+
     const handleSelectedProjectChange = (event: any) => {
         const pr = projects.find((project:any) => project.name === event.target.value);
         setSelectedProject(pr ? pr : null);
