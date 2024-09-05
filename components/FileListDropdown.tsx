@@ -1,12 +1,10 @@
+import { ProjectFile, addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
 
 interface Project {
     name: string;
-}
-
-interface ProjectFile {
-    path: string;
+    // Add other project properties here
 }
 
 interface ChatCode {
@@ -49,19 +47,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         if (event.key === 'Enter' && inputValue.trim() !== '') {
             if (!projectPaths.some(p => p.path === inputValue)) {
                 try {
-                    const response = await fetch('/api/project-paths', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ path: inputValue }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Failed to create project path: ${response.statusText}`);
-                    }
-
-                    const updatedPaths = await getProjectPath();
+                    await addProjectPath(inputValue);
+                    const updatedPaths = await fetchProjectPaths();
                     setProjectPaths(updatedPaths);
                 } catch (error) {
                     console.error('Failed to create project path:', error);
@@ -77,34 +64,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         setSelectedProject(pr ? pr : null);
     };
 
-    async function getProjectPath() {
-        try {
-            const response = await fetch(`/api/project-paths`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch project paths: ${response.statusText}`);
-            }
-            const data = await response.json();
-            return data.data;
-        } catch (error) {
-            console.error('Failed to fetch project paths:', error);
-        }
-    }
-
     const handleRemoveOption = async (option: ProjectFile) => {
         try {
-            const response = await fetch('/api/project-paths', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ path: option.path }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to remove project path: ${response.statusText}`);
-            }
-
-            const updatedPaths = await getProjectPath();
+            await removeProjectPath(option.path);
+            const updatedPaths = await fetchProjectPaths();
             setProjectPaths(updatedPaths);
         } catch (error) {
             console.error('Failed to remove project path:', error);
@@ -113,7 +76,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
 
     const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
     useEffect(() => {
-        getProjectPath().then((data: ProjectFile[]) => {
+        fetchProjectPaths().then((data: ProjectFile[]) => {
             setProjectPaths(data);
         });
     }, []); 
