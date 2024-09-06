@@ -88,22 +88,23 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     );
 
     return (
-        <div className="w-1/5 overflow-auto bg-gray-100 text-black">
-            <div>
+        <div className="w-1/5 bg-gray-100 text-black">
+            <div className="sticky top-0 bg-gray-100 p-2">
                 <input
                     type="text"
                     value={inputValue}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     onClick={() => setShowOptions(!showOptions)}
+                    className="w-full p-2 mb-2 border"
                 />
                 {showOptions && (
-                    <ul>
+                    <ul className="bg-white border rounded shadow-md max-h-60 overflow-auto">
                         {filteredOptions.map((option, index) => (
-                            <li key={index} className="flex justify-between items-center">
+                            <li key={index} className="flex justify-between items-center p-2">
                                 <span
                                     onClick={() => handleOptionClick(option)}
-                                    className="truncate max-w-xs"
+                                    className="truncate max-w-xs cursor-pointer"
                                 >
                                     {option.path}
                                 </span>
@@ -135,7 +136,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="overflow-auto">
+            <div className="max-h-[500px] overflow-auto">
                 {filteredFiles.map((projectFile, index) => {
                     const isHighlighted = highlightedFiles.includes(projectFile);
                     const chatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
