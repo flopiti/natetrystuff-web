@@ -88,7 +88,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     );
 
     return (
-        <div className="w-1/5 bg-gray-100 text-black">
+        <div className="w-1/5 overflow-auto bg-gray-100 text-black">
             <div>
                 <input
                     type="text"
@@ -135,32 +135,36 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="h-[500px] overflow-auto">
-                {filteredFiles.length > 0 && filteredFiles.map((projectFile, index) => {
+            <div className="overflow-auto">
+                {filteredFiles.map((projectFile, index) => {
                     const isHighlighted = highlightedFiles.includes(projectFile);
-                    const doWeHaveChatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
+                    const chatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
                     return (
                         <div
                             key={index}
                             onClick={event => handleFlightClick(projectFile, event)}
-                            className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''}`}
+                            className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
                         >
-                            <p style={{ fontWeight: selectedFileName === projectFile ? 'bold' : 'normal' }}>
-                                {projectFile}
-                            </p>
-                            {doWeHaveChatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
+                            <div className="overflow-x-auto">
+                                <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`}>
+                                    {projectFile}
+                                </p>
+                            </div>
+                            {chatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
                         </div>
                     );
                 })}
-                {chatCodes?.length > 0 && chatCodes?.filter(({ fileName }) => !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
+                {chatCodes?.filter(({ fileName }) => !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
                     <div
                         key={projectFiles.length + index}
                         onClick={() => setSelectedChatCode(code)}
-                        className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300"
+                        className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
-                        <p style={{ fontWeight: selectedFileName === fileName ? 'bold' : 'normal' }}>
-                            {fileName}
-                        </p>
+                        <div className="overflow-x-auto">
+                            <p className={`whitespace-nowrap ${selectedFileName === fileName ? 'font-bold' : 'font-normal'}`}>
+                                {fileName}
+                            </p>
+                        </div>
                     </div>
                 ))}
             </div>
