@@ -88,7 +88,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     );
 
     return (
-        <div className="w-1/5 bg-gray-100 text-black">
+        <div className="w-1/5 overflow-auto bg-gray-100 text-black">
             <div>
                 <input
                     type="text"
@@ -135,10 +135,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="h-[500px] overflow-auto">
-                {filteredFiles.length > 0 && filteredFiles.map((projectFile, index) => {
+            <div className="overflow-auto">
+                {filteredFiles.map((projectFile, index) => {
                     const isHighlighted = highlightedFiles.includes(projectFile);
-                    const doWeHaveChatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
+                    const chatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
                     return (
                         <div
                             key={index}
@@ -150,11 +150,11 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                                     {projectFile}
                                 </p>
                             </div>
-                            {doWeHaveChatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
+                            {chatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
                         </div>
                     );
                 })}
-                {chatCodes?.length > 0 && chatCodes?.filter(({ fileName }) => !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
+                {chatCodes?.filter(({ fileName }) => !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
                     <div
                         key={projectFiles.length + index}
                         onClick={() => setSelectedChatCode(code)}
