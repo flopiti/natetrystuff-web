@@ -1,7 +1,7 @@
 import { fetchAPI, formatDate } from "@/app/utils";
 import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
+import { faBriefcase, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 const DaySchedule = ({
     day,
@@ -36,7 +36,6 @@ const DaySchedule = ({
     const setDayRemote = async () => {
         const formattedDate = day.toISOString().slice(0, 10);
         if (day_) {
-            console.log("day exists");
             day_.inOffice = false;
             const response = await fetchAPI(`/api/days/${day_.id}`, "PUT", day_);
             if (response) {
@@ -103,21 +102,28 @@ const DaySchedule = ({
             </h1>
             {day_?.inOffice && (
                 <div className="bg-green-500 text-white text-sm rounded-lg p-1 mb-2 w-4/5 text-center">
-                    <div>LUNCH</div>
+                    <div className="font-bold">LUNCH</div>
                     {lunchMeals.length > 0 ? (
                         <>
-                            <span className="text-white text-sm">
-                                {lunchMeals[0].meal.mealName}
-                            </span>
-                            <span className="text-white text-sm">
-                                {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
-                            </span>
-                            <button
-                                className="bg-red-800 text-white rounded px-2 py-1 m-2"
-                                onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
-                            >
-                                X
-                            </button>
+                            <div className="flex justify-between items-center">
+                                <span className="text-white text-sm">
+                                    {lunchMeals[0].meal.mealName}
+                                </span>
+                                <span className="text-white text-sm flex items-center">
+                                    {lunchMeals[0].prepared ? (
+                                        <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
+                                    )}
+                                    {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
+                                </span>
+                                <button
+                                    className="bg-red-800 text-white rounded px-2 py-1 m-2"
+                                    onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
+                                >
+                                    X
+                                </button>
+                            </div>
                         </>
                     ) : (
                         <>
@@ -164,7 +170,14 @@ const DaySchedule = ({
                                     className="flex justify-between items-center text-gray-500"
                                 >
                                     <span className="font-medium">{mealSched.meal.mealName}</span>
-                                    <span className="font-medium">{mealSched.prepared ? "Prepared" : "Not Prepared"}</span>
+                                    <span className="font-medium flex items-center">
+                                        {mealSched.prepared ? (
+                                            <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
+                                        ) : (
+                                            <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
+                                        )}
+                                        {mealSched.prepared ? "Prepared" : "Not Prepared"}
+                                    </span>
                                     <button
                                         className="bg-red-800 opacity-50 text-white rounded px-2 py-1 m-2"
                                         onClick={() => deleteScheduledMeal(mealSched.scheduleId)}
@@ -200,19 +213,26 @@ const DaySchedule = ({
             {!day_?.inOffice && lunchMeals.length > 0 && (
                 <>
                     <div className="bg-orange-500 text-white text-sm rounded-lg p-1 mb-2 w-4/5 text-center">
-                        <div>LUNCH</div>
-                        <span className="text-white text-sm">
-                            {lunchMeals[0].meal.mealName}
-                        </span>
-                        <span className="text-white text-sm">
-                            {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
-                        </span>
-                        <button
-                            className="bg-red-800 text-white rounded px-2 py-1 m-2"
-                            onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
-                        >
-                            X
-                        </button>
+                        <div className="font-bold">LUNCH</div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-white text-sm">
+                                {lunchMeals[0].meal.mealName}
+                            </span>
+                            <span className="text-white text-sm flex items-center">
+                                {lunchMeals[0].prepared ? (
+                                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
+                                ) : (
+                                    <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
+                                )}
+                                {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
+                            </span>
+                            <button
+                                className="bg-red-800 text-white rounded px-2 py-1 m-2"
+                                onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
+                            >
+                                X
+                            </button>
+                        </div>
                     </div>
                 </>
             )}
