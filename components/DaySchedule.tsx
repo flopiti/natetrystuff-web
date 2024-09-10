@@ -173,7 +173,7 @@ const DaySchedule = ({
                         {nonLunchMeals.map((mealSched: any, idx: any) => (
                             <li
                                 key={idx}
-                                className="flex flex-col items-center text-gray-500 mb-2"
+                                className="flex flex-col items-center text-white mb-2"
                             >
                                 <span className="font-medium text-lg">{mealSched.meal.mealName}</span>
                                 <span
@@ -200,7 +200,7 @@ const DaySchedule = ({
                     <p className="text-gray-500 m-2">No meals scheduled</p>
                 )}
                 <button
-                    className="text-white mt-2 py-1 px-4 rounded hover:bg-blue-600"
+                    className="text-gray-500 mt-2 py-1 px-4 rounded hover:bg-blue-600"
                     onClick={() => setShowAddMeal(!showAddMeal)}
                 >
                     Add Meal to Schedule
