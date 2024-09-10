@@ -12,6 +12,7 @@ const DaySchedule = ({
     day_,
     setDays,
     days,
+    setMealsSchedule,
 }: any) => {
     const setDayInOffice = async () => {
         const formattedDate = day.toISOString().slice(0, 10);
@@ -53,6 +54,18 @@ const DaySchedule = ({
                     response.data,
                 ]);
             }
+        }
+    };
+
+    const togglePreparedStatus = async (mealSched: any) => {
+        const updatedMealSched = { ...mealSched, prepared: !mealSched.prepared };
+        const response = await fetchAPI(`/api/meal-schedules/${mealSched.scheduleId}`, "PUT", updatedMealSched);
+        if (response) {
+            setMealsSchedule((prevMealsSchedule: any) =>
+                prevMealsSchedule.map((ms: any) =>
+                    ms.scheduleId === mealSched.scheduleId ? response.data : ms
+                )
+            );
         }
     };
 
@@ -109,7 +122,10 @@ const DaySchedule = ({
                                 <span className="text-white text-sm">
                                     {lunchMeals[0].meal.mealName}
                                 </span>
-                                <span className="text-white text-sm flex items-center">
+                                <span
+                                    className="text-white text-sm flex items-center cursor-pointer"
+                                    onClick={() => togglePreparedStatus(lunchMeals[0])}
+                                >
                                     {lunchMeals[0].prepared ? (
                                         <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
                                     ) : (
@@ -170,7 +186,10 @@ const DaySchedule = ({
                                     className="flex justify-between items-center text-gray-500"
                                 >
                                     <span className="font-medium">{mealSched.meal.mealName}</span>
-                                    <span className="font-medium flex items-center">
+                                    <span
+                                        className="font-medium flex items-center cursor-pointer"
+                                        onClick={() => togglePreparedStatus(mealSched)}
+                                    >
                                         {mealSched.prepared ? (
                                             <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
                                         ) : (
@@ -218,7 +237,10 @@ const DaySchedule = ({
                             <span className="text-white text-sm">
                                 {lunchMeals[0].meal.mealName}
                             </span>
-                            <span className="text-white text-sm flex items-center">
+                            <span
+                                className="text-white text-sm flex items-center cursor-pointer"
+                                onClick={() => togglePreparedStatus(lunchMeals[0])}
+                            >
                                 {lunchMeals[0].prepared ? (
                                     <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
                                 ) : (
