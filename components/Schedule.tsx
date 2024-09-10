@@ -105,6 +105,7 @@ const Schedule = () => {
               addMealToSchedule={addMealToSchedule}
               meals={meals}
               key={index}
+              setMealsSchedule={setMealsSchedule}
             />
           );
         })}
