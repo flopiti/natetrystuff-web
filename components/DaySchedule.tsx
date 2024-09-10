@@ -114,16 +114,16 @@ const DaySchedule = ({
                 {formatDate(day)}
             </h1>
             {day_?.inOffice && (
-                <div className="bg-green-500 text-white text-sm rounded-lg p-1 mb-2 w-4/5 text-center">
-                    <div className="font-bold">LUNCH</div>
+                <div className="bg-green-500 text-white text-sm rounded-lg p-2 mb-2 w-4/5 text-center">
+                    <div className="font-bold mb-2">LUNCH</div>
                     {lunchMeals.length > 0 ? (
                         <>
-                            <div className="flex justify-between items-center">
-                                <span className="text-white text-sm">
+                            <div className="flex flex-col items-center">
+                                <span className="text-white text-lg font-semibold">
                                     {lunchMeals[0].meal.mealName}
                                 </span>
                                 <span
-                                    className="text-white text-sm flex items-center cursor-pointer"
+                                    className="text-white text-sm flex items-center cursor-pointer mt-1"
                                     onClick={() => togglePreparedStatus(lunchMeals[0])}
                                 >
                                     {lunchMeals[0].prepared ? (
@@ -134,7 +134,7 @@ const DaySchedule = ({
                                     {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
                                 </span>
                                 <button
-                                    className="bg-red-800 text-white rounded px-2 py-1 m-2"
+                                    className="bg-red-800 text-white rounded px-2 py-1 mt-2"
                                     onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
                                 >
                                     X
@@ -168,43 +168,33 @@ const DaySchedule = ({
                 </div>
             )}
             <div className="flex flex-col items-center flex-grow rounded-lg w-full">
-                {nonLunchMeals.filter((mealSched: any) => {
-                    const mealDate = new Date(mealSched.scheduledTime);
-                    return mealDate.toLocaleDateString() === day.toLocaleDateString();
-                }).length > 0 ? (
+                {nonLunchMeals.length > 0 ? (
                     <ul className="m-2 rounded-lg">
-                        {nonLunchMeals
-                            .filter((mealSched: any) => {
-                                const mealDate = new Date(mealSched.scheduledTime);
-                                return (
-                                    mealDate.toLocaleDateString() === day.toLocaleDateString()
-                                );
-                            })
-                            .map((mealSched: any, idx: any) => (
-                                <li
-                                    key={idx}
-                                    className="flex justify-between items-center text-gray-500"
+                        {nonLunchMeals.map((mealSched: any, idx: any) => (
+                            <li
+                                key={idx}
+                                className="flex flex-col items-center text-gray-500 mb-2"
+                            >
+                                <span className="font-medium text-lg">{mealSched.meal.mealName}</span>
+                                <span
+                                    className="font-medium flex items-center cursor-pointer mt-1"
+                                    onClick={() => togglePreparedStatus(mealSched)}
                                 >
-                                    <span className="font-medium">{mealSched.meal.mealName}</span>
-                                    <span
-                                        className="font-medium flex items-center cursor-pointer"
-                                        onClick={() => togglePreparedStatus(mealSched)}
-                                    >
-                                        {mealSched.prepared ? (
-                                            <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
-                                        ) : (
-                                            <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
-                                        )}
-                                        {mealSched.prepared ? "Prepared" : "Not Prepared"}
-                                    </span>
-                                    <button
-                                        className="bg-red-800 opacity-50 text-white rounded px-2 py-1 m-2"
-                                        onClick={() => deleteScheduledMeal(mealSched.scheduleId)}
-                                    >
-                                        X
-                                    </button>
-                                </li>
-                            ))}
+                                    {mealSched.prepared ? (
+                                        <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
+                                    ) : (
+                                        <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
+                                    )}
+                                    {mealSched.prepared ? "Prepared" : "Not Prepared"}
+                                </span>
+                                <button
+                                    className="bg-red-800 opacity-50 text-white rounded px-2 py-1 mt-2"
+                                    onClick={() => deleteScheduledMeal(mealSched.scheduleId)}
+                                >
+                                    X
+                                </button>
+                            </li>
+                        ))}
                     </ul>
                 ) : (
                     <p className="text-gray-500 m-2">No meals scheduled</p>
@@ -231,14 +221,14 @@ const DaySchedule = ({
             </div>
             {!day_?.inOffice && lunchMeals.length > 0 && (
                 <>
-                    <div className="bg-orange-500 text-white text-sm rounded-lg p-1 mb-2 w-4/5 text-center">
-                        <div className="font-bold">LUNCH</div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-white text-sm">
+                    <div className="bg-orange-500 text-white text-sm rounded-lg p-2 mb-2 w-4/5 text-center">
+                        <div className="font-bold mb-2">LUNCH</div>
+                        <div className="flex flex-col items-center">
+                            <span className="text-white text-lg font-semibold">
                                 {lunchMeals[0].meal.mealName}
                             </span>
                             <span
-                                className="text-white text-sm flex items-center cursor-pointer"
+                                className="text-white text-sm flex items-center cursor-pointer mt-1"
                                 onClick={() => togglePreparedStatus(lunchMeals[0])}
                             >
                                 {lunchMeals[0].prepared ? (
@@ -249,7 +239,7 @@ const DaySchedule = ({
                                 {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
                             </span>
                             <button
-                                className="bg-red-800 text-white rounded px-2 py-1 m-2"
+                                className="bg-red-800 text-white rounded px-2 py-1 mt-2"
                                 onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
                             >
                                 X
