@@ -119,7 +119,7 @@ const DaySchedule = ({
                     {lunchMeals.length > 0 ? (
                         <>
                             <div className="flex flex-col items-center">
-                                <span className="text-white text-lg font-semibold">
+                                <span className="text-white text-lg font-semibold text-center">
                                     {lunchMeals[0].meal.mealName}
                                 </span>
                                 <span
@@ -175,7 +175,7 @@ const DaySchedule = ({
                                 key={idx}
                                 className="flex flex-col items-center text-white mb-2"
                             >
-                                <span className="font-medium text-lg">{mealSched.meal.mealName}</span>
+                                <span className="font-medium text-lg text-center">{mealSched.meal.mealName}</span>
                                 <span
                                     className="font-medium flex items-center cursor-pointer mt-1"
                                     onClick={() => togglePreparedStatus(mealSched)}
@@ -224,7 +224,7 @@ const DaySchedule = ({
                     <div className="bg-orange-500 text-white text-sm rounded-lg p-2 mb-2 w-4/5 text-center">
                         <div className="font-bold mb-2">LUNCH</div>
                         <div className="flex flex-col items-center">
-                            <span className="text-white text-lg font-semibold">
+                            <span className="text-white text-lg font-semibold text-center">
                                 {lunchMeals[0].meal.mealName}
                             </span>
                             <span
