@@ -26,7 +26,7 @@ const TerminalInstance: React.FC<TerminalInstanceProps> = ({
       <button
         className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         onClick={() =>
-          runCommand("cd /dev-projects/natetrystuff-web && exec npm run dev")
+          runCommand("cd /dev-projects/natetrystuff-web && npm run dev")
         }
       >
         Run dev environment

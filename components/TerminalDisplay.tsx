@@ -78,11 +78,7 @@ const TerminalDisplay = () => {
         console.log(`Creating terminal session with ID: ${id}`); // Log statement added
         ws.send(JSON.stringify({ type: 'create', data: sessionId }));
         terminal.onData((data) => {
-          if (data === '\x03') { // Handle Ctrl+C
-            ws.send(JSON.stringify({ type: 'command', id: sessionId, data: '\x03' }));
-          } else {
-            ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
-          }
+          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
@@ -130,13 +126,9 @@ const TerminalDisplay = () => {
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
         ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
         terminal.onData((data) => {
-          if (data === '\x03') { // Handle Ctrl+C
-            ws.send(JSON.stringify({ type: 'command', id: sessionId, data: '\x03' }));
-          } else {
-            ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
-          }
+          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
-
+  
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
           if (message.type === 'output') {
