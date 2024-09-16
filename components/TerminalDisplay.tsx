@@ -42,7 +42,7 @@ const TerminalDisplay = () => {
     if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
       console.log("sending command", command);
       console.log(`Sending command to WebSocket with terminal ID: ${selectedTerminal}`);
-      terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command }));
+      terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
     } else {
       console.error('No active terminal selected or WebSocket not connected.');
     }
@@ -78,7 +78,11 @@ const TerminalDisplay = () => {
         console.log(`Creating terminal session with ID: ${id}`); // Log statement added
         ws.send(JSON.stringify({ type: 'create', data: sessionId }));
         terminal.onData((data) => {
-          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
+          if (data === '\x03') { // Handle Ctrl+C
+            ws.send(JSON.stringify({ type: 'command', id: sessionId, data: '\x03' }));
+          } else {
+            ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
+          }
         });
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
@@ -126,9 +130,13 @@ const TerminalDisplay = () => {
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
         ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
         terminal.onData((data) => {
-          ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
+          if (data === '\x03') { // Handle Ctrl+C
+            ws.send(JSON.stringify({ type: 'command', id: sessionId, data: '\x03' }));
+          } else {
+            ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
+          }
         });
-  
+
         ws.onmessage = (event) => {
           const message = JSON.parse(event.data);
           if (message.type === 'output') {
