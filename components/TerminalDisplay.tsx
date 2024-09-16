@@ -39,11 +39,18 @@ const TerminalDisplay = () => {
 
   const runCommand = (command: any) => {
     const terminal = terminals.find((t) => t.id === selectedTerminal);
-    terminal?.ws?.send(command + "\n");
+    if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+      console.log("sending command", command);
+      console.log(`Sending command to WebSocket with terminal ID: ${selectedTerminal}`);
+      terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
+    } else {
+      console.error('No active terminal selected or WebSocket not connected.');
+    }
   };
 
   const openTerminal = () => {   
     const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
+    console.log(`Opening terminal with ID: ${id_}`); // Log statement added
     setTerminals((prev) => [
       ...prev,
       { id: id_, terminalInstance: null, ws: null },
@@ -68,6 +75,7 @@ const TerminalDisplay = () => {
       const ws = new WebSocket("wss://natetrystuff.com:3001");
       ws.onopen = () => {
         const sessionId = `session-${id}`;
+        console.log(`Creating terminal session with ID: ${id}`); // Log statement added
         ws.send(JSON.stringify({ type: 'create', data: sessionId }));
         terminal.onData((data) => {
           ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
@@ -114,6 +122,7 @@ const TerminalDisplay = () => {
       const ws = new WebSocket(`wss://natetrystuff.com:3001?nocache=${Date.now()}`);
       ws.onopen = () => {
         const sessionId = `session-${id}`;
+        console.log(`Resuming terminal session with ID: ${id}`); // Log statement added
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
         ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
         terminal.onData((data) => {
