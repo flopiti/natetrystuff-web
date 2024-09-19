@@ -131,7 +131,7 @@ const CodeCentral = () => {
                     if (valueMatches) {
                         valueMatches.forEach((value, index) => {
                             let fieldValue = value.replace(/:\s*/, '');
-                            fieldValue = fieldValue.replace(/^"|"$/g, ''); // Remove surrounding quotes
+                            fieldValue = fieldValue.replace(/^"|"$/g, '');
                             if(index + 1 === 1){
                                 setConversation([...conversation, { content: fieldValue, role: 'assistant', type: 'text' }]);
                             }
