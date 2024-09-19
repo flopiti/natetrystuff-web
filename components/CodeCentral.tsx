@@ -131,10 +131,14 @@ const CodeCentral = () => {
                 const jsonStartIndex = chatCompletion.indexOf('{');
                 if (jsonStartIndex !== -1) {
                     buffer += chatCompletion.substring(jsonStartIndex);
-                    const firstFieldMatch = buffer.match(/"([^"]+)":/);
-                    if (firstFieldMatch) {
-                        const firstField = firstFieldMatch[1];
+                    const fieldMatches = buffer.match(/"([^"]+)":/g);
+                    if (fieldMatches) {
+                        const firstField = fieldMatches[0].replace(/"/g, '').replace(':', '');
                         console.log('First JSON field:', firstField);
+                        if (fieldMatches.length > 1) {
+                            const secondField = fieldMatches[1].replace(/"/g, '').replace(':', '');
+                            console.log('Second JSON field:', secondField);
+                        }
                     }
                 }
             } catch (error) {
