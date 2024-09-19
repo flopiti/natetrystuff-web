@@ -133,16 +133,14 @@ const CodeCentral = () => {
                     buffer += chatCompletion.substring(jsonStartIndex);
                     const fieldMatches = buffer.match(/"([^"]+)":/g);
                     if (fieldMatches) {
-                        const firstField = fieldMatches[0].replace(/"/g, '').replace(':', '');
-                        console.log('First JSON field:', firstField);
-                        if (fieldMatches.length > 1) {
-                            const secondField = fieldMatches[1].replace(/"/g, '').replace(':', '');
-                            console.log('Second JSON field:', secondField);
-                        }
+                        fieldMatches.forEach((field, index) => {
+                            const fieldName = field.replace(/"/g, '').replace(':', '');
+                            console.log(`JSON field ${index + 1}: ${fieldName}`);
+                        });
                     }
                 }
             } catch (error) {
-                console.error('Error parsing JSON chunk:', error);
+                console.error('Error processing JSON chunk:', error);
             }
             setLoading(false); // End loading
         }
