@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
-import { askChat, fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, handleFlightClick, replaceCode } from '../app/utils';
+import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, handleFlightClick, replaceCode } from '../app/utils';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
-    answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] 
+    answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] THE ENTIRE RESPONSE MUST BE JSON.
     the code snippet that you think is the answer}. You are allowed to create new files if necessary.
     If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
     If the code is not a coding solution, simply do not include the property in the JSON object.`;
@@ -56,12 +56,11 @@ const CodeCentral = () => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             setLoading(true); // Start loading
-            (async () => {
-                const response = await askChat(conversation, highlightedFiles, highlightedFilesContent);
-                setConversation([...conversation, { content: response.answer, role: 'assistant', type: 'text' }]);
-                setChatCodes(response.files);
-                setLoading(false); // End loading
-            })();
+            askChat(conversation, highlightedFiles, highlightedFilesContent);
+                // setConversation([...conversation, { content: response.answer, role: 'assistant', type: 'text' }]);
+                // setChatCodes(response.files);
+                // setLoading(false); // End loading
+            
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
@@ -69,7 +68,6 @@ const CodeCentral = () => {
         if (selectedProject) {
             (async () => {
                 const data = await getProjectFiles(selectedProject);
-                console.log(data)
                 setProjectFiles(data);
             })();
         }
@@ -89,6 +87,72 @@ const CodeCentral = () => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
 
+
+
+    const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
+        const messages = conversation.map((message: { role: any; content: any; }) => {
+            return { role: message.role, content: message.content, type: 'text' };
+        });
+        const lastMessage = messages[messages.length - 1];
+        messages.pop();
+        const highlightedFilesMap = highlightedFiles.reduce((acc: any, fileName: any, index: any) => ({
+            ...acc,
+            [fileName]: highlightedFilesContent[index]
+        }), {});
+        const highlightedFilesText = JSON.stringify(highlightedFilesMap);
+        messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
+    
+        console.log(messages);
+        const response = await fetch('api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store'
+            },
+            body: JSON.stringify({ messages })
+        });
+    
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+        let chatCompletion = '';
+    
+        while (!done) {
+            const { value, done: doneReading } = await reader?.read()!;
+            done = doneReading;
+            const chunk = decoder.decode(value, { stream: true });
+            // console.log(chunk);
+            
+            chatCompletion += chunk;
+            setConversation([...conversation, { content: chatCompletion, role: 'assistant', type: 'text' }]);
+            
+            let buffer = '';
+            try {
+                const jsonStartIndex = chatCompletion.indexOf('{');
+                if (jsonStartIndex !== -1) {
+                    buffer += chatCompletion.substring(jsonStartIndex);
+                    const firstFieldMatch = buffer.match(/"([^"]+)":/);
+                    if (firstFieldMatch) {
+                        const firstField = firstFieldMatch[1];
+                        console.log('First JSON field:', firstField);
+                    }
+                }
+            } catch (error) {
+                console.error('Error parsing JSON chunk:', error);
+            }
+            setLoading(false); // End loading
+        }
+
+        // console.log('completed');
+        // console.log(JSON.parse(chatCompletion))
+        setChatCodes(JSON.parse(chatCompletion).files);
+
+    
+        return "";
+        // console.log(chatCompletion);
+        // return JSON.parse(chatCompletion);
+    }
+
     const handleFileSelect = async (fileName: string) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
@@ -98,7 +162,6 @@ const CodeCentral = () => {
             setSelectedChatCode(chatCode.code);
         }
         const fileDataResponse = await fetch(`/api/get-file?fileName=${fileName}&project=${selectedProject.name}`);
-        console.log('received')
         const { splitFileData } = await fileDataResponse.json();
 
         setSplitFileData(splitFileData);

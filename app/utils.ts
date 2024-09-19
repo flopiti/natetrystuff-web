@@ -32,31 +32,6 @@ export const getProjectFiles = async (selectedProject: any) => {
     return files.data;
 }
 
-export const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
-    const messages = conversation.map((message: { role: any; content: any; }) => {
-        return { role: message.role, content: message.content, type: 'text' };
-    });
-    const lastMessage = messages[messages.length - 1];
-    messages.pop();
-    const highlightedFilesMap = highlightedFiles.reduce((acc: any, fileName: any, index: any) => ({
-        ...acc,
-        [fileName]: highlightedFilesContent[index]
-    }), {});
-    const highlightedFilesText = JSON.stringify(highlightedFilesMap);
-    messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
-    const res = await fetch('api/chat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store'
-        },
-        body: JSON.stringify({ messages })
-    });
-
-    const response = await res.json();
-    console.log(response.chatCompletion);
-    return JSON.parse(response.chatCompletion.choices[0].message.content);
-}
 
 
 export const fetchAPI = async (url: string, method: string = 'GET', body?: any) => {
