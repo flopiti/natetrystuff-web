@@ -121,21 +121,20 @@ const CodeCentral = () => {
             const { value, done: doneReading } = await reader?.read()!;
             done = doneReading;
             const chunk = decoder.decode(value, { stream: true });
-            // console.log(chunk);
-            
-            chatCompletion += chunk;
-            setConversation([...conversation, { content: chatCompletion, role: 'assistant', type: 'text' }]);
-            
+            chatCompletion += chunk;            
             let buffer = '';
             try {
                 const jsonStartIndex = chatCompletion.indexOf('{');
                 if (jsonStartIndex !== -1) {
                     buffer += chatCompletion.substring(jsonStartIndex);
-                    const fieldMatches = buffer.match(/"([^"]+)":/g);
-                    if (fieldMatches) {
-                        fieldMatches.forEach((field, index) => {
-                            const fieldName = field.replace(/"/g, '').replace(':', '');
-                            console.log(`JSON field ${index + 1}: ${fieldName}`);
+                    const valueMatches = buffer.match(/:\s*("[^"]*"|[^,{}[\]]+)/g);
+                    if (valueMatches) {
+                        valueMatches.forEach((value, index) => {
+                            let fieldValue = value.replace(/:\s*/, '');
+                            fieldValue = fieldValue.replace(/^"|"$/g, ''); // Remove surrounding quotes
+                            if(index + 1 === 1){
+                                setConversation([...conversation, { content: fieldValue, role: 'assistant', type: 'text' }]);
+                            }
                         });
                     }
                 }
