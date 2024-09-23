@@ -84,3 +84,242 @@ export const handleFlightClick = (fileName: any, event: { shiftKey: any; }, high
     }
     return highlightedFiles;
 }
+
+export const getTopLevelKeys = (jsonString: string): string[] => {
+    const keys: string[] = [];
+    let inString = false;
+    let stringChar = '';
+    let escapeNextChar = false;
+    let nestingLevel = 0;
+    let keyBuffer = '';
+    let collectingKey = false;
+    let expectingColon = false;
+    let i = 0;
+
+    while (i < jsonString.length) {
+        const char = jsonString[i];
+
+        if (inString) {
+            if (escapeNextChar) {
+                escapeNextChar = false;
+                if (collectingKey) {
+                    keyBuffer += char;
+                }
+            } else if (char === '\\') {
+                escapeNextChar = true;
+                if (collectingKey) {
+                    keyBuffer += char;
+                }
+            } else if (char === stringChar) {
+                inString = false;
+                if (collectingKey) {
+                    collectingKey = false;
+                    expectingColon = true;
+                }
+            } else {
+                if (collectingKey) {
+                    keyBuffer += char;
+                }
+            }
+        } else {
+            if (char === '"' || char === "'") {
+                inString = true;
+                stringChar = char;
+                if (nestingLevel === 1 && !collectingKey && !expectingColon) {
+                    collectingKey = true;
+                    keyBuffer = '';
+                }
+            } else if (char === '{' || char === '[') {
+                nestingLevel++;
+            } else if (char === '}' || char === ']') {
+                nestingLevel--;
+            } else if (char === ':') {
+                if (expectingColon) {
+                    keys.push(keyBuffer);
+                    keyBuffer = '';
+                    expectingColon = false;
+                }
+            } else if (char === ',') {
+                expectingColon = false;
+                collectingKey = false;
+            } else if (nestingLevel === 1 && collectingKey && !char.match(/\s/)) {
+                keyBuffer += char;
+            }
+        }
+
+        i++;
+    }
+
+    return keys;
+}
+
+export const getTopLevelArrayElements = (jsonString: string): string[] => {
+    const elements: string[] = [];
+    let inString = false;
+    let stringChar = '';
+    let escapeNextChar = false;
+    let nestingLevel = 0;
+    let valueBuffer = '';
+    let i = 0;
+
+    // Skip leading whitespace
+    while (i < jsonString.length && jsonString[i].match(/\s/)) {
+        i++;
+    }
+
+    // Check that the first non-whitespace character is '['
+    if (jsonString[i] !== '[') {
+        throw new Error('Invalid JSON array: does not start with [');
+    }
+    nestingLevel++; // Starting from '['
+    i++;
+
+    while (i < jsonString.length) {
+        const char = jsonString[i];
+
+        if (inString) {
+            if (escapeNextChar) {
+                escapeNextChar = false;
+                valueBuffer += char;
+            } else if (char === '\\') {
+                escapeNextChar = true;
+                valueBuffer += char;
+            } else if (char === stringChar) {
+                inString = false;
+                valueBuffer += char;
+            } else {
+                valueBuffer += char;
+            }
+        } else {
+            if (char === '"' || char === "'") {
+                inString = true;
+                stringChar = char;
+                valueBuffer += char;
+            } else if (char === '{' || char === '[') {
+                nestingLevel++;
+                valueBuffer += char;
+            } else if (char === '}' || char === ']') {
+                valueBuffer += char;
+                nestingLevel--;
+                if (nestingLevel === 1 && (char === '}' || char === ']')) {
+                    // End of value
+                    elements.push(valueBuffer.trim());
+                    valueBuffer = '';
+                } else if (nestingLevel === 0) {
+                    // End of array
+                    break;
+                }
+            } else if (char === ',') {
+                if (nestingLevel === 1) {
+                    // End of value
+                    if (valueBuffer.trim() !== '') {
+                        elements.push(valueBuffer.trim());
+                        valueBuffer = '';
+                    }
+                } else {
+                    valueBuffer += char;
+                }
+            } else if (!char.match(/\s/)) {
+                valueBuffer += char;
+            } else {
+                if (valueBuffer.length > 0) {
+                    valueBuffer += char;
+                }
+            }
+        }
+
+        i++;
+    }
+
+    // If we are still collecting a value at the end
+    if (valueBuffer.trim() !== '') {
+        elements.push(valueBuffer.trim());
+    }
+
+    return elements;
+}
+
+export const removeQuotes = (str: string): string => {
+    if (str.startsWith('"')) {
+        str = str.substring(1);
+    }
+    if (str.endsWith('"')) {
+        str = str.substring(0, str.length - 1);
+    }
+    return str;
+}
+
+export const getTopLevelValues = (jsonString: string): string[] => {
+    const values: string[] = [];
+    let inString = false;
+    let stringChar = '';
+    let escapeNextChar = false;
+    let nestingLevel = 0;
+    let collectingValue = false;
+    let valueBuffer = '';
+    let i = 0;
+
+    while (i < jsonString.length) {
+        const char = jsonString[i];
+
+        if (inString) {
+            if (escapeNextChar) {
+                escapeNextChar = false;
+                if (collectingValue) valueBuffer += char;
+            } else if (char === '\\') {
+                escapeNextChar = true;
+                if (collectingValue) valueBuffer += char;
+            } else if (char === stringChar) {
+                inString = false;
+                if (collectingValue) valueBuffer += char;
+            } else {
+                if (collectingValue) valueBuffer += char;
+            }
+        } else {
+            if (char === '"' || char === "'") {
+                inString = true;
+                stringChar = char;
+                if (collectingValue) valueBuffer += char;
+            } else if (char === '{' || char === '[') {
+                if (collectingValue) valueBuffer += char;
+                nestingLevel++;
+            } else if (char === '}' || char === ']') {
+                if (collectingValue) valueBuffer += char;
+                nestingLevel--;
+                if (collectingValue && nestingLevel === 1) {
+                    // End of value
+                    values.push(valueBuffer.trim());
+                    valueBuffer = '';
+                    collectingValue = false;
+                }
+            } else if (char === ':') {
+                if (nestingLevel === 1) {
+                    collectingValue = true;
+                    valueBuffer = '';
+                } else if (collectingValue) {
+                    valueBuffer += char;
+                }
+            } else if (char === ',') {
+                if (collectingValue && nestingLevel === 1) {
+                    // End of value
+                    values.push(valueBuffer.trim());
+                    valueBuffer = '';
+                    collectingValue = false;
+                } else if (collectingValue) {
+                    valueBuffer += char;
+                }
+            } else {
+                if (collectingValue) valueBuffer += char;
+            }
+        }``
+
+        i++;
+    }
+
+    // If we are still collecting a value at the end
+    if (collectingValue && valueBuffer.trim() !== '') {
+        values.push(valueBuffer.trim());
+    }
+
+    return values.map(removeQuotes);
+}
