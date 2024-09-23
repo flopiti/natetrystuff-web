@@ -272,20 +272,18 @@ const CodeCentral = () => {
                 if (jsonStartIndex !== -1) {
                 
                     buffer += chatCompletion.substring(jsonStartIndex);
-                    console.log(buffer);
-                    const valueMatches = buffer.match(/:\s*("[^"]*"|[^,{}[\]]+)/g);
-                    const keyMatches = buffer.match(/"[^"]*"\s*:/g);
-                    // console.log(valueMatches);
-                    // console.log(keyMatches);
 
-                    console.log(getTopLevelKeys(buffer));
-                    console.log(getTopLevelValues(buffer));
+                    const valueMatches = getTopLevelValues(buffer);
+
+                    const keyMatches = getTopLevelKeys(buffer);
                     if (valueMatches) {
                         valueMatches.forEach((value, index) => {
-                            let fieldValue = value.split(':')[1].trim().replace(/^"|"$/g, '');
-
+                            
                             if(index + 1 === 1){
-                                setConversation([...conversation, { content: fieldValue, role: 'assistant', type: 'text' }]);
+                                setConversation([...conversation, { content: value, role: 'assistant', type: 'text' }]);
+                            }
+                            if(index + 1 === 2){
+                                setChatCodes([...chatCodes, { fileName: keyMatches[0], code: value }]);
                             }
                         });
                     }
