@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
-import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, handleFlightClick, replaceCode } from '../app/utils';
+import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelKeys, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -10,23 +10,36 @@ const CodeCentral = () => {
     the code snippet that you think is the answer}. You are allowed to create new files if necessary.
     If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
     If the code is not a coding solution, simply do not include the property in the JSON object.`;
-    
-    const [projectFiles, setProjectFiles] = useState<string[]>([]);
-    const [selectedFileName, setSelectedFileName] = useState<string>('');
-    const [selectedFileContent, setSelectedFileContent] = useState<string>('');
+
+    //loading the file path
+    const[dirPath, setDirPath] = useState<string>('');
+
+    //loading projects from the file system
     const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
+
+    //loading project files based on the selected project
+    const [projectFiles, setProjectFiles] = useState<string[]>([]);
+
+    //loading the selected file content
+    const [selectedFileName, setSelectedFileName] = useState<string>('');
+    const [selectedFileContent, setSelectedFileContent] = useState<string>('');
+
+    //initializing the conversation
     const [conversation, setConversation] = useState<{ content: string, role: string, type: string }[]>([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState<string>('file'); // Default to showing file
+    const [loading, setLoading] = useState<boolean>(false);
+    const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
+
+    //loading the chat codes
     const [chatCodes, setChatCodes] = useState<any[]>([]); // Change state to an array
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
-    const [splitFileData, setSplitFileData] = useState<string>(''); 
-    const [loading, setLoading] = useState<boolean>(false);
+
+    //terminal
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
-    const[dirPath, setDirPath] = useState<string>('');
 
     useEffect(() => {
         if (dirPath.length > 1) {
@@ -75,7 +88,7 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (chatCodes?.length > 0) {
-            setActiveTab('chat'); // Switch to Chat tab when new chat codes are added
+            setActiveTab('chat'); 
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
                 setSelectedChatCode(chatCode.code);
@@ -86,245 +99,6 @@ const CodeCentral = () => {
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
-
-    function getTopLevelKeys(jsonString: string): string[] {
-        const keys: string[] = [];
-        let inString = false;
-        let stringChar = '';
-        let escapeNextChar = false;
-        let nestingLevel = 0;
-        let keyBuffer = '';
-        let collectingKey = false;
-        let expectingColon = false;
-        let i = 0;
-    
-        while (i < jsonString.length) {
-            const char = jsonString[i];
-    
-            if (inString) {
-                if (escapeNextChar) {
-                    escapeNextChar = false;
-                    if (collectingKey) {
-                        keyBuffer += char;
-                    }
-                } else if (char === '\\') {
-                    escapeNextChar = true;
-                    if (collectingKey) {
-                        keyBuffer += char;
-                    }
-                } else if (char === stringChar) {
-                    inString = false;
-                    if (collectingKey) {
-                        collectingKey = false;
-                        expectingColon = true;
-                    }
-                } else {
-                    if (collectingKey) {
-                        keyBuffer += char;
-                    }
-                }
-            } else {
-                if (char === '"' || char === "'") {
-                    inString = true;
-                    stringChar = char;
-                    if (nestingLevel === 1 && !collectingKey && !expectingColon) {
-                        collectingKey = true;
-                        keyBuffer = '';
-                    }
-                } else if (char === '{' || char === '[') {
-                    nestingLevel++;
-                } else if (char === '}' || char === ']') {
-                    nestingLevel--;
-                } else if (char === ':') {
-                    if (expectingColon) {
-                        keys.push(keyBuffer);
-                        keyBuffer = '';
-                        expectingColon = false;
-                    }
-                } else if (char === ',') {
-                    expectingColon = false;
-                    collectingKey = false;
-                } else if (nestingLevel === 1 && collectingKey && !char.match(/\s/)) {
-                    keyBuffer += char;
-                }
-            }
-    
-            i++;
-        }
-    
-        return keys;
-    }
-
-    function getTopLevelArrayElements(jsonString: string): string[] {
-        const elements: string[] = [];
-        let inString = false;
-        let stringChar = '';
-        let escapeNextChar = false;
-        let nestingLevel = 0;
-        let valueBuffer = '';
-        let i = 0;
-    
-        // Skip leading whitespace
-        while (i < jsonString.length && jsonString[i].match(/\s/)) {
-            i++;
-        }
-    
-        // Check that the first non-whitespace character is '['
-        if (jsonString[i] !== '[') {
-            throw new Error('Invalid JSON array: does not start with [');
-        }
-        nestingLevel++; // Starting from '['
-        i++;
-    
-        while (i < jsonString.length) {
-            const char = jsonString[i];
-    
-            if (inString) {
-                if (escapeNextChar) {
-                    escapeNextChar = false;
-                    valueBuffer += char;
-                } else if (char === '\\') {
-                    escapeNextChar = true;
-                    valueBuffer += char;
-                } else if (char === stringChar) {
-                    inString = false;
-                    valueBuffer += char;
-                } else {
-                    valueBuffer += char;
-                }
-            } else {
-                if (char === '"' || char === "'") {
-                    inString = true;
-                    stringChar = char;
-                    valueBuffer += char;
-                } else if (char === '{' || char === '[') {
-                    nestingLevel++;
-                    valueBuffer += char;
-                } else if (char === '}' || char === ']') {
-                    valueBuffer += char;
-                    nestingLevel--;
-                    if (nestingLevel === 1 && (char === '}' || char === ']')) {
-                        // End of value
-                        elements.push(valueBuffer.trim());
-                        valueBuffer = '';
-                    } else if (nestingLevel === 0) {
-                        // End of array
-                        break;
-                    }
-                } else if (char === ',') {
-                    if (nestingLevel === 1) {
-                        // End of value
-                        if (valueBuffer.trim() !== '') {
-                            elements.push(valueBuffer.trim());
-                            valueBuffer = '';
-                        }
-                    } else {
-                        valueBuffer += char;
-                    }
-                } else if (!char.match(/\s/)) {
-                    valueBuffer += char;
-                } else {
-                    if (valueBuffer.length > 0) {
-                        valueBuffer += char;
-                    }
-                }
-            }
-    
-            i++;
-        }
-    
-        // If we are still collecting a value at the end
-        if (valueBuffer.trim() !== '') {
-            elements.push(valueBuffer.trim());
-        }
-    
-        return elements;
-    }
-    
-    function removeQuotes(str: string): string {
-        if (str.startsWith('"')) {
-            str = str.substring(1);
-        }
-        if (str.endsWith('"')) {
-            str = str.substring(0, str.length - 1);
-        }
-        return str;
-    }
-    
-    function getTopLevelValues(jsonString: string): string[] {
-        const values: string[] = [];
-        let inString = false;
-        let stringChar = '';
-        let escapeNextChar = false;
-        let nestingLevel = 0;
-        let collectingValue = false;
-        let valueBuffer = '';
-        let i = 0;
-    
-        while (i < jsonString.length) {
-            const char = jsonString[i];
-    
-            if (inString) {
-                if (escapeNextChar) {
-                    escapeNextChar = false;
-                    if (collectingValue) valueBuffer += char;
-                } else if (char === '\\') {
-                    escapeNextChar = true;
-                    if (collectingValue) valueBuffer += char;
-                } else if (char === stringChar) {
-                    inString = false;
-                    if (collectingValue) valueBuffer += char;
-                } else {
-                    if (collectingValue) valueBuffer += char;
-                }
-            } else {
-                if (char === '"' || char === "'") {
-                    inString = true;
-                    stringChar = char;
-                    if (collectingValue) valueBuffer += char;
-                } else if (char === '{' || char === '[') {
-                    if (collectingValue) valueBuffer += char;
-                    nestingLevel++;
-                } else if (char === '}' || char === ']') {
-                    if (collectingValue) valueBuffer += char;
-                    nestingLevel--;
-                    if (collectingValue && nestingLevel === 1) {
-                        // End of value
-                        values.push(valueBuffer.trim());
-                        valueBuffer = '';
-                        collectingValue = false;
-                    }
-                } else if (char === ':') {
-                    if (nestingLevel === 1) {
-                        collectingValue = true;
-                        valueBuffer = '';
-                    } else if (collectingValue) {
-                        valueBuffer += char;
-                    }
-                } else if (char === ',') {
-                    if (collectingValue && nestingLevel === 1) {
-                        // End of value
-                        values.push(valueBuffer.trim());
-                        valueBuffer = '';
-                        collectingValue = false;
-                    } else if (collectingValue) {
-                        valueBuffer += char;
-                    }
-                } else {
-                    if (collectingValue) valueBuffer += char;
-                }
-            }``
-    
-            i++;
-        }
-    
-        // If we are still collecting a value at the end
-        if (collectingValue && valueBuffer.trim() !== '') {
-            values.push(valueBuffer.trim());
-        }
-    
-        return values.map(removeQuotes);
-    }
     
     const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
@@ -338,8 +112,6 @@ const CodeCentral = () => {
         }), {});
         const highlightedFilesText = JSON.stringify(highlightedFilesMap);
         messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
-    
-        console.log(messages);
         const response = await fetch('api/chat', {
             method: 'POST',
             headers: {
@@ -361,41 +133,23 @@ const CodeCentral = () => {
             chatCompletion += chunk;            
             let buffer = '';
             try {
-                // console.log(chatCompletion);
-                const jsonStartIndex = chatCompletion.indexOf('{');
-                
+                const jsonStartIndex = chatCompletion.indexOf('{');                
                 if (jsonStartIndex !== -1) {
-                
                     buffer += chatCompletion.substring(jsonStartIndex);
-
-                    // console.log(buffer);    
                     const valueMatches = getTopLevelValues(buffer);
-                    // console.log(valueMatches);
-
-                    const keyMatches = getTopLevelKeys(buffer);
                     if (valueMatches) {
                         valueMatches.forEach((value, index) => {
-                            
-                            
                             if(index + 1 === 1){
                                 setConversation([...conversation, { content: value, role: 'assistant', type: 'text' }]);
                             }
                             if(index + 1 === 2){
-                                // console.log(value);
-                                console.log(getTopLevelArrayElements(value));
                                 const files = getTopLevelArrayElements(value);
                                 let arrayElementsValues = files.map((element) => {
                                     return getTopLevelValues(element);
                                 });
-                                console.log(arrayElementsValues);
                                 arrayElementsValues.forEach((element) => {
-                                    console.log(element);
-                                    setChatCodes([...chatCodes, { fileName: element[0], code: element[1] }]);
+                                    setChatCodes([...chatCodes, { fileName: element[0], code: element[1] ? element[1]:'' }]);
                                 });
-
-                                
-                                // console.log(getTopLevelValues(arrayElements[0]));
-                                // setChatCodes([...chatCodes, { fileName: keyMatches[0], code: value }]);
                             }
                         });
                     }
@@ -403,17 +157,12 @@ const CodeCentral = () => {
             } catch (error) {
                 console.error('Error processing JSON chunk:', error);
             }
-            setLoading(false); // End loading
+            setLoading(false);
         }
-
-        // console.log('completed');
-        // console.log(JSON.parse(chatCompletion))
         setChatCodes(JSON.parse(chatCompletion).files);
 
     
-        return "";
-        // console.log(chatCompletion);
-        // return JSON.parse(chatCompletion);
+        return  
     }
 
     const handleFileSelect = async (fileName: string) => {
@@ -427,7 +176,6 @@ const CodeCentral = () => {
         const fileDataResponse = await fetch(`/api/get-file?fileName=${fileName}&project=${selectedProject.name}`);
         const { splitFileData } = await fileDataResponse.json();
 
-        setSplitFileData(splitFileData);
 
         if (!highlightedFiles.includes(fileName)) {
             setHighlightedFiles([...highlightedFiles, fileName]);
@@ -442,6 +190,7 @@ const CodeCentral = () => {
             })();
         }
     }, [highlightedFiles,selectedProject]);
+
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-row">
