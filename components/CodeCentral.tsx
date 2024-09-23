@@ -154,6 +154,102 @@ const CodeCentral = () => {
     
         return keys;
     }
+
+    function getTopLevelArrayElements(jsonString: string): string[] {
+        const elements: string[] = [];
+        let inString = false;
+        let stringChar = '';
+        let escapeNextChar = false;
+        let nestingLevel = 0;
+        let valueBuffer = '';
+        let i = 0;
+    
+        // Skip leading whitespace
+        while (i < jsonString.length && jsonString[i].match(/\s/)) {
+            i++;
+        }
+    
+        // Check that the first non-whitespace character is '['
+        if (jsonString[i] !== '[') {
+            throw new Error('Invalid JSON array: does not start with [');
+        }
+        nestingLevel++; // Starting from '['
+        i++;
+    
+        while (i < jsonString.length) {
+            const char = jsonString[i];
+    
+            if (inString) {
+                if (escapeNextChar) {
+                    escapeNextChar = false;
+                    valueBuffer += char;
+                } else if (char === '\\') {
+                    escapeNextChar = true;
+                    valueBuffer += char;
+                } else if (char === stringChar) {
+                    inString = false;
+                    valueBuffer += char;
+                } else {
+                    valueBuffer += char;
+                }
+            } else {
+                if (char === '"' || char === "'") {
+                    inString = true;
+                    stringChar = char;
+                    valueBuffer += char;
+                } else if (char === '{' || char === '[') {
+                    nestingLevel++;
+                    valueBuffer += char;
+                } else if (char === '}' || char === ']') {
+                    valueBuffer += char;
+                    nestingLevel--;
+                    if (nestingLevel === 1 && (char === '}' || char === ']')) {
+                        // End of value
+                        elements.push(valueBuffer.trim());
+                        valueBuffer = '';
+                    } else if (nestingLevel === 0) {
+                        // End of array
+                        break;
+                    }
+                } else if (char === ',') {
+                    if (nestingLevel === 1) {
+                        // End of value
+                        if (valueBuffer.trim() !== '') {
+                            elements.push(valueBuffer.trim());
+                            valueBuffer = '';
+                        }
+                    } else {
+                        valueBuffer += char;
+                    }
+                } else if (!char.match(/\s/)) {
+                    valueBuffer += char;
+                } else {
+                    if (valueBuffer.length > 0) {
+                        valueBuffer += char;
+                    }
+                }
+            }
+    
+            i++;
+        }
+    
+        // If we are still collecting a value at the end
+        if (valueBuffer.trim() !== '') {
+            elements.push(valueBuffer.trim());
+        }
+    
+        return elements;
+    }
+    
+    function removeQuotes(str: string): string {
+        if (str.startsWith('"')) {
+            str = str.substring(1);
+        }
+        if (str.endsWith('"')) {
+            str = str.substring(0, str.length - 1);
+        }
+        return str;
+    }
     
     function getTopLevelValues(jsonString: string): string[] {
         const values: string[] = [];
@@ -217,7 +313,7 @@ const CodeCentral = () => {
                 } else {
                     if (collectingValue) valueBuffer += char;
                 }
-            }
+            }``
     
             i++;
         }
@@ -227,9 +323,8 @@ const CodeCentral = () => {
             values.push(valueBuffer.trim());
         }
     
-        return values;
+        return values.map(removeQuotes);
     }
-    
     
     const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
@@ -273,17 +368,34 @@ const CodeCentral = () => {
                 
                     buffer += chatCompletion.substring(jsonStartIndex);
 
+                    // console.log(buffer);    
                     const valueMatches = getTopLevelValues(buffer);
+                    // console.log(valueMatches);
 
                     const keyMatches = getTopLevelKeys(buffer);
                     if (valueMatches) {
                         valueMatches.forEach((value, index) => {
                             
+                            
                             if(index + 1 === 1){
                                 setConversation([...conversation, { content: value, role: 'assistant', type: 'text' }]);
                             }
                             if(index + 1 === 2){
-                                setChatCodes([...chatCodes, { fileName: keyMatches[0], code: value }]);
+                                // console.log(value);
+                                console.log(getTopLevelArrayElements(value));
+                                const files = getTopLevelArrayElements(value);
+                                let arrayElementsValues = files.map((element) => {
+                                    return getTopLevelValues(element);
+                                });
+                                console.log(arrayElementsValues);
+                                arrayElementsValues.forEach((element) => {
+                                    console.log(element);
+                                    setChatCodes([...chatCodes, { fileName: element[0], code: element[1] }]);
+                                });
+
+                                
+                                // console.log(getTopLevelValues(arrayElements[0]));
+                                // setChatCodes([...chatCodes, { fileName: keyMatches[0], code: value }]);
                             }
                         });
                     }
