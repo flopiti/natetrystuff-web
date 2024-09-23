@@ -94,7 +94,7 @@ const CodeCentral = () => {
                 setSelectedChatCode(chatCode.code);
             }
         }
-    }, [chatCodes, selectedFileName]);
+    }, [chatCodes]);
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
@@ -173,6 +173,9 @@ const CodeCentral = () => {
         const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
+        }
+        else{
+            setSelectedChatCode('');
         }
         const fileDataResponse = await fetch(`/api/get-file?fileName=${fileName}&project=${selectedProject.name}`);
         const { splitFileData } = await fileDataResponse.json();
