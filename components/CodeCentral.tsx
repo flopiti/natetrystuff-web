@@ -51,19 +51,19 @@ const CodeCentral = () => {
         }
     }, [dirPath]);
 
-    useEffect(() => {
-        setChatCodes((prevChatCodes) => {
-            const newChatCodes = prevChatCodes.map((chatCode) => {
-                if (chatCode.fileName === selectedFileName) {
-                    return { fileName: selectedFileName, code: selectedChatCode };
-                }
-                return chatCode;
-            });
-            return newChatCodes;
-        }
-        );
+    // useEffect(() => {
+    //     setChatCodes((prevChatCodes) => {
+    //         const newChatCodes = prevChatCodes.map((chatCode) => {
+    //             if (chatCode.fileName === selectedFileName) {
+    //                 return { fileName: selectedFileName, code: selectedChatCode };
+    //             }
+    //             return chatCode;
+    //         });
+    //         return newChatCodes;
+    //     }
+    //     );
 
-    }, [selectedChatCode,selectedFileName] );
+    // }, [selectedChatCode,selectedFileName] )
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
@@ -157,8 +157,9 @@ const CodeCentral = () => {
             } catch (error) {
                 console.error('Error processing JSON chunk:', error);
             }
-            setLoading(false);
         }
+        setLoading(false);
+
         setChatCodes(JSON.parse(chatCompletion).files);
 
     

@@ -43,7 +43,14 @@ const FileViewer: React.FC<FileViewerProps> = ({
         </button>
       </div>
       <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
-        {loading && <p className="text-center text-black">Loading...</p>}
+        {loading && <div>
+          <pre>
+          {
+              selectedChatCode ? selectedChatCode : ''
+            }
+          </pre>
+        </div>
+        }
         {!loading && activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div>
