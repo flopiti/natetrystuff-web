@@ -1,3 +1,4 @@
+import { unescapeString } from '@/app/utils';
 import { diffLines } from 'diff';
 import React, { useState } from 'react';
 
@@ -46,7 +47,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         {loading && <div>
           <pre>
           {
-              selectedChatCode ? selectedChatCode : ''
+              selectedChatCode ? unescapeString(selectedChatCode) : ''
             }
           </pre>
         </div>
