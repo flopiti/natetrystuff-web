@@ -87,8 +87,150 @@ const CodeCentral = () => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
 
-
-
+    function getTopLevelKeys(jsonString: string): string[] {
+        const keys: string[] = [];
+        let inString = false;
+        let stringChar = '';
+        let escapeNextChar = false;
+        let nestingLevel = 0;
+        let keyBuffer = '';
+        let collectingKey = false;
+        let expectingColon = false;
+        let i = 0;
+    
+        while (i < jsonString.length) {
+            const char = jsonString[i];
+    
+            if (inString) {
+                if (escapeNextChar) {
+                    escapeNextChar = false;
+                    if (collectingKey) {
+                        keyBuffer += char;
+                    }
+                } else if (char === '\\') {
+                    escapeNextChar = true;
+                    if (collectingKey) {
+                        keyBuffer += char;
+                    }
+                } else if (char === stringChar) {
+                    inString = false;
+                    if (collectingKey) {
+                        collectingKey = false;
+                        expectingColon = true;
+                    }
+                } else {
+                    if (collectingKey) {
+                        keyBuffer += char;
+                    }
+                }
+            } else {
+                if (char === '"' || char === "'") {
+                    inString = true;
+                    stringChar = char;
+                    if (nestingLevel === 1 && !collectingKey && !expectingColon) {
+                        collectingKey = true;
+                        keyBuffer = '';
+                    }
+                } else if (char === '{' || char === '[') {
+                    nestingLevel++;
+                } else if (char === '}' || char === ']') {
+                    nestingLevel--;
+                } else if (char === ':') {
+                    if (expectingColon) {
+                        keys.push(keyBuffer);
+                        keyBuffer = '';
+                        expectingColon = false;
+                    }
+                } else if (char === ',') {
+                    expectingColon = false;
+                    collectingKey = false;
+                } else if (nestingLevel === 1 && collectingKey && !char.match(/\s/)) {
+                    keyBuffer += char;
+                }
+            }
+    
+            i++;
+        }
+    
+        return keys;
+    }
+    
+    function getTopLevelValues(jsonString: string): string[] {
+        const values: string[] = [];
+        let inString = false;
+        let stringChar = '';
+        let escapeNextChar = false;
+        let nestingLevel = 0;
+        let collectingValue = false;
+        let valueBuffer = '';
+        let i = 0;
+    
+        while (i < jsonString.length) {
+            const char = jsonString[i];
+    
+            if (inString) {
+                if (escapeNextChar) {
+                    escapeNextChar = false;
+                    if (collectingValue) valueBuffer += char;
+                } else if (char === '\\') {
+                    escapeNextChar = true;
+                    if (collectingValue) valueBuffer += char;
+                } else if (char === stringChar) {
+                    inString = false;
+                    if (collectingValue) valueBuffer += char;
+                } else {
+                    if (collectingValue) valueBuffer += char;
+                }
+            } else {
+                if (char === '"' || char === "'") {
+                    inString = true;
+                    stringChar = char;
+                    if (collectingValue) valueBuffer += char;
+                } else if (char === '{' || char === '[') {
+                    if (collectingValue) valueBuffer += char;
+                    nestingLevel++;
+                } else if (char === '}' || char === ']') {
+                    if (collectingValue) valueBuffer += char;
+                    nestingLevel--;
+                    if (collectingValue && nestingLevel === 1) {
+                        // End of value
+                        values.push(valueBuffer.trim());
+                        valueBuffer = '';
+                        collectingValue = false;
+                    }
+                } else if (char === ':') {
+                    if (nestingLevel === 1) {
+                        collectingValue = true;
+                        valueBuffer = '';
+                    } else if (collectingValue) {
+                        valueBuffer += char;
+                    }
+                } else if (char === ',') {
+                    if (collectingValue && nestingLevel === 1) {
+                        // End of value
+                        values.push(valueBuffer.trim());
+                        valueBuffer = '';
+                        collectingValue = false;
+                    } else if (collectingValue) {
+                        valueBuffer += char;
+                    }
+                } else {
+                    if (collectingValue) valueBuffer += char;
+                }
+            }
+    
+            i++;
+        }
+    
+        // If we are still collecting a value at the end
+        if (collectingValue && valueBuffer.trim() !== '') {
+            values.push(valueBuffer.trim());
+        }
+    
+        return values;
+    }
+    
+    
     const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
@@ -124,14 +266,24 @@ const CodeCentral = () => {
             chatCompletion += chunk;            
             let buffer = '';
             try {
+                // console.log(chatCompletion);
                 const jsonStartIndex = chatCompletion.indexOf('{');
+                
                 if (jsonStartIndex !== -1) {
+                
                     buffer += chatCompletion.substring(jsonStartIndex);
+                    console.log(buffer);
                     const valueMatches = buffer.match(/:\s*("[^"]*"|[^,{}[\]]+)/g);
+                    const keyMatches = buffer.match(/"[^"]*"\s*:/g);
+                    // console.log(valueMatches);
+                    // console.log(keyMatches);
+
+                    console.log(getTopLevelKeys(buffer));
+                    console.log(getTopLevelValues(buffer));
                     if (valueMatches) {
                         valueMatches.forEach((value, index) => {
-                            let fieldValue = value.replace(/:\s*/, '');
-                            fieldValue = fieldValue.replace(/^"|"$/g, '');
+                            let fieldValue = value.split(':')[1].trim().replace(/^"|"$/g, '');
+
                             if(index + 1 === 1){
                                 setConversation([...conversation, { content: fieldValue, role: 'assistant', type: 'text' }]);
                             }
