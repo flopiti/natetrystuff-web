@@ -51,28 +51,12 @@ const CodeCentral = () => {
         }
     }, [dirPath]);
 
-    // useEffect(() => {
-    //     setChatCodes((prevChatCodes) => {
-    //         const newChatCodes = prevChatCodes.map((chatCode) => {
-    //             if (chatCode.fileName === selectedFileName) {
-    //                 return { fileName: selectedFileName, code: selectedChatCode };
-    //             }
-    //             return chatCode;
-    //         });
-    //         return newChatCodes;
-    //     }
-    //     );
-
-    // }, [selectedChatCode,selectedFileName] )
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             setLoading(true); // Start loading
             askChat(conversation, highlightedFiles, highlightedFilesContent);
-                // setConversation([...conversation, { content: response.answer, role: 'assistant', type: 'text' }]);
-                // setChatCodes(response.files);
-                // setLoading(false); // End loading
             
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
