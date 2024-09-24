@@ -2,22 +2,34 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
 export async function POST(request: NextRequest) {
-    const body = await request.json()
+    const body = await request.json();
     const openai = new OpenAI({
         apiKey: process.env.OPEN_AI_API_KEY
-      });
-      console.log('sending:', body.messages)
-    const chatCompletion = await openai.chat.completions.create({
-        messages: body.messages ,
-        model: 'gpt-4-1106-preview',
-        response_format:{ "type": "json_object" },
-      });
-    console.log('response:', chatCompletion.choices[0].message.content)
+    });
 
-    return new NextResponse(JSON.stringify({ chatCompletion }), {
+    const stream = new ReadableStream({
+        async start(controller) {
+            const chatCompletion = await openai.chat.completions.create({
+                messages: body.messages,
+                model: 'gpt-4-1106-preview',
+                stream: true,// Enable streaming
+                response_format: { "type": "json_object" },
+            });
+
+            for await (const chunk of chatCompletion) {
+                const text = chunk.choices[0].delta.content;
+                if (text) {
+                    controller.enqueue(new TextEncoder().encode(text));
+                }
+            }
+            controller.close();
+        }
+    });
+
+    return new NextResponse(stream, {
         status: 200,
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/plain',
         },
     });
 }
