@@ -48,6 +48,40 @@ const TerminalDisplay = () => {
     }
   };
 
+  const runCommandAndGetOutput = async (command: string): Promise<string> => {
+    const terminal = terminals.find((t) => t.id === selectedTerminal);
+    if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+      return new Promise((resolve, reject) => {
+        const sessionId = `session-${selectedTerminal}`;
+        const ws = terminal.ws;
+
+        const handleMessage = (event: MessageEvent) => {
+          const message = JSON.parse(event.data);
+          if (message.type === 'commandOutput' && message.id === sessionId) {
+            ws.removeEventListener('message', handleMessage);
+            resolve(message.data.trim());
+          } else if (message.type === 'commandError' && message.id === sessionId) {
+            ws.removeEventListener('message', handleMessage);
+            reject(message.error);
+          }
+        };
+
+        ws.addEventListener('message', handleMessage);
+
+        ws.send(
+          JSON.stringify({
+            type: 'execCommand',
+            id: sessionId,
+            data: command,
+          })
+        );
+      });
+    } else {
+      console.error('No active terminal selected or WebSocket not connected.');
+      return Promise.reject('No active terminal selected or WebSocket not connected.');
+    }
+  };
+
   const openTerminal = () => {   
     const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     console.log(`Opening terminal with ID: ${id_}`); // Log statement added
@@ -159,6 +193,7 @@ const TerminalDisplay = () => {
         isSelected={selectedTerminal === t.id}
         closeTerminal={closeTerminal}
         runCommand={runCommand}
+        runCommandAndGetOutput={runCommandAndGetOutput}
       />
     ))}
     </div>
