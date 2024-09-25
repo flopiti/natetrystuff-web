@@ -3,12 +3,16 @@ import dynamic from "next/dynamic";
 import "xterm/css/xterm.css";
 import TerminalBar from "./TerminalBar";
 import TerminalInstance from "./TerminalInstance";
+function cleanString(input: string): string {
+  return input.replace(/[\r\n]/g, '').trim();
+}
 
 const TerminalDisplay = () => {
   const [terminals, setTerminals] = useState<{ id: number; terminalInstance: any; ws: WebSocket | null }[]>([]);
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
-
+  const [currentBranch, setCurrentBranch] = useState<string | null>(null);
+ console.log('currentBranch', currentBranch)
   useEffect(() => {
     listSessions();
   },[]);
@@ -37,6 +41,7 @@ const TerminalDisplay = () => {
     }
   };
 
+
   const runCommand = (command: any) => {
     const terminal = terminals.find((t) => t.id === selectedTerminal);
     if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
@@ -51,12 +56,25 @@ const TerminalDisplay = () => {
   const runCommandAndGetOutput = async (command: string): Promise<string> => {
     const terminal = terminals.find((t) => t.id === selectedTerminal);
     if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+      
       return new Promise((resolve, reject) => {
         const sessionId = `session-${selectedTerminal}`;
         const ws = terminal.ws;
+        let capture = false;
 
         const handleMessage = (event: MessageEvent) => {
+
           const message = JSON.parse(event.data);
+          console.log('message', message)
+          if(capture){
+            setCurrentBranch(cleanString(message.data));
+            capture = false;
+          }
+          if(message.data.includes('git branch --show-current')){
+            capture = true;
+          }
+
+
           if (message.type === 'commandOutput' && message.id === sessionId) {
             ws.removeEventListener('message', handleMessage);
             resolve(message.data.trim());
@@ -70,9 +88,9 @@ const TerminalDisplay = () => {
 
         ws.send(
           JSON.stringify({
-            type: 'execCommand',
+            type: 'command',
             id: sessionId,
-            data: command,
+            data: command + '\r',
           })
         );
       });
