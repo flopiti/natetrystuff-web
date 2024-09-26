@@ -45,10 +45,10 @@ const TerminalInstance: React.FC<TerminalInstanceProps> = ({
       </button>
       <button
         className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={() => runCommandAndGetOutput("git branch --show-current").then((output) => {
+        onClick={() => runCommandAndGetOutput("git branch --show-current").then((output:string) => {
           console.log('Command Output:', output);
         })
-        .catch((error) => {
+        .catch((error:any) => {
           console.error('Error:', error);
         })}
       >
