@@ -75,17 +75,17 @@ const TerminalDisplay = () => {
 
 
           if (message.type === 'commandOutput' && message.id === sessionId) {
-            ws.removeEventListener('message', handleMessage);
+            ws?.removeEventListener('message', handleMessage);
             resolve(message.data.trim());
           } else if (message.type === 'commandError' && message.id === sessionId) {
-            ws.removeEventListener('message', handleMessage);
+            ws?.removeEventListener('message', handleMessage);
             reject(message.error);
           }
         };
 
-        ws.addEventListener('message', handleMessage);
+        ws?.addEventListener('message', handleMessage);
 
-        ws.send(
+        ws?.send(
           JSON.stringify({
             type: 'command',
             id: sessionId,
