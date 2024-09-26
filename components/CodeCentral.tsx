@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
@@ -47,8 +47,9 @@ const CodeCentral = () => {
     const getBranch = async () => {
         console.log('dirPath', dirPath);
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
-        const { data } = await response.json();
-        setBranch(data.branchName);
+        const { branchName } = await response.json();
+        console.log('branch', branch);
+        setBranch(branchName);
     }
 
     useEffect(() => {
@@ -195,11 +196,11 @@ const CodeCentral = () => {
 
 
     return (
-        <div >
+        <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
                 {branch && <p>Current Branch: {branch}</p>}
             </div>
-            <div className="h-[70vh] border-2 border-white w-full flex flex-row">
+            <div className="flex h-full flex-row w-full">
             <FileListDropdown
                 setDirPath={setDirPath}
                 projects={projects}
