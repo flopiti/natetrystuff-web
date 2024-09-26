@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     console.log('searchParams', searchParams)
     const dirPath = searchParams.get("dirPath");
+    console.log(' the env ', process.env.CODE_HELPER_URL)
     const res = await fetch(`${process.env.CODE_HELPER_URL}/get-projects?dirPath=${dirPath}`, {
       headers: {
         'Content-Type': 'application/json',
