@@ -12,7 +12,6 @@ const TerminalDisplay = () => {
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
   const [currentBranch, setCurrentBranch] = useState<string | null>(null);
- console.log('currentBranch', currentBranch)
   useEffect(() => {
     listSessions();
   },[]);

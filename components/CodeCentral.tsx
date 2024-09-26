@@ -40,6 +40,20 @@ const CodeCentral = () => {
     //terminal
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
+    
+    //branch
+    const [branch, setBranch] = useState<string | null>(null);
+
+    const getBranch = async () => {
+        console.log('dirPath', dirPath);
+        const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
+        const { data } = await response.json();
+        setBranch(data.branchName);
+    }
+
+    useEffect(() => {
+        getBranch();
+    }, [selectedProject]);
 
     useEffect(() => {
         if (dirPath.length > 1) {
@@ -181,7 +195,11 @@ const CodeCentral = () => {
 
 
     return (
-        <div className="h-[70vh] border-2 border-white w-full flex flex-row">
+        <div >
+            <div>
+                {branch && <p>Current Branch: {branch}</p>}
+            </div>
+            <div className="h-[70vh] border-2 border-white w-full flex flex-row">
             <FileListDropdown
                 setDirPath={setDirPath}
                 projects={projects}
@@ -227,9 +245,9 @@ const CodeCentral = () => {
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
                 <TerminalDisplay/>
             </div>
-            
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
- 
+            </div>
+
         </div>
     );
 }
