@@ -65,7 +65,6 @@ const TerminalDisplay = () => {
         const handleMessage = (event: MessageEvent) => {
 
           const message = JSON.parse(event.data);
-          console.log('message', message)
           if(capture){
             setCurrentBranch(cleanString(message.data));
             capture = false;
