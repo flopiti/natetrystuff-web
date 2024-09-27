@@ -11,13 +11,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    console.log('receveide', res)
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
 
     const data = await res.json();
 
+    console.log('data', data)
     return new NextResponse(JSON.stringify({ data }), {
       status: 200,
       headers: {
