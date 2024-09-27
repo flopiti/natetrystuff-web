@@ -6,13 +6,30 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages }:any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand }:any) => {
 
 
+  const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
+    "git pull origin main"
+]);
+
+  const[selectedOption, setSelectedOption] = useState<string>("");
 
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
+
+  const handleRunCommand = () => {
+    if (selectedOption === 'git pull origin main') {
+      gitPullOriginMain();
+    } else {
+      alert("Command not found");
+    }
+  };
+
+  const gitPullOriginMain = () => {
+    runCommand('git pull origin main');
+  };
 
   return (
     <div className="w-[40%] bg-red-200 h-full flex flex-col">
@@ -34,12 +51,14 @@ const Chat = ({ conversation, loading, addToConversation, setMessages }:any) => 
                 }
             }} />
         <div className="w-full flex flex-row px-4 py-2">
-            <select className="flex-grow p-2">
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
+            <select className="p-2 bg-blue-500 text-white"
+                onChange={(e) => setSelectedOption(e.target.value)}
+            >
+                {commandsReadyToGo.map((command:string, index:number) => (
+                    <option key={index}>{command}</option>
+                ))}
             </select>
-            <button onClick={() => alert(document.querySelector('select')?.value)} className="ml-2 p-2 bg-blue-500 text-white">Run</button>
+            <button onClick={handleRunCommand} className="ml-2 p-2 bg-blue-500 text-white">Run</button>
         </div> 
     </div>
 </div>
