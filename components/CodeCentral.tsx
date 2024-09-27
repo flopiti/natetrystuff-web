@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Terminal } from 'xterm';
+import { ITerminalOptions } from 'xterm';
+
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelKeys, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
+import Chat from './Chat';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -10,6 +14,9 @@ const CodeCentral = () => {
     the code snippet that you think is the answer}. You are allowed to create new files if necessary.
     If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
     If the code is not a coding solution, simply do not include the property in the JSON object.`;
+    // Add new state for terminals and selected terminal
+    const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
+    const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
 
     //loading the file path
     const[dirPath, setDirPath] = useState<string>('');
@@ -99,7 +106,59 @@ const CodeCentral = () => {
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
+    const runCommand = (command: any) => {
+        const terminal = terminals.find((t) => t.id === selectedTerminal);
+        if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+          console.log("sending command", command);
+          console.log(`Sending command to WebSocket with terminal ID: ${selectedTerminal}`);
+          terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
+        } else {
+          console.error('No active terminal selected or WebSocket not connected.');
+        }
+      };
     
+      const runCommandAndGetOutput = async (command: string): Promise<string> => {
+        const terminal = terminals.find((t) => t.id === selectedTerminal);
+        if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+          
+          return new Promise((resolve, reject) => {
+            const sessionId = `session-${selectedTerminal}`;
+            const ws = terminal.ws;
+            let capture = false;
+    
+            const handleMessage = (event: MessageEvent) => {
+    
+              const message = JSON.parse(event.data);
+              if(message.data.includes('git branch --show-current')){
+                capture = true;
+              }
+    
+    
+              if (message.type === 'commandOutput' && message.id === sessionId) {
+                ws?.removeEventListener('message', handleMessage);
+                resolve(message.data.trim());
+              } else if (message.type === 'commandError' && message.id === sessionId) {
+                ws?.removeEventListener('message', handleMessage);
+                reject(message.error);
+              }
+            };
+    
+            ws?.addEventListener('message', handleMessage);
+    
+            ws?.send(
+              JSON.stringify({
+                type: 'command',
+                id: sessionId,
+                data: command + '\r',
+              })
+            );
+          });
+        } else {
+          console.error('No active terminal selected or WebSocket not connected.');
+          return Promise.reject('No active terminal selected or WebSocket not connected.');
+        }
+      };
+
     const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
@@ -224,37 +283,16 @@ const CodeCentral = () => {
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 loading={loading} // Pass loading state to FileViewer
             />
-            <div className="w-[40%] bg-red-200 h-full flex flex-col">
-                <div className="w-full flex-grow bg-yellow-200 overflow-scroll">
-                    {loading && <p className="text-center text-black">Loading...</p>} {/* Show loading message */}
-                    {conversation?.slice(1).map((message, index) => (
-                        <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}> 
-                            <p>{message.content}</p>
-                        </div>
-                    ))}
-                </div>
-                <div className="w-full h-1/5 bg-purple-20">
-                    <textarea className="w-full h-full text-black p-2 whitespace-pre-wrap break-words"
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
-                                addToConversation(e.currentTarget.value);
-                                e.currentTarget.value = '';
-                                e.preventDefault(); 
-                            }
-                        }} />
-                    <div className="w-full flex flex-row px-4 py-2">
-                        <select className="flex-grow p-2">
-                            <option>Option 1</option>
-                            <option>Option 2</option>
-                            <option>Option 3</option>
-                        </select>
-                        <button onClick={() => alert(document.querySelector('select')?.value)} className="ml-2 p-2 bg-blue-500 text-white">Run</button>
-                    </div> 
-                </div>
-            </div>
+                <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommand} />
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
-                <TerminalDisplay/>
-            </div>
+            <TerminalDisplay
+                terminals={terminals}
+                setTerminals={setTerminals}
+                selectedTerminal={selectedTerminal}
+                setSelectedTerminal={setSelectedTerminal}
+                runCommand={runCommand}
+                runCommandAndGetOutput={runCommandAndGetOutput}
+            />            </div>
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
             </div>
 
