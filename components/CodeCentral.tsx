@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
@@ -242,6 +242,14 @@ const CodeCentral = () => {
                                 e.preventDefault(); 
                             }
                         }} />
+                    <div className="w-full flex flex-row px-4 py-2">
+                        <select className="flex-grow p-2">
+                            <option>Option 1</option>
+                            <option>Option 2</option>
+                            <option>Option 3</option>
+                        </select>
+                        <button onClick={() => alert(document.querySelector('select')?.value)} className="ml-2 p-2 bg-blue-500 text-white">Run</button>
+                    </div> 
                 </div>
             </div>
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
