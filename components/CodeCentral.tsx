@@ -52,7 +52,9 @@ const CodeCentral = () => {
     }
 
     useEffect(() => {
-        getBranch();
+        if (selectedProject) {
+            getBranch();
+        }
     }, [selectedProject]);
 
     useEffect(() => {
