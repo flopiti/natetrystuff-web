@@ -3,15 +3,11 @@ import dynamic from "next/dynamic";
 import "xterm/css/xterm.css";
 import TerminalBar from "./TerminalBar";
 import TerminalInstance from "./TerminalInstance";
-function cleanString(input: string): string {
-  return input.replace(/[\r\n]/g, '').trim();
-}
 
 const TerminalDisplay = () => {
   const [terminals, setTerminals] = useState<{ id: number; terminalInstance: any; ws: WebSocket | null }[]>([]);
   const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
-  const [currentBranch, setCurrentBranch] = useState<string | null>(null);
   useEffect(() => {
     listSessions();
   },[]);
@@ -64,10 +60,6 @@ const TerminalDisplay = () => {
         const handleMessage = (event: MessageEvent) => {
 
           const message = JSON.parse(event.data);
-          if(capture){
-            setCurrentBranch(cleanString(message.data));
-            capture = false;
-          }
           if(message.data.includes('git branch --show-current')){
             capture = true;
           }
