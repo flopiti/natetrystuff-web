@@ -10,7 +10,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
-    "git pull origin main"
+    "git pull origin main",
+    "git switch origin main",
 ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
@@ -22,10 +23,18 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const handleRunCommand = () => {
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
-    } else {
+    } 
+    else if (selectedOption === 'git switch origin main') {
+      gitSwitchOriginMain();
+    }
+    else {
       alert("Command not found");
     }
   };
+
+  const gitSwitchOriginMain = () => {
+    runCommand('git switch origin main');
+  }
 
   const gitPullOriginMain = () => {
     runCommand('git pull origin main');
