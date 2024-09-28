@@ -11,7 +11,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
-    "git switch origin main",
+    "git switch main",
 ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
