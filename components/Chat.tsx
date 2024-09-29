@@ -31,9 +31,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
-    if(branchName) {
-      getBranch();
-    }
+
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
     } 
@@ -57,6 +55,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     } 
     else {
       alert("Command not found");
+    }
+
+    if(branchName) {
+      getBranch();
     }
   };
 
