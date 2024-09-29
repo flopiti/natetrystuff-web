@@ -11,8 +11,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
-    "git switch origin main",
-    "git checkout -b"
+    "git checkout -b",
+    "git switch main",
 ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
@@ -26,7 +26,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
     } 
-    else if (selectedOption === 'git switch origin main') {
+    else if (selectedOption === 'git switch main') {
       gitSwitchOriginMain();
     }
     else if (selectedOption === 'git checkout -b') {
