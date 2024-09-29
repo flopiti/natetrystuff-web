@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 
 interface Message {
   content: string;
@@ -6,7 +6,7 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand }:any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch}:any) => {
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
@@ -24,13 +24,16 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const[prTitle, setPrTitle] = useState<string>("");
   const[prBody, setPrBody] = useState<string>("");
 
+
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
-
+    if(branchName) {
+      getBranch();
+    }
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
     } 

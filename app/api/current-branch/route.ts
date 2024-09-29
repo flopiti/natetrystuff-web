@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
       cache: 'no-store'
     });
 
+
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
