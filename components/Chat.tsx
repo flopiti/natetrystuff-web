@@ -8,15 +8,21 @@ interface Message {
 
 const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand }:any) => {
 
-
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
     "git checkout -b",
     "git switch main",
-]);
+    "git add .",
+    "git commit -m ",
+    "git push",
+    "gh pr create --title ",
+  ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
   const[branchName, setBranchName] = useState<string>("");
+  const[commitMessage, setCommitMessage] = useState<string>("");
+  const[prTitle, setPrTitle] = useState<string>("");
+  const[prBody, setPrBody] = useState<string>("");
 
   useEffect(() => {
     setMessages(conversation);
@@ -32,6 +38,18 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     else if (selectedOption === 'git checkout -b') {
       gitCheckoutBranch();
     }
+    else if (selectedOption === 'git add .') {
+      gitAddAll();
+    }
+    else if (selectedOption === 'git commit -m ') {
+      gitCommit();
+    }
+    else if (selectedOption === 'git push') {
+      gitPush();
+    }
+    else if (selectedOption === 'gh pr create --title ') {
+      createPullRequest();
+    } 
     else {
       alert("Command not found");
     }
@@ -50,6 +68,30 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       runCommand(`git checkout -b ${branchName}`);
     } else {
       alert('Please enter a branch name');
+    }
+  };
+
+  const gitAddAll = () => {
+    runCommand('git add .');
+  };
+
+  const gitCommit = () => {
+    if (commitMessage.trim()) {
+      runCommand(`git commit -m "${commitMessage}"`);
+    } else {
+      alert('Please enter a commit message');
+    }
+  };
+
+  const gitPush = () => {
+    runCommand('git push');
+  };
+
+  const createPullRequest = () => {
+    if (prTitle.trim() && prBody.trim()) {
+      runCommand(`gh pr create --title "${prTitle}" --body "${prBody}"`);
+    } else {
+      alert('Please enter both PR title and body');
     }
   };
 
@@ -88,6 +130,33 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
                 value={branchName}
                 onChange={(e) => setBranchName(e.target.value)}
               />
+            )}
+            {selectedOption === 'git commit -m ' && (
+              <input 
+                type="text" 
+                className="ml-2 p-2 border border-gray-400"
+                placeholder="Commit Message"
+                value={commitMessage}
+                onChange={(e) => setCommitMessage(e.target.value)}
+              />
+            )}
+            {selectedOption === 'gh pr create --title ' && (
+              <>
+                <input 
+                  type="text" 
+                  className="ml-2 p-2 border border-gray-400"
+                  placeholder="PR Title"
+                  value={prTitle}
+                  onChange={(e) => setPrTitle(e.target.value)}
+                />
+                <input 
+                  type="text" 
+                  className="ml-2 p-2 border border-gray-400"
+                  placeholder="PR Body"
+                  value={prBody}
+                  onChange={(e) => setPrBody(e.target.value)}
+                />
+              </>
             )}
             <button onClick={handleRunCommand} className="ml-2 p-2 bg-blue-500 text-white">Run</button>
         </div> 
