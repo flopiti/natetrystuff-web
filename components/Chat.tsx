@@ -24,7 +24,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
     } 
-    else if (selectedOption === 'git switch origin main') {
+    else if (selectedOption === 'git switch main') {
       gitSwitchOriginMain();
     }
     else {
