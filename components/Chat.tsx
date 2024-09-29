@@ -29,6 +29,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   }, [conversation]);
 
   const handleRunCommand = () => {
+    console.log(`Running command: ${selectedOption}`);
+
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
     } 
@@ -119,7 +121,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
                 onChange={(e) => setSelectedOption(e.target.value)}
             >
                 {commandsReadyToGo.map((command:string, index:number) => (
-                    <option key={index}>{command}</option>
+                    <option key={index} value={command}>{command}</option>
                 ))}
             </select>
             {selectedOption === 'git checkout -b' && (
