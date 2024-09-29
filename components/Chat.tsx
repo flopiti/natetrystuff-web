@@ -108,7 +108,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
         ))}
     </div>
     <div className="w-full h-1/5 bg-purple-20">
-        <textarea className="w-full h-full text-black p-2 whitespace-pre-wrap break-words"
+        <textarea className="w-full h-full text-black p-2 whitespace-pre-wrap break-words text-black"
             onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
                     addToConversation(e.currentTarget.value);
@@ -127,7 +127,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
             {selectedOption === 'git checkout -b' && (
               <input 
                 type="text" 
-                className="ml-2 p-2 border border-gray-400"
+                className="ml-2 p-2 border border-gray-400 text-black"
                 placeholder="Branch Name"
                 value={branchName}
                 onChange={(e) => setBranchName(e.target.value)}
@@ -136,7 +136,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
             {selectedOption === 'git commit -m ' && (
               <input 
                 type="text" 
-                className="ml-2 p-2 border border-gray-400"
+                className="ml-2 p-2 border border-gray-400 text-black"
                 placeholder="Commit Message"
                 value={commitMessage}
                 onChange={(e) => setCommitMessage(e.target.value)}
@@ -146,14 +146,14 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
               <>
                 <input 
                   type="text" 
-                  className="ml-2 p-2 border border-gray-400"
+                  className="ml-2 p-2 border border-gray-400 text-black"
                   placeholder="PR Title"
                   value={prTitle}
                   onChange={(e) => setPrTitle(e.target.value)}
                 />
                 <input 
                   type="text" 
-                  className="ml-2 p-2 border border-gray-400"
+                  className="ml-2 p-2 border border-gray-400 text-black"
                   placeholder="PR Body"
                   value={prBody}
                   onChange={(e) => setPrBody(e.target.value)}
