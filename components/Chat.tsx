@@ -12,9 +12,11 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
     "git switch origin main",
+    "git checkout -b"
 ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
+  const[branchName, setBranchName] = useState<string>("");
 
   useEffect(() => {
     setMessages(conversation);
@@ -27,6 +29,9 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     else if (selectedOption === 'git switch origin main') {
       gitSwitchOriginMain();
     }
+    else if (selectedOption === 'git checkout -b') {
+      gitCheckoutBranch();
+    }
     else {
       alert("Command not found");
     }
@@ -38,6 +43,14 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const gitPullOriginMain = () => {
     runCommand('git pull origin main');
+  };
+
+  const gitCheckoutBranch = () => {
+    if (branchName.trim()) {
+      runCommand(`git checkout -b ${branchName}`);
+    } else {
+      alert('Please enter a branch name');
+    }
   };
 
   return (
@@ -67,6 +80,15 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
                     <option key={index}>{command}</option>
                 ))}
             </select>
+            {selectedOption === 'git checkout -b' && (
+              <input 
+                type="text" 
+                className="ml-2 p-2 border border-gray-400"
+                placeholder="Branch Name"
+                value={branchName}
+                onChange={(e) => setBranchName(e.target.value)}
+              />
+            )}
             <button onClick={handleRunCommand} className="ml-2 p-2 bg-blue-500 text-white">Run</button>
         </div> 
     </div>
