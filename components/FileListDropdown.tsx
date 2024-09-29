@@ -72,7 +72,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         }
     };
 
-    const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '');
     useEffect(() => {
         fetchProjectPaths().then((data: ProjectFile[]) => {
             setProjectPaths(data);
@@ -153,7 +153,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                         </div>
                     );
                 })}
-                {chatCodes?.filter(({ fileName }) => !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
+                {chatCodes?.filter(({ fileName }) => fileName !== '' && !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
                     <div
                         key={projectFiles.length + index}
                         onClick={() => setSelectedChatCode(code)}
