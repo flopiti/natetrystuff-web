@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules`, {
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules?startDate=${startDate}&endDate=${endDate}`, {
         headers: {
           'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`

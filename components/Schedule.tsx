@@ -22,6 +22,8 @@ const Schedule = () => {
     setDays,
   } = useScheduleState();
 
+  console.log("Meals Schedule: ", mealsSchedule); // added log statement
+
   const [firstDay, setFirstDay] = useState(new Date());
   const [officeDays, setOfficeDays] = useState<number | null>(null);
   const [nextMonthOfficeDays, setNextMonthOfficeDays] = useState<number | null>(null);
