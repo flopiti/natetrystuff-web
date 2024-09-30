@@ -54,6 +54,47 @@ const Schedule = () => {
     fetchOfficeDays(nextMonthYear, nextMonth, setNextMonthOfficeDays);
   }, []);
 
+  const setDayInOffice = async (day_: any, formattedDate: string) => {
+    if (day_) {
+      day_.inOffice = true;
+      const response = await fetchAPI(`/api/days/${day_.id}`, "PUT", day_);
+      if (response) {
+        setDays([
+          ...days.filter((day: any) => day.date !== formattedDate),
+          response.data,
+        ]);
+      }
+    } else {
+      const inOfficePayload = { date: formattedDate, inOffice: true };
+      const response = await fetchAPI("/api/days", "POST", inOfficePayload);
+      if (response) {
+        setDays([...days, response.data]);
+      }
+    }
+  };
+
+  const setDayRemote = async (day_: any, formattedDate: string) => {
+    if (day_) {
+      day_.inOffice = false;
+      const response = await fetchAPI(`/api/days/${day_.id}`, "PUT", day_);
+      if (response) {
+        setDays([
+          ...days.filter((day: any) => day.date !== formattedDate),
+          response.data,
+        ]);
+      }
+    } else {
+      const inOfficePayload = { date: formattedDate, inOffice: false };
+      const response = await fetchAPI("/api/days", "POST", inOfficePayload);
+      if (response) {
+        setDays([
+          ...days.filter((day: any) => day.date !== formattedDate),
+          response.data,
+        ]);
+      }
+    }
+  };
+
   const showNextDay = () => {
     setFirstDay(new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + 1));
   };
@@ -140,6 +181,8 @@ const Schedule = () => {
               meals={meals}
               key={index}
               setMealsSchedule={setMealsSchedule}
+              setDayInOffice={() => setDayInOffice(dayFound, day.toISOString().slice(0, 10))}
+              setDayRemote={() => setDayRemote(dayFound, day.toISOString().slice(0, 10))}
             />
           );
         })}
