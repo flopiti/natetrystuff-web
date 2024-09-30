@@ -24,6 +24,7 @@ const Schedule = () => {
 
   const[firstDay, setFirstDay] = useState(new Date());
   const[officeDays, setOfficeDays] = useState<number | null>(null);
+  const[nextMonthOfficeDays, setNextMonthOfficeDays] = useState<number | null>(null);
 
   useEffect(() => {
     getNextFourDays(firstDay).then(setFourDaysSchedule);
@@ -33,17 +34,24 @@ const Schedule = () => {
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
-    const apiUrl = `/api/days/office-days?year=${year}&month=${month}`;
-    console.log(`Request URL: ${apiUrl}`);
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextMonthYear = month === 12 ? year + 1 : year;
 
-    fetchAPI(apiUrl)
-      .then((response) => {
+    const fetchOfficeDays = async (year: number, month: number, setOfficeDays: (days: number) => void) => {
+      const apiUrl = `/api/days/office-days?year=${year}&month=${month}`;
+      console.log(`Request URL: ${apiUrl}`);
+
+      try {
+        const response = await fetchAPI(apiUrl);
         console.log("API Response: ", response.data);
         setOfficeDays(response.data);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching office days: ", error);
-      });
+      }
+    };
+
+    fetchOfficeDays(year, month, setOfficeDays);
+    fetchOfficeDays(nextMonthYear, nextMonth, setNextMonthOfficeDays);
   }, []);
 
   const showNextDay = () => {
@@ -105,6 +113,14 @@ const Schedule = () => {
 
   return (
     <div className="md:h-[70vh] w-full p-4 rounded-lg mt-5">
+      <div style={{ position: "absolute", top: 0, left: 0 }}>
+        {officeDays !== null && (
+          <p>Office Days this month: {officeDays}</p>
+        )}
+        {nextMonthOfficeDays !== null && (
+          <p>Office Days next month: {nextMonthOfficeDays}</p>
+        )}
+      </div>
       <button onClick={showPreviousDay}>Previous</button>
       <button onClick={showNextDay}>Next</button>
       <div className="flex flex-col md:flex-row h-full md:space-x-4">
@@ -129,11 +145,6 @@ const Schedule = () => {
         })}
       </div>
       <GroceryList groceries={groceries} />
-      <div>
-        {officeDays !== null && (
-          <p>Office Days this month: {officeDays}</p>
-        )}
-      </div>
     </div>
   );
 };
