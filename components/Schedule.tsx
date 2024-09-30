@@ -23,10 +23,28 @@ const Schedule = () => {
   } = useScheduleState();
 
   const[firstDay, setFirstDay] = useState(new Date());
+  const[officeDays, setOfficeDays] = useState<number | null>(null);
 
   useEffect(() => {
     getNextFourDays(firstDay).then(setFourDaysSchedule);
   }, [firstDay]);
+
+  useEffect(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const apiUrl = `/api/days/office-days?year=${year}&month=${month}`;
+    console.log(`Request URL: ${apiUrl}`);
+
+    fetchAPI(apiUrl)
+      .then((response) => {
+        console.log("API Response: ", response.data);
+        setOfficeDays(response.data.officeDays);
+      })
+      .catch((error) => {
+        console.error("Error fetching office days: ", error);
+      });
+  }, []);
 
   const showNextDay = () => {
     setFirstDay(new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + 1));
@@ -111,6 +129,11 @@ const Schedule = () => {
         })}
       </div>
       <GroceryList groceries={groceries} />
+      <div>
+        {officeDays !== null && (
+          <p>Office Days this month: {officeDays}</p>
+        )}
+      </div>
     </div>
   );
 };

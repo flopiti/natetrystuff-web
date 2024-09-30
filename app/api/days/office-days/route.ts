@@ -3,10 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
-
-    const urlParams = new URL(request.url).searchParams;
-    const year = urlParams.get('year') || new Date().getFullYear();
-    const month = urlParams.get('month') || new Date().getMonth() + 1;
+    const { searchParams } = new URL(request.url);
+    const year = searchParams.get('year');
+    const month = searchParams.get('month');
 
     const apiUrl = `${process.env.SPRING_BOOT_URL}/days/office-days/${year}/${month}`;
     const res = await fetch(apiUrl, {
