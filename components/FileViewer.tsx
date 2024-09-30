@@ -26,7 +26,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
   const diff = diffLines(selectedFileContent, selectedChatCode);
   let lineNumber = 0;
   return (
-    <div className="w-1/2 bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
+    <div className="w-1/2 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
         <button
           className={`flex-1 text-center p-2 ${activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
@@ -54,7 +54,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         }
         {!loading && activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
         {!loading && activeTab === 'chat' && selectedChatCode && (
-          <div>
+          <div className='h-full inline-block'>
             <pre>
               {diff.map((part, index) => {
                 const lines = part.value.split('\n').slice(0, -1);
