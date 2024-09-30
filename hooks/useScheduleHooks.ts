@@ -16,16 +16,19 @@ export const setFourDaysScheduleDisplay = (fourDaysSchedule:any, setMeals:any, s
     useEffect(() => {
         const fetchInitialData = async () => {
             if (fourDaysSchedule.length === 0) return;
+            const startDate = formatISODate(fourDaysSchedule[0]);
+            const endDate = formatISODate(fourDaysSchedule.at(-1));
             const [mealsData, mealSchedulesData, groceriesData, inOfficeDays] = await Promise.all([
                 fetchAPI('/api/meals'),
-                fetchAPI('/api/meal-schedules'),
-                fetchAPI(`/api/meal-schedule/get-groceries?startDate=${formatISODate(fourDaysSchedule[0])}&endDate=${formatISODate(fourDaysSchedule.at(-1))}`),
+                fetchAPI(`/api/meal-schedules?startDate=${startDate}&endDate=${endDate}`),
+                fetchAPI(`/api/meal-schedule/get-groceries?startDate=${startDate}&endDate=${endDate}`),
                 fetchAPI('/api/days')
             ]);
             setMeals(mealsData.data);
             setMealsSchedule(mealSchedulesData.data);
             setGroceries(groceriesData.data);
             setInOfficeDays(inOfficeDays.data);
+            console.log(mealSchedulesData.data); // Log meals schedule when received from hook
         };
         fetchInitialData();
     }, [fourDaysSchedule]);
