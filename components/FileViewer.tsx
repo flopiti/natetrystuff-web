@@ -43,6 +43,14 @@ const FileViewer: React.FC<FileViewerProps> = ({
           Chat
         </button>
       </div>
+      {activeTab === 'chat' && !loading && (
+        <button
+          className="bg-blue-500 text-white p-2"
+          onClick={() => replaceCode()}
+        >
+          Replace code in {selectedFileName}
+        </button>
+      )}
       <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
         {loading && <div>
           <pre>
@@ -95,12 +103,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
                 return x;
             })}
             </pre>
-            <button
-              className="bg-blue-500 text-white p-2"
-              onClick={() => replaceCode()}
-            >
-              Replace code in {selectedFileName}
-            </button>
           </div>
         )}
       </div>
