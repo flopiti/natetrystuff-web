@@ -13,49 +13,9 @@ const DaySchedule = ({
     setDays,
     days,
     setMealsSchedule,
+    setDayInOffice,
+    setDayRemote,
 }: any) => {
-    const setDayInOffice = async () => {
-        const formattedDate = day.toISOString().slice(0, 10);
-        if (day_) {
-            day_.inOffice = true;
-            const response = await fetchAPI(`/api/days/${day_.id}`, "PUT", day_);
-            if (response) {
-                setDays([
-                    ...days.filter((day: any) => day.date !== formattedDate),
-                    response.data,
-                ]);
-            }
-        } else {
-            const inOfficePayload = { date: formattedDate, inOffice: true };
-            const response = await fetchAPI("/api/days", "POST", inOfficePayload);
-            if (response) {
-                setDays([...days, response.data]);
-            }
-        }
-    };
-
-    const setDayRemote = async () => {
-        const formattedDate = day.toISOString().slice(0, 10);
-        if (day_) {
-            day_.inOffice = false;
-            const response = await fetchAPI(`/api/days/${day_.id}`, "PUT", day_);
-            if (response) {
-                setDays([
-                    ...days.filter((day: any) => day.date !== formattedDate),
-                    response.data,
-                ]);
-            }
-        } else {
-            const inOfficePayload = { date: formattedDate, inOffice: false };
-            const response = await fetchAPI("/api/days", "POST", inOfficePayload);
-            if (response) {
-                setDays([
-                    ...days.filter((day: any) => day.date !== formattedDate),
-                    response.data,
-                ]);
-            }
-        }
-    };
 
     const togglePreparedStatus = async (mealSched: any) => {
         const updatedMealSched = { ...mealSched, prepared: !mealSched.prepared };
