@@ -1,9 +1,17 @@
 import { getAccessToken } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 
+function getFormattedDate(offsetDays) {
+    const date = new Date();
+    date.setDate(date.getDate() + offsetDays);
+    return date.toISOString().split('T')[0];
+}
+
 export async function GET(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules`, {
+    const startDate = getFormattedDate(-1); // Yesterday
+    const endDate = getFormattedDate(30); // 30 days in the future
+    const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules?startDate=${startDate}&endDate=${endDate}`, {
         headers: {
           'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
