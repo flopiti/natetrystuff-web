@@ -24,7 +24,11 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
 
-    const apiUrl = `${process.env.SPRING_BOOT_URL}/days`;
+    const { searchParams } = new URL(request.url);
+    const year = searchParams.get('year');
+    const month = searchParams.get('month');
+
+    const apiUrl = `${process.env.SPRING_BOOT_URL}/days/office-days/${year}/${month}`;
     const res = await fetch(apiUrl, {
         method: 'GET',
         headers: {

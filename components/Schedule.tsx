@@ -39,7 +39,7 @@ const Schedule = () => {
     fetchAPI(apiUrl)
       .then((response) => {
         console.log("API Response: ", response.data);
-        setOfficeDays(response.data.officeDays);
+        setOfficeDays(response.data);
       })
       .catch((error) => {
         console.error("Error fetching office days: ", error);
