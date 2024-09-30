@@ -22,36 +22,40 @@ const Schedule = () => {
     setDays,
   } = useScheduleState();
 
-  const[firstDay, setFirstDay] = useState(new Date());
-  const[officeDays, setOfficeDays] = useState<number | null>(null);
-  const[nextMonthOfficeDays, setNextMonthOfficeDays] = useState<number | null>(null);
+  const [firstDay, setFirstDay] = useState(new Date());
+  const [officeDays, setOfficeDays] = useState<number | null>(null);
+  const [nextMonthOfficeDays, setNextMonthOfficeDays] = useState<number | null>(null);
 
-  useEffect(() => {
-    getNextFourDays(firstDay).then(setFourDaysSchedule);
-  }, [firstDay]);
+  const fetchOfficeDays = async (year: number, month: number, setOfficeDays: (days: number) => void) => {
+    const apiUrl = `/api/days/office-days?year=${year}&month=${month}`;
+    console.log(`Request URL: ${apiUrl}`);
 
-  useEffect(() => {
+    try {
+      const response = await fetchAPI(apiUrl);
+      console.log("API Response: ", response.data);
+      setOfficeDays(response.data);
+    } catch (error) {
+      console.error("Error fetching office days: ", error);
+    }
+  };
+
+  const refreshOfficeDays = () => {
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const nextMonth = month === 12 ? 1 : month + 1;
     const nextMonthYear = month === 12 ? year + 1 : year;
 
-    const fetchOfficeDays = async (year: number, month: number, setOfficeDays: (days: number) => void) => {
-      const apiUrl = `/api/days/office-days?year=${year}&month=${month}`;
-      console.log(`Request URL: ${apiUrl}`);
-
-      try {
-        const response = await fetchAPI(apiUrl);
-        console.log("API Response: ", response.data);
-        setOfficeDays(response.data);
-      } catch (error) {
-        console.error("Error fetching office days: ", error);
-      }
-    };
-
     fetchOfficeDays(year, month, setOfficeDays);
     fetchOfficeDays(nextMonthYear, nextMonth, setNextMonthOfficeDays);
+  };
+
+  useEffect(() => {
+    getNextFourDays(firstDay).then(setFourDaysSchedule);
+  }, [firstDay]);
+
+  useEffect(() => {
+    refreshOfficeDays();
   }, []);
 
   const setDayInOffice = async (day_: any, formattedDate: string) => {
@@ -71,6 +75,7 @@ const Schedule = () => {
         setDays([...days, response.data]);
       }
     }
+    refreshOfficeDays(); // Refresh office days after setting in office
   };
 
   const setDayRemote = async (day_: any, formattedDate: string) => {
@@ -93,6 +98,7 @@ const Schedule = () => {
         ]);
       }
     }
+    refreshOfficeDays(); // Refresh office days after setting remote
   };
 
   const showNextDay = () => {
