@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Message {
   content: string;
@@ -29,6 +29,19 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
+
+  useEffect(() => {
+    setBranchName(branch);
+    setCommandsReadyToGo([
+      "git pull origin main",
+      "git checkout -b",
+      "git switch main",
+      "git add .",
+      "git commit -m ",
+      `git push origin ${branch}`,
+      "gh pr create --title ",
+    ]);
+  }, [branch]);
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
@@ -92,8 +105,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitPush = () => {
-    console.log(`Pushing to branch: ${branch}`);
-    runCommand(`git push origin ${branch}`);
+    console.log(`Pushing to branch: ${branchName}`);
+    runCommand(`git push origin ${branchName}`);
   };
 
   const createPullRequest = () => {
