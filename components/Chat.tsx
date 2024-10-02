@@ -14,7 +14,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     "git switch main",
     "git add .",
     "git commit -m ",
-    "git push",
+    "git push origin {branchName}",
     "gh pr create --title ",
   ]);
 
@@ -47,7 +47,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     else if (selectedOption === 'git commit -m ') {
       gitCommit();
     }
-    else if (selectedOption === 'git push') {
+    else if (selectedOption === 'git push origin {branchName}') {
       gitPush();
     }
     else if (selectedOption === 'gh pr create --title ') {
@@ -91,7 +91,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitPush = () => {
-    runCommand('git push');
+    runCommand(`git push origin ${branchName}`);
   };
 
   const createPullRequest = () => {
