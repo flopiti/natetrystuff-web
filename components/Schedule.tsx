@@ -162,7 +162,7 @@ const Schedule = () => {
 
   return (
     <div className="md:h-[70vh] w-full p-4 rounded-lg mt-5">
-      <div style={{ position: "absolute", top: 0, left: 0 }}>
+      <div className="absolute top-0 left-0 mt-2 ml-2">
         {officeDays !== null && (
           <p>Office Days this month: {officeDays}</p>
         )}
