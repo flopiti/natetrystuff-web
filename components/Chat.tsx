@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Message {
   content: string;
@@ -6,7 +6,8 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch}:any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch, branch}:any) => {
+  console.log('Branch argument received:', branch); // Added log statement
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
@@ -14,12 +15,12 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     "git switch main",
     "git add .",
     "git commit -m ",
-    "git push",
+    `git push origin ${branch}`,
     "gh pr create --title ",
   ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
-  const[branchName, setBranchName] = useState<string>("");
+  const[branchName, setBranchName] = useState<string>(branch);
   const[commitMessage, setCommitMessage] = useState<string>("");
   const[prTitle, setPrTitle] = useState<string>("");
   const[prBody, setPrBody] = useState<string>("");
@@ -28,6 +29,19 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
+
+  useEffect(() => {
+    setBranchName(branch);
+    setCommandsReadyToGo([
+      "git pull origin main",
+      "git checkout -b",
+      "git switch main",
+      "git add .",
+      "git commit -m ",
+      `git push origin ${branch}`,
+      "gh pr create --title ",
+    ]);
+  }, [branch]);
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
@@ -47,7 +61,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     else if (selectedOption === 'git commit -m ') {
       gitCommit();
     }
-    else if (selectedOption === 'git push') {
+    else if (selectedOption === `git push origin ${branch}`) {
       gitPush();
     }
     else if (selectedOption === 'gh pr create --title ') {
@@ -91,7 +105,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitPush = () => {
-    runCommand('git push');
+    console.log(`Pushing to branch: ${branchName}`);
+    runCommand(`git push origin ${branchName}`);
   };
 
   const createPullRequest = () => {
