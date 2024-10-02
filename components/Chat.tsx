@@ -7,6 +7,7 @@ interface Message {
 }
 
 const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch, branch}:any) => {
+  console.log('Branch argument received:', branch); // Added log statement
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
@@ -91,8 +92,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitPush = () => {
-    console.log(`Pushing to branch: ${branchName}`);
-    runCommand(`git push origin ${branchName}`);
+    console.log(`Pushing to branch: ${branch}`);
+    runCommand(`git push origin ${branch}`);
   };
 
   const createPullRequest = () => {
