@@ -6,23 +6,23 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch}:any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch }: any) => {
 
-  const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
+  const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
     "git checkout -b",
     "git switch main",
     "git add .",
     "git commit -m ",
-    "git push origin {branchName}",
+    "git push",
     "gh pr create --title ",
   ]);
 
-  const[selectedOption, setSelectedOption] = useState<string>("");
-  const[branchName, setBranchName] = useState<string>("");
-  const[commitMessage, setCommitMessage] = useState<string>("");
-  const[prTitle, setPrTitle] = useState<string>("");
-  const[prBody, setPrBody] = useState<string>("");
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [branchName, setBranchName] = useState<string>("");
+  const [commitMessage, setCommitMessage] = useState<string>("");
+  const [prTitle, setPrTitle] = useState<string>("");
+  const [prBody, setPrBody] = useState<string>("");
 
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
-    } 
+    }
     else if (selectedOption === 'git switch main') {
       gitSwitchOriginMain();
     }
@@ -47,17 +47,17 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     else if (selectedOption === 'git commit -m ') {
       gitCommit();
     }
-    else if (selectedOption === 'git push origin {branchName}') {
+    else if (selectedOption === 'git push') {
       gitPush();
     }
     else if (selectedOption === 'gh pr create --title ') {
       createPullRequest();
-    } 
+    }
     else {
       alert("Command not found");
     }
 
-    if(branchName) {
+    if (branchName) {
       getBranch();
     }
   };
@@ -106,35 +106,35 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     <div className="w-2/5 bg-gray-100 h-full flex flex-col shadow-lg">
       <div className="w-full flex-grow bg-white overflow-scroll p-4 border-b border-gray-300">
         {loading && <p className="text-center text-gray-500">Loading...</p>}
-        {conversation?.slice(1).map((message:any, index:number) => (
-          <div key={index} className={`text-gray-800 ${message.role === 'user' ? 'text-right' : 'text-left'} mt-2`}> 
+        {conversation?.slice(1).map((message: any, index: number) => (
+          <div key={index} className={`text-gray-800 ${message.role === 'user' ? 'text-right' : 'text-left'} mt-2`}>
             <p className="bg-blue-100 p-2 rounded-lg inline-block max-w-xs">{message.content}</p>
           </div>
         ))}
       </div>
       <div className="w-full h-1/5 bg-gray-200 flex flex-col justify-between p-4">
-        <textarea 
+        <textarea
           className="w-full h-3/5 text-gray-700 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
               addToConversation(e.currentTarget.value);
               e.currentTarget.value = '';
-              e.preventDefault(); 
+              e.preventDefault();
             }
           }}
         />
         <div className="w-full flex flex-row items-center mt-2 space-x-2">
-          <select 
+          <select
             className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => setSelectedOption(e.target.value)}
           >
-            {commandsReadyToGo.map((command:string, index:number) => (
+            {commandsReadyToGo.map((command: string, index: number) => (
               <option key={index} value={command}>{command}</option>
             ))}
           </select>
           {selectedOption === 'git checkout -b' && (
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="p-2 border border-gray-400 text-gray-700 rounded-md"
               placeholder="Branch Name"
               value={branchName}
@@ -142,8 +142,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
             />
           )}
           {selectedOption === 'git commit -m ' && (
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="p-2 border border-gray-400 text-gray-700 rounded-md"
               placeholder="Commit Message"
               value={commitMessage}
@@ -152,15 +152,15 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
           )}
           {selectedOption === 'gh pr create --title ' && (
             <>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className="p-2 border border-gray-400 text-gray-700 rounded-md"
                 placeholder="PR Title"
                 value={prTitle}
                 onChange={(e) => setPrTitle(e.target.value)}
               />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 className="p-2 border border-gray-400 text-gray-700 rounded-md ml-2"
                 placeholder="PR Body"
                 value={prBody}
@@ -168,13 +168,13 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
               />
             </>
           )}
-          <button 
-            onClick={handleRunCommand} 
+          <button
+            onClick={handleRunCommand}
             className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Run
           </button>
-        </div> 
+        </div>
       </div>
     </div>
   );
