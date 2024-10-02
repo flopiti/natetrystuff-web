@@ -6,7 +6,7 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch}:any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch, branch}:any) => {
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
@@ -14,12 +14,12 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     "git switch main",
     "git add .",
     "git commit -m ",
-    "git push origin",
+    `git push origin ${branch}`,
     "gh pr create --title ",
   ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
-  const[branchName, setBranchName] = useState<string>("");
+  const[branchName, setBranchName] = useState<string>(branch);
   const[commitMessage, setCommitMessage] = useState<string>("");
   const[prTitle, setPrTitle] = useState<string>("");
   const[prBody, setPrBody] = useState<string>("");
@@ -47,7 +47,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     else if (selectedOption === 'git commit -m ') {
       gitCommit();
     }
-    else if (selectedOption === 'git push origin') {
+    else if (selectedOption === `git push origin ${branch}`) {
       gitPush();
     }
     else if (selectedOption === 'gh pr create --title ') {
