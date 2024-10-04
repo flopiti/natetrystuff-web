@@ -18,6 +18,9 @@ const CodeCentral = () => {
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
 
+    // New state for devTerminalId and doesCurrentProjectHaveTerminal
+    const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
+
     //loading the file path
     const[dirPath, setDirPath] = useState<string>('');
 
@@ -257,9 +260,6 @@ const CodeCentral = () => {
         }
     }, [highlightedFiles,selectedProject]);
 
-    useEffect(() => {
-        console.log('doesCurrentProjectHaveTerminal:', doesCurrentProjectHaveTerminal);
-    }, [doesCurrentProjectHaveTerminal]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
@@ -300,6 +300,8 @@ const CodeCentral = () => {
                 runCommandAndGetOutput={runCommandAndGetOutput}
                 doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal} // Pass the new state
                 setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal} // Pass the setter function
+                devTerminalId={devTerminalId} // Pass the devTerminalId
+                setDevTerminalId={setDevTerminalId} // Pass the setter function for devTerminalId
                 selectedProject={selectedProject} // Pass selectedProject
             />            </div>
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>

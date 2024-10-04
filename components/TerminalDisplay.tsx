@@ -13,7 +13,9 @@ const TerminalDisplay = ({
   runCommandAndGetOutput,
   selectedProject,
   doesCurrentProjectHaveTerminal,
-  setDoesCurrentProjectHaveTerminal
+  setDoesCurrentProjectHaveTerminal,
+  devTerminalId, // Receive devTerminalId
+  setDevTerminalId // Receive setDevTerminalId
 }: any) => {
 
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
@@ -62,6 +64,7 @@ const TerminalDisplay = ({
     console.log(`Creating terminal session for project ${project}`);
     const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     setTerminals((prev: any) => [...prev, { id: id_, terminalInstance: null, ws: null }]);
+    setDevTerminalId(id_); // Set the devTerminalId when creating a new terminal session
     createTerminalSession(id_);
   };
 
