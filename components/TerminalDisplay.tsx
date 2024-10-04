@@ -10,42 +10,64 @@ const TerminalDisplay = ({
   selectedTerminal,
   setSelectedTerminal,
   runCommand,
-  runCommandAndGetOutput
-}:any) => {  
-  
+  runCommandAndGetOutput,
+  selectedProject,
+  doesCurrentProjectHaveTerminal,
+  setDoesCurrentProjectHaveTerminal
+}: any) => {
+
   const [prexistingTerminals, setPrexistingTerminals] = useState<number[]>([]);
+
   useEffect(() => {
     listSessions();
-  },[]);
+  }, []);
 
-  useEffect(() => {    
-    prexistingTerminals.forEach((id:any) => {
+  useEffect(() => {
+    prexistingTerminals.forEach((id: any) => {
       reconnectTerminal(id);
     });
   }, [prexistingTerminals]);
-  
+
+  // This effect reacts to changes in selectedProject
+  useEffect(() => {
+    if (selectedProject) {
+      console.log(`Selected project changed to: ${selectedProject}`);
+      // Logic to create a new terminal session for the selected project
+      createTerminalSessionForProject(selectedProject);
+    }
+  }, [selectedProject]);
+
   const listSessions = async () => {
-    const alreadyRunningTerminals:any[] = [];
+    const alreadyRunningTerminals: any[] = [];
     const ws = new WebSocket("wss://natetrystuff.com:3001");
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: 'list' }));
     };
-    ws.onmessage = (event:any) => {
+    ws.onmessage = (event: any) => {
       const message = JSON.parse(event.data);
       if (message.type === 'sessions') {
-        message.data.forEach((sessionId:any) => {
+        message.data.forEach((sessionId: any) => {
           const id = parseInt(sessionId.split('-')[1]);
-          alreadyRunningTerminals.push(id);        });
+          alreadyRunningTerminals.push(id);
+        });
       }
       setPrexistingTerminals(alreadyRunningTerminals);
       ws.close();
     }
   };
 
-  const openTerminal = () => {   
+  const createTerminalSessionForProject = (project: string) => {
+    // Example logic to open a terminal session for a specific project
+    console.log(`Creating terminal session for project ${project}`);
+    const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
+    setTerminals((prev: any) => [...prev, { id: id_, terminalInstance: null, ws: null }]);
+    createTerminalSession(id_);
+  };
+
+  const openTerminal = () => {
     const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     console.log(`Opening terminal with ID: ${id_}`); // Log statement added
-    setTerminals((prev:any) => [
+    setTerminals((prev: any) => [
       ...prev,
       { id: id_, terminalInstance: null, ws: null },
     ]);
@@ -53,10 +75,10 @@ const TerminalDisplay = ({
   };
 
   const closeTerminal = (id: number) => {
-    const terminal = terminals.find((t:any) => t.id === id);
+    const terminal = terminals.find((t: any) => t.id === id);
     terminal?.ws?.send(JSON.stringify({ type: 'stop', data: `session-${id}`, id: `session-${id}` }));
     terminal?.ws?.close();
-    setTerminals((prev:any) => prev.filter((t:any) => t.id !== id));
+    setTerminals((prev: any) => prev.filter((t: any) => t.id !== id));
     if (selectedTerminal === id) setSelectedTerminal(null);
   };
 
@@ -71,26 +93,26 @@ const TerminalDisplay = ({
         const sessionId = `session-${id}`;
         console.log(`Creating terminal session with ID: ${id}`); // Log statement added
         ws.send(JSON.stringify({ type: 'create', data: sessionId }));
-        terminal.onData((data:any) => {
+        terminal.onData((data: any) => {
           ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
-        ws.onmessage = (event:any) => {
+        ws.onmessage = (event: any) => {
           const message = JSON.parse(event.data);
           if (message.type === 'output') {
             terminal.write(message.data.toString());
           }
         };
-      };
+      }
       setSelectedTerminal(id);
-      setTerminals((prev:any) =>
-        prev.map((t:any) =>
+      setTerminals((prev: any) =>
+        prev.map((t: any) =>
           t.id === id ? { id, terminalInstance: terminal, ws } : t
         )
       );
     }
   };
 
-  const waitForElement = async (selector:any, timeout = 5000) => {
+  const waitForElement = async (selector: any, timeout = 5000) => {
     const pollInterval = 100;
     let elapsedTime = 0;
     while (elapsedTime < timeout) {
@@ -101,9 +123,9 @@ const TerminalDisplay = ({
     }
     throw new Error(`Element with selector "${selector}" not found after ${timeout}ms.`);
   };
-  
-  const reconnectTerminal = async (id:number) => {
-    setTerminals((prev:any) => [
+
+  const reconnectTerminal = async (id: number) => {
+    setTerminals((prev: any) => [
       ...prev,
       { id: id, terminalInstance: null, ws: null },
     ]);
@@ -118,44 +140,44 @@ const TerminalDisplay = ({
         const sessionId = `session-${id}`;
         console.log(`Resuming terminal session with ID: ${id}`); // Log statement added
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
-        ws.send(JSON.stringify({ type: 'command', id: sessionId , data: '\r'}));
-        terminal.onData((data:any) => {
+        ws.send(JSON.stringify({ type: 'command', id: sessionId, data: '\r' }));
+        terminal.onData((data: any) => {
           ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
         });
-  
-        ws.onmessage = (event:any) => {
+
+        ws.onmessage = (event: any) => {
           const message = JSON.parse(event.data);
           if (message.type === 'output') {
             terminal.write(message.data.toString());
           }
         };
       };
-      setTerminals((prev:any) =>
-        prev.map((t:any) =>
+      setTerminals((prev: any) =>
+        prev.map((t: any) =>
           t.id === id ? { id, terminalInstance: terminal, ws } : t
         )
       );
     }
   };
-  
+
   return (
     <div className="p-4">
       <TerminalBar
-        terminals={terminals.map((t:any) => t.id)}
+        terminals={terminals.map((t: any) => t.id)}
         selectedTerminal={selectedTerminal}
         setSelectedTerminal={setSelectedTerminal}
         openTerminal={openTerminal}
       />
-      {terminals.map((t:any) => (
-      <TerminalInstance
-        key={t.id}
-        id={t.id}
-        isSelected={selectedTerminal === t.id}
-        closeTerminal={closeTerminal}
-        runCommand={runCommand}
-        runCommandAndGetOutput={runCommandAndGetOutput}
-      />
-    ))}
+      {terminals.map((t: any) => (
+        <TerminalInstance
+          key={t.id}
+          id={t.id}
+          isSelected={selectedTerminal === t.id}
+          closeTerminal={closeTerminal}
+          runCommand={runCommand}
+          runCommandAndGetOutput={runCommandAndGetOutput}
+        />
+      ))}
     </div>
   );
 };

@@ -51,6 +51,9 @@ const CodeCentral = () => {
     //branch
     const [branch, setBranch] = useState<string | null>(null);
 
+    // New state for doesCurrentProjectHaveTerminal
+    const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
+
     const getBranch = async () => {
         console.log('dirPath', dirPath);
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
@@ -292,6 +295,9 @@ const CodeCentral = () => {
                 setSelectedTerminal={setSelectedTerminal}
                 runCommand={runCommand}
                 runCommandAndGetOutput={runCommandAndGetOutput}
+                doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal} // Pass the new state
+                setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal} // Pass the setter function
+                selectedProject={selectedProject} // Pass selectedProject
             />            </div>
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
             </div>
