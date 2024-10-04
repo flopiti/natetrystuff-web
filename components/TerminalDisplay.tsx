@@ -30,12 +30,13 @@ const TerminalDisplay = ({
 
   // This effect reacts to changes in selectedProject
   useEffect(() => {
-    if (selectedProject) {
+    if (selectedProject && !doesCurrentProjectHaveTerminal) {
       console.log(`Selected project changed to: ${selectedProject}`);
       // Logic to create a new terminal session for the selected project
       createTerminalSessionForProject(selectedProject);
+      setDoesCurrentProjectHaveTerminal(true);
     }
-  }, [selectedProject]);
+  }, [selectedProject, doesCurrentProjectHaveTerminal]);
 
   const listSessions = async () => {
     const alreadyRunningTerminals: any[] = [];

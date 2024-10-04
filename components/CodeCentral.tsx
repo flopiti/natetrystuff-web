@@ -257,6 +257,9 @@ const CodeCentral = () => {
         }
     }, [highlightedFiles,selectedProject]);
 
+    useEffect(() => {
+        console.log('doesCurrentProjectHaveTerminal:', doesCurrentProjectHaveTerminal);
+    }, [doesCurrentProjectHaveTerminal]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
