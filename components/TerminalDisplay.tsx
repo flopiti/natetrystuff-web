@@ -85,7 +85,7 @@ const TerminalDisplay = ({
   const createTerminalSession = async (id: number) => {
     const { Terminal } = await import("xterm");
     const terminal = new Terminal();
-    const terminalElement = document.getElementById(`terminal-${id}`);
+    const terminalElement = await waitForElement(`terminal-${id}`);
     if (terminalElement) {
       terminal.open(terminalElement);
       const ws = new WebSocket("wss://natetrystuff.com:3001");
