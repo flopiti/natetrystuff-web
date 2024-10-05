@@ -136,12 +136,13 @@ const CodeCentral = () => {
         } else {
             console.error('No active terminal for current project or WebSocket not connected.');
         }
-        if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
-          console.log("sending command", command);
-          terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
-        } else {
-          console.error('No active terminal for current project or WebSocket not connected.');
-        }
+        // Remove immediate command transmission below
+        // if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+        //   console.log("sending command", command);
+        //   terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
+        // } else {
+        //   console.error('No active terminal for current project or WebSocket not connected.');
+        // }
       };
     
     const runCommandAndGetOutput = async (command: string): Promise<string> => {

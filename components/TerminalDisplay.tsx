@@ -33,9 +33,16 @@ const TerminalDisplay = ({
 
   useEffect(() => {
     if (selectedProject && !doesCurrentProjectHaveTerminal) {
-      console.log(`Selected project changed to: ${selectedProject}`);
-      createTerminalSessionForProject(selectedProject);
-      setDoesCurrentProjectHaveTerminal(true);
+      const existingTerminal = prexistingTerminals.find(t => t.name === selectedProject.name);
+      if (existingTerminal) {
+        console.log(`Terminal for selected project ${selectedProject.name} already exists.`);
+        setDevTerminalId(existingTerminal.id);
+        setDoesCurrentProjectHaveTerminal(true);
+      } else {
+        console.log(`Creating terminal session for project ${selectedProject.name}`);
+        createTerminalSessionForProject(selectedProject);
+        setDoesCurrentProjectHaveTerminal(true);
+      }
     }
   }, [selectedProject, doesCurrentProjectHaveTerminal]);
 
