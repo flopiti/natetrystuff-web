@@ -67,10 +67,12 @@ const TerminalDisplay = ({
     setDevTerminalId(id_); // Set the devTerminalId when creating a new terminal session
     createTerminalSession(id_);
 
-    // Run the specified command
+    // Run the specified command with a deliberate delay
     const runCommandWithLogging = `cd /dev-projects/${project.name}`;
     console.log(`Running command in project terminal: ${runCommandWithLogging}`); // Log before running command
-    runCommandInCurrentProject(runCommandWithLogging);
+    setTimeout(() => {
+      runCommandInCurrentProject(runCommandWithLogging);
+    }, 500); // Delay of 500 milliseconds
   };
 
   const openTerminal = () => {

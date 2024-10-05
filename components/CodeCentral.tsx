@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
-import { ITerminalOptions } from 'xterm';
 
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
-import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelKeys, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
+import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, handleFlightClick, replaceCode } from '../app/utils';
 import Chat from './Chat';
 
 const CodeCentral = () => {
@@ -14,58 +13,33 @@ const CodeCentral = () => {
     the code snippet that you think is the answer}. You are allowed to create new files if necessary.
     If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
     If the code is not a coding solution, simply do not include the property in the JSON object.`;
-    // Add new state for terminals and selected terminal
+
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
-
-    // New state for devTerminalId and doesCurrentProjectHaveTerminal
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
-
-    // Log devTerminalId whenever it changes
-    useEffect(() => {
-        if (devTerminalId !== null) {
-            console.log(`devTerminalId: ${devTerminalId}`);
-        }
-    }, [devTerminalId]);
-
-    //loading the file path
-    const[dirPath, setDirPath] = useState<string>('');
-
-    //loading projects from the file system
+    const [dirPath, setDirPath] = useState<string>('');
     const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
-
-    //loading project files based on the selected project
     const [projectFiles, setProjectFiles] = useState<string[]>([]);
-
-    //loading the selected file content
     const [selectedFileName, setSelectedFileName] = useState<string>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
-
-    //initializing the conversation
     const [conversation, setConversation] = useState<{ content: string, role: string, type: string }[]>([{ content: PROMPT, role: 'system', type: 'text' }]);
-    const [activeTab, setActiveTab] = useState<string>('file'); // Default to showing file
+    const [activeTab, setActiveTab] = useState<string>('file');
     const [loading, setLoading] = useState<boolean>(false);
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
-    //loading the chat codes
-    const [chatCodes, setChatCodes] = useState<any[]>([]); // Change state to an array
+    const [chatCodes, setChatCodes] = useState<any[]>([]);
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
-    const [selectedChatCode, setSelectedChatCode] = useState<string>(''); // Add state to store selected chat code
+    const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
-    //terminal
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
-    
-    //branch
     const [branch, setBranch] = useState<string | null>(null);
 
-    // New state for doesCurrentProjectHaveTerminal
     const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
     const getBranch = async () => {
-        console.log('dirPath', dirPath);
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
         const { data } = await response.json();
         setBranch(data.branchName);
@@ -87,13 +61,11 @@ const CodeCentral = () => {
         }
     }, [dirPath]);
 
-
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            setLoading(true); // Start loading
+            setLoading(true);
             askChat(conversation, highlightedFiles, highlightedFilesContent);
-            
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
@@ -116,47 +88,50 @@ const CodeCentral = () => {
         }
     }, [chatCodes]);
 
+    // Log devTerminalId on every render
+    useEffect(() => {
+        console.log('Dev Terminal ID during render:', devTerminalId);
+    });
+
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
+
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
           console.log("sending command", command);
-          console.log(`Sending command to WebSocket with terminal ID: ${selectedTerminal}`);
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
         } else {
           console.error('No active terminal selected or WebSocket not connected.');
         }
       };
     
-      const runCommandInCurrentProject = (command: any) => {
+    const runCommandInCurrentProject = (command: any) => {
+        console.log(`Current devTerminalId before running command:`, devTerminalId);
         const terminal = terminals.find((t) => t.id === devTerminalId);
+        console.log(`Found terminal:`, terminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
           console.log("sending command", command);
-          console.log(`Sending command to WebSocket with terminal ID: ${devTerminalId}`);
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
         } else {
           console.error('No active terminal for current project or WebSocket not connected.');
         }
       };
     
-      const runCommandAndGetOutput = async (command: string): Promise<string> => {
+    const runCommandAndGetOutput = async (command: string): Promise<string> => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
-          
           return new Promise((resolve, reject) => {
             const sessionId = `session-${selectedTerminal}`;
             const ws = terminal.ws;
             let capture = false;
     
             const handleMessage = (event: MessageEvent) => {
-    
               const message = JSON.parse(event.data);
               if(message.data.includes('git branch --show-current')){
                 capture = true;
               }
-    
     
               if (message.type === 'commandOutput' && message.id === sessionId) {
                 ws?.removeEventListener('message', handleMessage);
@@ -169,13 +144,7 @@ const CodeCentral = () => {
     
             ws?.addEventListener('message', handleMessage);
     
-            ws?.send(
-              JSON.stringify({
-                type: 'command',
-                id: sessionId,
-                data: command + '\r',
-              })
-            );
+            ws?.send(JSON.stringify({ type: 'command', id: sessionId, data: command + '\r' }));
           });
         } else {
           console.error('No active terminal selected or WebSocket not connected.');
@@ -183,7 +152,7 @@ const CodeCentral = () => {
         }
       };
 
-    const askChat = async (conversation: any[], highlightedFiles: any[], highlightedFilesContent: any[]) => {
+    const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
         });
@@ -244,7 +213,6 @@ const CodeCentral = () => {
         setLoading(false);
 
         setChatCodes(JSON.parse(chatCompletion).files);
-
     
         return  
     }
@@ -263,7 +231,6 @@ const CodeCentral = () => {
         const fileDataResponse = await fetch(`/api/get-file?fileName=${fileName}&project=${selectedProject.name}`);
         const { splitFileData } = await fileDataResponse.json();
 
-
         if (!highlightedFiles.includes(fileName)) {
             setHighlightedFiles([...highlightedFiles, fileName]);
         }
@@ -276,8 +243,7 @@ const CodeCentral = () => {
                 setHighlightedFilesContent(content);
             })();
         }
-    }, [highlightedFiles,selectedProject]);
-
+    }, [highlightedFiles, selectedProject]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
@@ -298,14 +264,14 @@ const CodeCentral = () => {
                 setSelectedChatCode={setSelectedChatCode}
             />
             <FileViewer
-                setSelectedChatCode={setSelectedChatCode} // Pass the state function down to FileViewer
+                setSelectedChatCode={setSelectedChatCode}
                 activeTab={activeTab} 
                 setActiveTab={setActiveTab} 
                 selectedFileContent={selectedFileContent} 
                 selectedChatCode={selectedChatCode} 
                 selectedFileName={selectedFileName} 
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
-                loading={loading} // Pass loading state to FileViewer
+                loading={loading}
             />
             <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch}/>
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
@@ -315,17 +281,16 @@ const CodeCentral = () => {
                 selectedTerminal={selectedTerminal}
                 setSelectedTerminal={setSelectedTerminal}
                 runCommand={runCommand}
-                runCommandInCurrentProject={runCommandInCurrentProject} // Pass runCommandInCurrentProject
+                runCommandInCurrentProject={runCommandInCurrentProject}
                 runCommandAndGetOutput={runCommandAndGetOutput}
-                doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal} // Pass the new state
-                setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal} // Pass the setter function
-                devTerminalId={devTerminalId} // Pass the devTerminalId
-                setDevTerminalId={setDevTerminalId} // Pass the setter function for devTerminalId
-                selectedProject={selectedProject} // Pass selectedProject
+                doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal}
+                setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
+                devTerminalId={devTerminalId}
+                setDevTerminalId={setDevTerminalId}
+                selectedProject={selectedProject}
             />            </div>
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
             </div>
-
         </div>
     );
 }
