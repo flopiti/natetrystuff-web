@@ -44,7 +44,12 @@ const CodeCentral = () => {
         const { data } = await response.json();
         setBranch(data.branchName);
     }
-
+    useEffect(() => {
+        if (selectedProject && doesCurrentProjectHaveTerminal) {
+            const runCommandWithLogging = `cd /dev-projects/${selectedProject.name}`;
+            runCommandInCurrentProject(runCommandWithLogging);
+        }
+    }, [selectedProject, doesCurrentProjectHaveTerminal, terminals]);
     useEffect(() => {
         if (selectedProject) {
             getBranch();
@@ -111,6 +116,26 @@ const CodeCentral = () => {
         console.log(`Current devTerminalId before running command:`, devTerminalId);
         const terminal = terminals.find((t) => t.id === devTerminalId);
         console.log(`Found terminal:`, terminal);
+        console.log(`Terminal WebSocket ready state:`, terminal?.ws?.readyState);
+        if (terminal && terminal.ws) {
+            let attempts = 0;
+            const maxAttempts = 5;
+            setTimeout(() => {
+                const interval = setInterval(() => {
+                    if (terminal.ws?.readyState === WebSocket.OPEN) {
+                        console.log("WebSocket is open, sending command", command);
+                        terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
+                        clearInterval(interval);
+                    } else if (terminal.ws?.readyState !== WebSocket.CONNECTING || attempts >= maxAttempts) {
+                        console.error('No active terminal for current project or WebSocket not connected.');
+                        clearInterval(interval);
+                    }
+                    attempts++;
+                }, 1000);
+            }, 1000);
+        } else {
+            console.error('No active terminal for current project or WebSocket not connected.');
+        }
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
           console.log("sending command", command);
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
