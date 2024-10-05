@@ -6,7 +6,7 @@ const TerminalBar = ({
   setSelectedTerminal,
   openTerminal,
 }: {
-  terminals: number[];
+  terminals: any[];
   selectedTerminal: number | null;
   setSelectedTerminal: (id: number) => void;
   openTerminal: () => void;
@@ -18,11 +18,11 @@ const TerminalBar = ({
         <span
           key={idx}
           className={`mr-2 p-2 rounded cursor-pointer ${
-            selectedTerminal === terminal ? "bg-blue-300" : "bg-gray-300"
+            selectedTerminal === terminal.id ? "bg-blue-300" : "bg-gray-300"
           }`}
-          onClick={() => setSelectedTerminal(terminal)}
+          onClick={() => setSelectedTerminal(terminal.id)}
         >
-          Terminal {terminal}
+         {terminal.name  ? terminal.name : `Terminal ${terminal.id}`}
         </span>
       ))}
       <button
