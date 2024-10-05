@@ -10,6 +10,7 @@ const TerminalDisplay = ({
   selectedTerminal,
   setSelectedTerminal,
   runCommand,
+  runCommandInCurrentProject, // Add runCommandInCurrentProject to props
   runCommandAndGetOutput,
   selectedProject,
   doesCurrentProjectHaveTerminal,
@@ -59,18 +60,22 @@ const TerminalDisplay = ({
     }
   };
 
-  const createTerminalSessionForProject = (project: string) => {
-    // Example logic to open a terminal session for a specific project
-    console.log(`Creating terminal session for project ${project}`);
+  const createTerminalSessionForProject = (project: any) => {
+    console.log(`Creating terminal session for project ${project.name}`);
     const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
     setTerminals((prev: any) => [...prev, { id: id_, terminalInstance: null, ws: null }]);
     setDevTerminalId(id_); // Set the devTerminalId when creating a new terminal session
     createTerminalSession(id_);
+
+    // Run the specified command
+    const runCommandWithLogging = `cd /dev-projects/${project.name}`;
+    console.log(`Running command in project terminal: ${runCommandWithLogging}`); // Log before running command
+    runCommandInCurrentProject(runCommandWithLogging);
   };
 
   const openTerminal = () => {
     const id_ = (terminals.length > 0 ? terminals[terminals.length - 1].id : 0) + 1;
-    console.log(`Opening terminal with ID: ${id_}`); // Log statement added
+    console.log(`Opening terminal with ID: ${id_}`);
     setTerminals((prev: any) => [
       ...prev,
       { id: id_, terminalInstance: null, ws: null },
@@ -95,7 +100,7 @@ const TerminalDisplay = ({
       const ws = new WebSocket("wss://natetrystuff.com:3001");
       ws.onopen = () => {
         const sessionId = `session-${id}`;
-        console.log(`Creating terminal session with ID: ${id}`); // Log statement added
+        console.log(`Creating terminal session with ID: ${id}`);
         ws.send(JSON.stringify({ type: 'create', data: sessionId }));
         terminal.onData((data: any) => {
           ws.send(JSON.stringify({ type: 'command', id: sessionId, data }));
@@ -142,7 +147,7 @@ const TerminalDisplay = ({
       const ws = new WebSocket(`wss://natetrystuff.com:3001?nocache=${Date.now()}`);
       ws.onopen = () => {
         const sessionId = `session-${id}`;
-        console.log(`Resuming terminal session with ID: ${id}`); // Log statement added
+        console.log(`Resuming terminal session with ID: ${id}`);
         ws.send(JSON.stringify({ type: 'resume', data: sessionId }));
         ws.send(JSON.stringify({ type: 'command', id: sessionId, data: '\r' }));
         terminal.onData((data: any) => {

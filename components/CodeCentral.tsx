@@ -315,6 +315,7 @@ const CodeCentral = () => {
                 selectedTerminal={selectedTerminal}
                 setSelectedTerminal={setSelectedTerminal}
                 runCommand={runCommand}
+                runCommandInCurrentProject={runCommandInCurrentProject} // Pass runCommandInCurrentProject
                 runCommandAndGetOutput={runCommandAndGetOutput}
                 doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal} // Pass the new state
                 setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal} // Pass the setter function
