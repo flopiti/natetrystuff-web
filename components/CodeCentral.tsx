@@ -18,6 +18,16 @@ const CodeCentral = () => {
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
 
+    // New state for devTerminalId and doesCurrentProjectHaveTerminal
+    const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
+
+    // Log devTerminalId whenever it changes
+    useEffect(() => {
+        if (devTerminalId !== null) {
+            console.log(`devTerminalId: ${devTerminalId}`);
+        }
+    }, [devTerminalId]);
+
     //loading the file path
     const[dirPath, setDirPath] = useState<string>('');
 
@@ -50,6 +60,9 @@ const CodeCentral = () => {
     
     //branch
     const [branch, setBranch] = useState<string | null>(null);
+
+    // New state for doesCurrentProjectHaveTerminal
+    const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
     const getBranch = async () => {
         console.log('dirPath', dirPath);
@@ -114,6 +127,17 @@ const CodeCentral = () => {
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
         } else {
           console.error('No active terminal selected or WebSocket not connected.');
+        }
+      };
+    
+      const runCommandInCurrentProject = (command: any) => {
+        const terminal = terminals.find((t) => t.id === devTerminalId);
+        if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+          console.log("sending command", command);
+          console.log(`Sending command to WebSocket with terminal ID: ${devTerminalId}`);
+          terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
+        } else {
+          console.error('No active terminal for current project or WebSocket not connected.');
         }
       };
     
@@ -283,7 +307,7 @@ const CodeCentral = () => {
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 loading={loading} // Pass loading state to FileViewer
             />
-            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommand}  getBranch={getBranch} branch={branch}/>
+            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch}/>
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
                 terminals={terminals}
@@ -292,6 +316,11 @@ const CodeCentral = () => {
                 setSelectedTerminal={setSelectedTerminal}
                 runCommand={runCommand}
                 runCommandAndGetOutput={runCommandAndGetOutput}
+                doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal} // Pass the new state
+                setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal} // Pass the setter function
+                devTerminalId={devTerminalId} // Pass the devTerminalId
+                setDevTerminalId={setDevTerminalId} // Pass the setter function for devTerminalId
+                selectedProject={selectedProject} // Pass selectedProject
             />            </div>
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
             </div>
