@@ -72,13 +72,17 @@ export const fetchHighlightedFilesContent = async (highlightedFiles: any[], proj
 };
 
 export const replaceCode = async (projectName: any, chatCodes: any[]) => {
-    await fetch('/api/replace-code', {
+    const response = await fetch('/api/replace-code', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ project: projectName, files: chatCodes })
     });
+
+    if (!response.ok) {
+        throw new Error('Failed to replace code');
+    }
 };
 
 export const handleFlightClick = (fileName: any, event: { shiftKey: any; }, highlightedFiles: any[], handleFileSelect: { (fileName: any): Promise<void>; (arg0: any): void; }) => {

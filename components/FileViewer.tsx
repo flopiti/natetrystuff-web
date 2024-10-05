@@ -23,8 +23,22 @@ const FileViewer: React.FC<FileViewerProps> = ({
   loading,
   setSelectedChatCode
 }) => {
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const diff = diffLines(selectedFileContent, selectedChatCode);
   let lineNumber = 0;
+
+  const handleReplaceCode = async () => {
+    try {
+      setErrorMessage('');
+      setSuccessMessage('');
+      await replaceCode();
+      setSuccessMessage('Code replacement was successful.');
+    } catch (error) {
+      setErrorMessage('Failed to replace code.');
+    }
+  };
+
   return (
     <div className="w-1/2 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
@@ -46,11 +60,13 @@ const FileViewer: React.FC<FileViewerProps> = ({
       {activeTab === 'chat' && !loading && (
         <button
           className="bg-blue-500 text-white p-2"
-          onClick={() => replaceCode()}
+          onClick={handleReplaceCode}
         >
           Replace code in {selectedFileName}
         </button>
       )}
+      {errorMessage && <div className="text-red-500">{errorMessage}</div>}
+      {successMessage && <div className="text-green-500">{successMessage}</div>}
       <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
         {loading && <div>
           <pre>
@@ -86,7 +102,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
                       file={selectedChatCode}
                       updateFile={setSelectedChatCode}
                     />
-
                   ) : part.added ? (
                     <RemoveButton
                       lineNumber={lineNumber}
@@ -111,7 +126,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
 };
 
 const AddButton: React.FC<any> = ({ lineNumber, value, file, updateFile }) => {
-
   return <button
     key={lineNumber}
     className="bg-blue-500 text-white p-2"
@@ -121,7 +135,6 @@ const AddButton: React.FC<any> = ({ lineNumber, value, file, updateFile }) => {
 }
 
 const RemoveButton: React.FC<any> = ({ lineNumber, number, file, updateFile}) => {
-
   return <button
     key={lineNumber}
     className="bg-blue-500 text-white p-2"
@@ -141,6 +154,5 @@ const removeLine = (lineToRemove: number,length:number, file:string, updateFile:
   newCode.splice(lineToRemove, length);
   updateFile(newCode.join('\n'));
 };
-
 
 export default FileViewer;

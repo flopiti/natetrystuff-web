@@ -307,7 +307,7 @@ const CodeCentral = () => {
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 loading={loading} // Pass loading state to FileViewer
             />
-            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch}/>
+            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch}/>
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
                 terminals={terminals}

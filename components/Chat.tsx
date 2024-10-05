@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Message {
   content: string;
@@ -6,7 +6,8 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch}:any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch, branch}:any) => {
+  console.log('Branch argument received:', branch); // Added log statement
 
   const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
@@ -14,12 +15,12 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     "git switch main",
     "git add .",
     "git commit -m ",
-    "git push",
+    `git push origin ${branch}`,
     "gh pr create --title ",
   ]);
 
   const[selectedOption, setSelectedOption] = useState<string>("");
-  const[branchName, setBranchName] = useState<string>("");
+  const[branchName, setBranchName] = useState<string>(branch);
   const[commitMessage, setCommitMessage] = useState<string>("");
   const[prTitle, setPrTitle] = useState<string>("");
   const[prBody, setPrBody] = useState<string>("");
@@ -28,6 +29,19 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
+
+  useEffect(() => {
+    setBranchName(branch);
+    setCommandsReadyToGo([
+      "git pull origin main",
+      "git checkout -b",
+      "git switch main",
+      "git add .",
+      "git commit -m ",
+      `git push origin ${branch}`,
+      "gh pr create --title ",
+    ]);
+  }, [branch]);
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
@@ -47,7 +61,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     else if (selectedOption === 'git commit -m ') {
       gitCommit();
     }
-    else if (selectedOption === 'git push') {
+    else if (selectedOption === `git push origin ${branch}`) {
       gitPush();
     }
     else if (selectedOption === 'gh pr create --title ') {
@@ -91,7 +105,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitPush = () => {
-    runCommand('git push');
+    console.log(`Pushing to branch: ${branchName}`);
+    runCommand(`git push origin ${branchName}`);
   };
 
   const createPullRequest = () => {
@@ -103,72 +118,80 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   return (
-    <div className="w-[40%] bg-red-200 h-full flex flex-col">
-    <div className="w-full flex-grow bg-yellow-200 overflow-scroll">
-        {loading && <p className="text-center text-black">Loading...</p>} {/* Show loading message */}
+    <div className="w-2/5 bg-gray-100 h-full flex flex-col shadow-lg">
+      <div className="w-full flex-grow bg-white overflow-scroll p-4 border-b border-gray-300">
+        {loading && <p className="text-center text-gray-500">Loading...</p>}
         {conversation?.slice(1).map((message:any, index:number) => (
-            <div key={index} className={`text-black ${message.role === 'user' ? 'text-right' : 'text-left'}`}> 
-                <p>{message.content}</p>
-            </div>
+          <div key={index} className={`text-gray-800 ${message.role === 'user' ? 'text-right' : 'text-left'} mt-2`}> 
+            <p className="bg-blue-100 p-2 rounded-lg inline-block max-w-xs">{message.content}</p>
+          </div>
         ))}
-    </div>
-    <div className="w-full h-1/5 bg-purple-20">
-        <textarea className="w-full h-full text-black p-2 whitespace-pre-wrap break-words text-black"
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
-                    addToConversation(e.currentTarget.value);
-                    e.currentTarget.value = '';
-                    e.preventDefault(); 
-                }
-            }} />
-        <div className="w-full flex flex-row px-4 py-2">
-            <select className="p-2 bg-blue-500 text-white"
-                onChange={(e) => setSelectedOption(e.target.value)}
-            >
-                {commandsReadyToGo.map((command:string, index:number) => (
-                    <option key={index} value={command}>{command}</option>
-                ))}
-            </select>
-            {selectedOption === 'git checkout -b' && (
+      </div>
+      <div className="w-full h-1/5 bg-gray-200 flex flex-col justify-between p-4">
+        <textarea 
+          className="w-full h-3/5 text-gray-700 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
+              addToConversation(e.currentTarget.value);
+              e.currentTarget.value = '';
+              e.preventDefault(); 
+            }
+          }}
+        />
+        <div className="w-full flex flex-row items-center mt-2 space-x-2">
+          <select 
+            className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => setSelectedOption(e.target.value)}
+          >
+            {commandsReadyToGo.map((command:string, index:number) => (
+              <option key={index} value={command}>{command}</option>
+            ))}
+          </select>
+          {selectedOption === 'git checkout -b' && (
+            <input 
+              type="text" 
+              className="p-2 border border-gray-400 text-gray-700 rounded-md"
+              placeholder="Branch Name"
+              value={branchName}
+              onChange={(e) => setBranchName(e.target.value)}
+            />
+          )}
+          {selectedOption === 'git commit -m ' && (
+            <input 
+              type="text" 
+              className="p-2 border border-gray-400 text-gray-700 rounded-md"
+              placeholder="Commit Message"
+              value={commitMessage}
+              onChange={(e) => setCommitMessage(e.target.value)}
+            />
+          )}
+          {selectedOption === 'gh pr create --title ' && (
+            <>
               <input 
                 type="text" 
-                className="ml-2 p-2 border border-gray-400 text-black"
-                placeholder="Branch Name"
-                value={branchName}
-                onChange={(e) => setBranchName(e.target.value)}
+                className="p-2 border border-gray-400 text-gray-700 rounded-md"
+                placeholder="PR Title"
+                value={prTitle}
+                onChange={(e) => setPrTitle(e.target.value)}
               />
-            )}
-            {selectedOption === 'git commit -m ' && (
               <input 
                 type="text" 
-                className="ml-2 p-2 border border-gray-400 text-black"
-                placeholder="Commit Message"
-                value={commitMessage}
-                onChange={(e) => setCommitMessage(e.target.value)}
+                className="p-2 border border-gray-400 text-gray-700 rounded-md ml-2"
+                placeholder="PR Body"
+                value={prBody}
+                onChange={(e) => setPrBody(e.target.value)}
               />
-            )}
-            {selectedOption === 'gh pr create --title ' && (
-              <>
-                <input 
-                  type="text" 
-                  className="ml-2 p-2 border border-gray-400 text-black"
-                  placeholder="PR Title"
-                  value={prTitle}
-                  onChange={(e) => setPrTitle(e.target.value)}
-                />
-                <input 
-                  type="text" 
-                  className="ml-2 p-2 border border-gray-400 text-black"
-                  placeholder="PR Body"
-                  value={prBody}
-                  onChange={(e) => setPrBody(e.target.value)}
-                />
-              </>
-            )}
-            <button onClick={handleRunCommand} className="ml-2 p-2 bg-blue-500 text-white">Run</button>
+            </>
+          )}
+          <button 
+            onClick={handleRunCommand} 
+            className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Run
+          </button>
         </div> 
+      </div>
     </div>
-</div>
   );
 }
 
