@@ -271,6 +271,20 @@ const CodeCentral = () => {
         }
     }, [highlightedFiles, selectedProject]);
 
+    const fetchGitDiff = async () => {
+        if (selectedProject) {
+            try {
+                const response = await fetch(`/api/git-diff?projectName=${selectedProject}`);
+                const result = await response.json();
+                console.log('Git Diff Result:', result);
+            } catch (error) {
+                console.error('Error fetching git diff:', error);
+            }
+        } else {
+            console.error('No project selected.');
+        }
+    };
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
@@ -316,6 +330,7 @@ const CodeCentral = () => {
                 selectedProject={selectedProject}
             />            </div>
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
+            <button onClick={fetchGitDiff}>Fetch Git Diff</button>
             </div>
         </div>
     );
