@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
         },
     });
 
-    const data = await res.json();
+    const resText = await res.text();
+    console.log('Response:', resText); // Log the response as a string
+    const data = JSON.parse(resText);
+
     return new NextResponse(JSON.stringify({ data }), {
         status: 200,
         headers: {
