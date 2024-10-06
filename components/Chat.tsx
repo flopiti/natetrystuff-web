@@ -19,7 +19,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     "gh pr create --title ",
   ]);
 
-  const[selectedOption, setSelectedOption] = useState<string>("");
+  const[selectedOption, setSelectedOption] = useState<string>("no selected option");
   const[branchName, setBranchName] = useState<string>(branch);
   const[commitMessage, setCommitMessage] = useState<string>("");
   const[prTitle, setPrTitle] = useState<string>("");
@@ -142,7 +142,9 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
           <select 
             className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => setSelectedOption(e.target.value)}
+            value={selectedOption}
           >
+            <option value="no selected option">Select a command</option>
             {commandsReadyToGo.map((command:string, index:number) => (
               <option key={index} value={command}>{command}</option>
             ))}
@@ -186,6 +188,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
           <button 
             onClick={handleRunCommand} 
             className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={selectedOption === 'no selected option'}
           >
             Run
           </button>
