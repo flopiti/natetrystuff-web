@@ -274,7 +274,7 @@ const CodeCentral = () => {
     const fetchGitDiff = async () => {
         if (selectedProject) {
             try {
-                const response = await fetch(`/api/git-diff?projectName=${selectedProject}`);
+                const response = await fetch(`/api/git-diff?projectName=${selectedProject.name}`);
                 const result = await response.json();
                 console.log('Git Diff Result:', result);
             } catch (error) {
