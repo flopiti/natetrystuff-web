@@ -255,7 +255,6 @@ const CodeCentral = () => {
             const data = await response.json();
             console.log('Response from chat-no-stream:', data);
             // Handle the response data accordingly
-            setConversation([...conversation, { content: data.answer, role: 'assistant', type: 'text' }]);
             return data;
             // If there are files, you can update the state to reflect them as well
         } else {
