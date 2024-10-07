@@ -26,13 +26,14 @@ const CodeCentral = () => {
 
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
 
-
+    // Open terminal for current project if it doesn't have one
     useEffect(() => {
         if (selectedProject && doesCurrentProjectHaveTerminal) {
-            const runCommandWithLogging = `cd /dev-projects/${selectedProject.name}`;
-            runCommandInCurrentProject(runCommandWithLogging);
+            runCommandInCurrentProject(`cd /dev-projects/${selectedProject.name}`);
         }
     }, [selectedProject, doesCurrentProjectHaveTerminal, terminals]);
+
+    // Get current branch for selected project
     useEffect(() => {
         if (selectedProject) {
             getCurrentBranch(dirPath, selectedProject.name).then((data) => {
@@ -44,6 +45,7 @@ const CodeCentral = () => {
         }
     }, [selectedProject]);
 
+    // Get projects for selected directory
     useEffect(() => {
         if (dirPath.length > 1) {
             getProjects(dirPath).then((data) => {
@@ -54,6 +56,7 @@ const CodeCentral = () => {
         }
     }, [dirPath]);
 
+    // Ask chat when user sends a message
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
@@ -62,6 +65,7 @@ const CodeCentral = () => {
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
+    // Get project files when selected project changes
     useEffect(() => {
         if (selectedProject) {
             (async () => {
@@ -71,6 +75,7 @@ const CodeCentral = () => {
         }
     }, [selectedProject]);
 
+    // Set selected file content and chat code when chat codes are fetched
     useEffect(() => {
         if (chatCodes?.length > 0) {
             setActiveTab('chat'); 
@@ -80,11 +85,6 @@ const CodeCentral = () => {
             }
         }
     }, [chatCodes]);
-
-    // Log devTerminalId on every render
-    useEffect(() => {
-        console.log('Dev Terminal ID during render:', devTerminalId);
-    });
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
@@ -218,9 +218,7 @@ const CodeCentral = () => {
             }
         }
         setLoading(false);
-
         setChatCodes(JSON.parse(chatCompletion).files);
-    
         return  
     }
 

@@ -14,7 +14,6 @@ const TerminalInstance: React.FC<TerminalInstanceProps> = ({
   isSelected,
   closeTerminal,
   runCommand,
-  runCommandAndGetOutput,
 }) => {
   return (
     <div className={`${isSelected ? "" : "hidden"}`}>
@@ -42,17 +41,6 @@ const TerminalInstance: React.FC<TerminalInstanceProps> = ({
         }
       >
         Run API in dev
-      </button>
-      <button
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={() => runCommandAndGetOutput("git branch --show-current").then((output:string) => {
-          console.log('Command Output:', output);
-        })
-        .catch((error:any) => {
-          console.error('Error:', error);
-        })}
-      >
-        Get Branch
       </button>
     </div>
   );
