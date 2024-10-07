@@ -306,9 +306,11 @@ const CodeCentral = () => {
     };
 
     useEffect(() => {
-        if (gitDiff) {
-            console.log('helodd');
+        if (gitDiff && gitDiff !== '') {
             console.log('Git Diff:', gitDiff);
+            const message = `Please reduce these changes to a less than 3 words commit message: ${gitDiff}`;
+            askChatNoStream([{ role: 'user', content: message }])
+                .then(data => { console.log('Commit Message:', data.answer) });
         }
     }, [gitDiff]);
 
