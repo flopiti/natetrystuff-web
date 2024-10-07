@@ -40,7 +40,8 @@ const CodeCentral = () => {
     const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
     const [commitMessage, setCommitMessage] = useState<string>('');
-    
+    const [gitDiff, setGitDiff] = useState<string | null>(null);
+
     const handleCommitMessageChange = (newMessage: string) => {
         setCommitMessage(newMessage);
     };
@@ -294,6 +295,7 @@ const CodeCentral = () => {
             try {
                 const response = await fetch(`/api/git-diff?projectName=${selectedProject.name}`);
                 const result = await response.json();
+                setGitDiff(result);
                 console.log('Git Diff Result:', result);
             } catch (error) {
                 console.error('Error fetching git diff:', error);
@@ -302,6 +304,12 @@ const CodeCentral = () => {
             console.error('No project selected.');
         }
     };
+
+    useEffect(() => {
+        if (gitDiff) {
+            console.log('helodd');
+        }
+    }, [gitDiff]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
