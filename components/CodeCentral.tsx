@@ -308,6 +308,7 @@ const CodeCentral = () => {
     useEffect(() => {
         if (gitDiff) {
             console.log('helodd');
+            console.log('Git Diff:', gitDiff);
         }
     }, [gitDiff]);
 
