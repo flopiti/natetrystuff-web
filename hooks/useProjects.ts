@@ -7,7 +7,8 @@ const useProjects = () => {
     const [projectFiles, setProjectFiles] = useState<string[]>([]);
     const [selectedFileName, setSelectedFileName] = useState<string>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
-    
+    const [branch, setBranch] = useState<string | null>(null);
+
     return {
         dirPath,
         setDirPath,
@@ -20,7 +21,9 @@ const useProjects = () => {
         selectedFileName,
         setSelectedFileName,
         selectedFileContent,
-        setSelectedFileContent
+        setSelectedFileContent,
+        branch,
+        setBranch
     };
 }
 

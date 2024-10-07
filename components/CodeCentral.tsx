@@ -14,23 +14,15 @@ const CodeCentral = () => {
 
     const { conversation, setConversation, highlightedFiles, setHighlightedFiles, highlightedFilesContent, setHighlightedFilesContent, chatCodes, setChatCodes, selectedChatCode, setSelectedChatCode} = useConversation();
     const { terminals, setTerminals, selectedTerminal, setSelectedTerminal, devTerminalId, setDevTerminalId, isTerminalOpen, setIsTerminalOpen } = useTerminals();
-    const { dirPath, setDirPath, projects, setProjects, selectedProject, setSelectedProject, projectFiles, setProjectFiles, selectedFileName, setSelectedFileName, selectedFileContent, setSelectedFileContent } = useProjects();
+    const { dirPath, setDirPath, projects, setProjects, selectedProject, setSelectedProject, projectFiles, setProjectFiles, selectedFileName, setSelectedFileName, selectedFileContent, setSelectedFileContent, branch, setBranch} = useProjects();
 
     const [activeTab, setActiveTab] = useState<string>('file');
     const [loading, setLoading] = useState<boolean>(false);
-
+    const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
+    const [gitDiff, setGitDiff] = useState<any>(null);
+    const [commitMessage, setCommitMessage] = useState<string>('');
 
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
-    const [branch, setBranch] = useState<string | null>(null);
-
-    const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
-
-    const [commitMessage, setCommitMessage] = useState<string>('');
-    const [gitDiff, setGitDiff] = useState<any>(null);
-
-    const handleCommitMessageChange = (newMessage: string) => {
-        setCommitMessage(newMessage);
-    };
 
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
