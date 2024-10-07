@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         async start(controller) {
             const chatCompletion = await openai.chat.completions.create({
                 messages: body.messages,
-                model: 'gpt-4o',
+                model: 'gpt-4', // changed from 'gpt-4o' to 'gpt-4'
                 stream: true,// enable streaming
                 response_format: { "type": "json_object" },
             });
