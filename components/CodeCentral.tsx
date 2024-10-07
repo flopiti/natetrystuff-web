@@ -306,9 +306,9 @@ const CodeCentral = () => {
     };
 
     useEffect(() => {
-        if (gitDiff && gitDiff.data !== '') {
+        if (gitDiff && gitDiff.data.diff !== '') {
             console.log('Git Diff:', gitDiff);
-            const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data}`;
+            const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => { console.log('Commit Message:', data.answer) });
         }
