@@ -11,6 +11,7 @@ import useTerminals from '@/hooks/useTerminals';
 import useProjects from '@/hooks/useProjects';
 import { getCurrentBranch } from '@/services/CodeService';
 import { askChatNoStream } from '@/services/GPTService';
+import { runCommandInCurrentProject } from '@/services/TerminalService';
 
 const CodeCentral = () => {
 
@@ -29,7 +30,7 @@ const CodeCentral = () => {
     // Open terminal for current project if it doesn't have one
     useEffect(() => {
         if (selectedProject && doesCurrentProjectHaveTerminal) {
-            runCommandInCurrentProject(`cd /dev-projects/${selectedProject.name}`);
+            runCommandInCurrentProject(`cd /dev-projects/${selectedProject.name}`,terminals.find((t) => t.id === devTerminalId));
         }
     }, [selectedProject, doesCurrentProjectHaveTerminal, terminals]);
 
@@ -86,6 +87,17 @@ const CodeCentral = () => {
         }
     }, [chatCodes]);
 
+    // Fetch highlighted files content when highlighted files change
+    useEffect(() => {
+        if (highlightedFiles.length > 0) {
+            (async () => {
+                const content = await fetchHighlightedFilesContent(highlightedFiles, selectedProject.name);
+                setHighlightedFilesContent(content);
+            })();
+        }
+    }, [highlightedFiles, selectedProject]);
+
+
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
@@ -99,33 +111,7 @@ const CodeCentral = () => {
           console.error('No active terminal selected or WebSocket not connected.');
         }
       };
-    
-    const runCommandInCurrentProject = (command: any) => {
-        console.log(`Current devTerminalId before running command:`, devTerminalId);
-        const terminal = terminals.find((t) => t.id === devTerminalId);
-        console.log(`Found terminal:`, terminal);
-        console.log(`Terminal WebSocket ready state:`, terminal?.ws?.readyState);
-        if (terminal && terminal.ws) {
-            let attempts = 0;
-            const maxAttempts = 5;
-            setTimeout(() => {
-                const interval = setInterval(() => {
-                    if (terminal.ws?.readyState === WebSocket.OPEN) {
-                        console.log("WebSocket is open, sending command", command);
-                        terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
-                        clearInterval(interval);
-                    } else if (terminal.ws?.readyState !== WebSocket.CONNECTING || attempts >= maxAttempts) {
-                        console.error('No active terminal for current project or WebSocket not connected.');
-                        clearInterval(interval);
-                    }
-                    attempts++;
-                }, 1000);
-            }, 1000);
-        } else {
-            console.error('No active terminal for current project or WebSocket not connected.');
-        }
-      };
-    
+        
     const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
@@ -208,15 +194,6 @@ const CodeCentral = () => {
         }
     };
 
-    useEffect(() => {
-        if (highlightedFiles.length > 0) {
-            (async () => {
-                const content = await fetchHighlightedFilesContent(highlightedFiles, selectedProject.name);
-                setHighlightedFilesContent(content);
-            })();
-        }
-    }, [highlightedFiles, selectedProject]);
-
     const fetchGitDiff = async () => {
         if (selectedProject) {
             try {
@@ -277,7 +254,6 @@ const CodeCentral = () => {
                 selectedTerminal={selectedTerminal}
                 setSelectedTerminal={setSelectedTerminal}
                 runCommand={runCommand}
-                runCommandInCurrentProject={runCommandInCurrentProject}
                 doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal}
                 setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
                 devTerminalId={devTerminalId}
