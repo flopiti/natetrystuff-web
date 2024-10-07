@@ -40,7 +40,7 @@ const CodeCentral = () => {
     const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
     const [commitMessage, setCommitMessage] = useState<string>('');
-    const [gitDiff, setGitDiff] = useState<string | null>(null);
+    const [gitDiff, setGitDiff] = useState<any>(null);
 
     const handleCommitMessageChange = (newMessage: string) => {
         setCommitMessage(newMessage);
@@ -255,7 +255,6 @@ const CodeCentral = () => {
             const data = await response.json();
             console.log('Response from chat-no-stream:', data);
             // Handle the response data accordingly
-            setConversation([...conversation, { content: data.answer, role: 'assistant', type: 'text' }]);
             return data;
             // If there are files, you can update the state to reflect them as well
         } else {
@@ -307,9 +306,9 @@ const CodeCentral = () => {
     };
 
     useEffect(() => {
-        if (gitDiff && gitDiff !== '') {
+        if (gitDiff && gitDiff.data !== '') {
             console.log('Git Diff:', gitDiff);
-            const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff}`;
+            const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => { console.log('Commit Message:', data.answer) });
         }
