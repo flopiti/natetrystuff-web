@@ -8,11 +8,23 @@ export const useConversation = () => {
     If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
     If the code is not a coding solution, simply do not include the property in the JSON object.`;
 
-    const [conversation, setConversation] = useState<{ content: string, role: string, type: string }[]>([{ content: PROMPT, role: 'system', type: 'text' }]);
+    const [conversation, setConversation] = useState<{ content: string, role: string, type: string }[]>([{ content: PROMPT, role: 'system', type: 'text' }])
+    const [chatCodes, setChatCodes] = useState<any[]>([]);
+    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
+    const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
     return {
         conversation,
-        setConversation
+        setConversation,
+        chatCodes,
+        setChatCodes,
+        highlightedFiles,
+        setHighlightedFiles,
+        highlightedFilesContent,
+        setHighlightedFilesContent,
+        selectedChatCode,
+        setSelectedChatCode
     }
 }
-    
+

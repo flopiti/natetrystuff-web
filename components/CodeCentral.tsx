@@ -12,21 +12,14 @@ import useProjects from '@/hooks/useProjects';
 
 const CodeCentral = () => {
 
-    const { conversation, setConversation } = useConversation();
-    const { terminals, setTerminals, selectedTerminal, setSelectedTerminal, devTerminalId, setDevTerminalId } = useTerminals();
+    const { conversation, setConversation, highlightedFiles, setHighlightedFiles, highlightedFilesContent, setHighlightedFilesContent, chatCodes, setChatCodes, selectedChatCode, setSelectedChatCode} = useConversation();
+    const { terminals, setTerminals, selectedTerminal, setSelectedTerminal, devTerminalId, setDevTerminalId, isTerminalOpen, setIsTerminalOpen } = useTerminals();
     const { dirPath, setDirPath, projects, setProjects, selectedProject, setSelectedProject, projectFiles, setProjectFiles, selectedFileName, setSelectedFileName, selectedFileContent, setSelectedFileContent } = useProjects();
-    
 
     const [activeTab, setActiveTab] = useState<string>('file');
     const [loading, setLoading] = useState<boolean>(false);
-    const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
-    const [chatCodes, setChatCodes] = useState<any[]>([]);
-    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
-    const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
-    const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
 
