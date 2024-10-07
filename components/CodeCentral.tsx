@@ -8,17 +8,15 @@ import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, ge
 import Chat from './Chat';
 import { useConversation } from '@/hooks/useConversation';
 import useTerminals from '@/hooks/useTerminals';
+import useProjects from '@/hooks/useProjects';
 
 const CodeCentral = () => {
 
     const { conversation, setConversation } = useConversation();
     const { terminals, setTerminals, selectedTerminal, setSelectedTerminal, devTerminalId, setDevTerminalId } = useTerminals();
-    const [dirPath, setDirPath] = useState<string>('');
-    const [projects, setProjects] = useState<any[]>([]);
-    const [selectedProject, setSelectedProject] = useState<any>(null);
-    const [projectFiles, setProjectFiles] = useState<string[]>([]);
-    const [selectedFileName, setSelectedFileName] = useState<string>('');
-    const [selectedFileContent, setSelectedFileContent] = useState<string>('');
+    const { dirPath, setDirPath, projects, setProjects, selectedProject, setSelectedProject, projectFiles, setProjectFiles, selectedFileName, setSelectedFileName, selectedFileContent, setSelectedFileContent } = useProjects();
+    
+
     const [activeTab, setActiveTab] = useState<string>('file');
     const [loading, setLoading] = useState<boolean>(false);
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
