@@ -9,6 +9,7 @@ import Chat from './Chat';
 import { useConversation } from '@/hooks/useConversation';
 import useTerminals from '@/hooks/useTerminals';
 import useProjects from '@/hooks/useProjects';
+import { getCurrentBranch } from '@/services/CodeService';
 
 const CodeCentral = () => {
 
@@ -24,11 +25,7 @@ const CodeCentral = () => {
 
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
 
-    const getBranch = async () => {
-        const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
-        const { data } = await response.json();
-        setBranch(data.branchName);
-    }
+
     useEffect(() => {
         if (selectedProject && doesCurrentProjectHaveTerminal) {
             const runCommandWithLogging = `cd /dev-projects/${selectedProject.name}`;
@@ -37,7 +34,12 @@ const CodeCentral = () => {
     }, [selectedProject, doesCurrentProjectHaveTerminal, terminals]);
     useEffect(() => {
         if (selectedProject) {
-            getBranch();
+            getCurrentBranch(dirPath, selectedProject.name).then((data) => {
+                setBranch(data);
+            }
+            ).catch((error) => {
+                console.error('Error:', error);
+            });
         }
     }, [selectedProject]);
 
@@ -320,7 +322,7 @@ const CodeCentral = () => {
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 loading={loading}
             />
-            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch}/>
+            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getCurrentBranch} branch={branch}/>
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
                 terminals={terminals}
