@@ -7,14 +7,12 @@ import TerminalDisplay from './TerminalDisplay';
 import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
 import Chat from './Chat';
 import { useConversation } from '@/hooks/useConversation';
+import useTerminals from '@/hooks/useTerminals';
 
 const CodeCentral = () => {
 
-    const{conversation, setConversation} = useConversation();
-
-    const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
-    const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
-    const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
+    const { conversation, setConversation } = useConversation();
+    const { terminals, setTerminals, selectedTerminal, setSelectedTerminal, devTerminalId, setDevTerminalId } = useTerminals();
     const [dirPath, setDirPath] = useState<string>('');
     const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
