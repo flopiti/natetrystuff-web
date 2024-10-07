@@ -11,7 +11,6 @@ import useTerminals from '@/hooks/useTerminals';
 import useProjects from '@/hooks/useProjects';
 import { getCurrentBranch } from '@/services/CodeService';
 import { askChatNoStream } from '@/services/GPTService';
-import { runCommandInCurrentProject } from '@/services/TerminalService';
 
 const CodeCentral = () => {
 
@@ -111,7 +110,28 @@ const CodeCentral = () => {
           console.error('No active terminal selected or WebSocket not connected.');
         }
       };
-        
+    
+    const runCommandInCurrentProject = (command: any, terminal:any,) => {
+        if (terminal && terminal.ws) {
+            let attempts = 0;
+            const maxAttempts = 5;
+            setTimeout(() => {
+                const interval = setInterval(() => {
+                    if (terminal.ws?.readyState === WebSocket.OPEN) {
+                        terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${terminal.id}`, data: command + '\r' }));
+                        clearInterval(interval);
+                    } else if (terminal.ws?.readyState !== WebSocket.CONNECTING || attempts >= maxAttempts) {
+                        console.error('No active terminal for current project or WebSocket not connected.');
+                        clearInterval(interval);
+                    }
+                    attempts++;
+                }, 1000);
+            }, 1000);
+        } else {
+            console.error('No active terminal for current project or WebSocket not connected.');
+        }
+      };
+    
     const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
