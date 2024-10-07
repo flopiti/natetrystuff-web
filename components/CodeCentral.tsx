@@ -10,6 +10,7 @@ import { useConversation } from '@/hooks/useConversation';
 import useTerminals from '@/hooks/useTerminals';
 import useProjects from '@/hooks/useProjects';
 import { getCurrentBranch } from '@/services/CodeService';
+import { askChatNoStream } from '@/services/GPTService';
 
 const CodeCentral = () => {
 
@@ -222,25 +223,6 @@ const CodeCentral = () => {
     
         return  
     }
-
-    const askChatNoStream = async (messages: any[]): Promise<any> => {
-        const response = await fetch('/api/chat-no-stream', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ messages })
-        });
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Response from chat-no-stream:', data);
-            // Handle the response data accordingly
-            return data;
-            // If there are files, you can update the state to reflect them as well
-        } else {
-            console.error('Error calling chat-no-stream:', response.statusText);
-        }
-    };
 
     const handleFileSelect = async (fileName: string) => {
         setSelectedFileName(fileName);
