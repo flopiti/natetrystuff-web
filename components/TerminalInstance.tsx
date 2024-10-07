@@ -6,7 +6,6 @@ interface TerminalInstanceProps {
   isSelected: boolean;
   closeTerminal: (id: number) => void;
   runCommand: (command: string) => void;
-  runCommandAndGetOutput: (command: string) => any;
 }
 
 const TerminalInstance: React.FC<TerminalInstanceProps> = ({
