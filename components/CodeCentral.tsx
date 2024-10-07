@@ -243,7 +243,7 @@ const CodeCentral = () => {
         return  
     }
 
-    const askChatNoStream = async (messages: any[]) => {
+    const askChatNoStream = async (messages: any[]): Promise<any> => {
         const response = await fetch('/api/chat-no-stream', {
             method: 'POST',
             headers: {
@@ -256,6 +256,7 @@ const CodeCentral = () => {
             console.log('Response from chat-no-stream:', data);
             // Handle the response data accordingly
             setConversation([...conversation, { content: data.answer, role: 'assistant', type: 'text' }]);
+            return data;
             // If there are files, you can update the state to reflect them as well
         } else {
             console.error('Error calling chat-no-stream:', response.statusText);
