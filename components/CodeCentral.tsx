@@ -178,6 +178,26 @@ const CodeCentral = () => {
         }
       };
 
+    const askChatNoStream = async (messages: any[]) => {
+        const response = await fetch('/api/chat-no-stream', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ messages })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Response from chat-no-stream:', data);
+            // Handle the response data accordingly
+            setConversation([...conversation, { content: data.answer, role: 'assistant', type: 'text' }]);
+            // If there are files, you can update the state to reflect them as well
+        } else {
+            console.error('Error calling chat-no-stream:', response.statusText);
+        }
+    };
+
     const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
