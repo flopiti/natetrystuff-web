@@ -39,6 +39,13 @@ const CodeCentral = () => {
 
     const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
+    const [commitMessage, setCommitMessage] = useState<string>('');
+    const [gitDiff, setGitDiff] = useState<string | null>(null);
+
+    const handleCommitMessageChange = (newMessage: string) => {
+        setCommitMessage(newMessage);
+    };
+
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
         const { data } = await response.json();
@@ -136,13 +143,6 @@ const CodeCentral = () => {
         } else {
             console.error('No active terminal for current project or WebSocket not connected.');
         }
-        // Remove immediate command transmission below
-        // if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
-        //   console.log("sending command", command);
-        //   terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
-        // } else {
-        //   console.error('No active terminal for current project or WebSocket not connected.');
-        // }
       };
     
     const runCommandAndGetOutput = async (command: string): Promise<string> => {
@@ -243,6 +243,25 @@ const CodeCentral = () => {
         return  
     }
 
+    const askChatNoStream = async (messages: any[]) => {
+        const response = await fetch('/api/chat-no-stream', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ messages })
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Response from chat-no-stream:', data);
+            // Handle the response data accordingly
+            setConversation([...conversation, { content: data.answer, role: 'assistant', type: 'text' }]);
+            // If there are files, you can update the state to reflect them as well
+        } else {
+            console.error('Error calling chat-no-stream:', response.statusText);
+        }
+    };
+
     const handleFileSelect = async (fileName: string) => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
@@ -276,6 +295,7 @@ const CodeCentral = () => {
             try {
                 const response = await fetch(`/api/git-diff?projectName=${selectedProject.name}`);
                 const result = await response.json();
+                setGitDiff(result);
                 console.log('Git Diff Result:', result);
             } catch (error) {
                 console.error('Error fetching git diff:', error);
@@ -284,6 +304,13 @@ const CodeCentral = () => {
             console.error('No project selected.');
         }
     };
+
+    useEffect(() => {
+        if (gitDiff) {
+            console.log('helodd');
+            console.log('Git Diff:', gitDiff);
+        }
+    }, [gitDiff]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
