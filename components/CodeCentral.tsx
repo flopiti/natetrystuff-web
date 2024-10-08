@@ -337,7 +337,7 @@ const CodeCentral = () => {
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 loading={loading}
             />
-            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch}/>
+            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch} commitMessage={commitMessage} />
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
                 terminals={terminals}
