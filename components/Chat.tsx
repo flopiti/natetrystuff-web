@@ -6,7 +6,7 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch, branch, commitMessage: initialCommitMessage }: any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage }: any) => {
   console.log('Branch argument received:', branch);
 
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
@@ -21,7 +21,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const [selectedOption, setSelectedOption] = useState<string>("no selected option");
   const [branchName, setBranchName] = useState<string>(branch);
-  const [commitMessage, setCommitMessage] = useState<string>(initialCommitMessage || "");
+  const [commitMessageState, setCommitMessage] = useState<string>(commitMessage || "");
   const [prTitle, setPrTitle] = useState<string>("");
   const [prBody, setPrBody] = useState<string>("");
 
@@ -43,8 +43,13 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   }, [branch]);
 
   useEffect(() => {
-    setCommitMessage(initialCommitMessage);
-  }, [initialCommitMessage]);
+    console.log('Commit message updated:', commitMessageState);
+  }, [commitMessageState]);
+
+  useEffect(() => {
+    console.log('Initial commit message changed:', commitMessage);
+    setCommitMessage(commitMessage);
+  }, [commitMessage]);
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
@@ -93,8 +98,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitCommit = () => {
-    if (commitMessage.trim()) {
-      runCommand(`git commit -m "${commitMessage}"`);
+    if (commitMessageState.trim()) {
+      runCommand(`git commit -m "${commitMessageState}"`);
     } else {
       alert('Please enter a commit message');
     }
@@ -122,6 +127,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
             <p className="bg-blue-100 p-2 rounded-lg inline-block max-w-xs">{message.content}</p>
           </div>
         ))}
+        {console.log('Commit message:', commitMessage)}
       </div>
       <div className="w-full h-1/5 bg-gray-200 flex flex-col justify-between p-4">
         <textarea 
@@ -159,7 +165,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
               type="text" 
               className="p-2 border border-gray-400 text-gray-700 rounded-md"
               placeholder="Commit Message"
-              value={commitMessage}
+              value={commitMessageState}
               onChange={(e) => setCommitMessage(e.target.value)}
             />
           )}
