@@ -6,10 +6,10 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch, branch}:any) => {
-  console.log('Branch argument received:', branch); // Added log statement
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand , getBranch, branch, commitMessage: initialCommitMessage }: any) => {
+  console.log('Branch argument received:', branch);
 
-  const[commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
+  const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
     "git checkout -b",
     "git switch main",
@@ -19,12 +19,11 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     "gh pr create --title ",
   ]);
 
-  const[selectedOption, setSelectedOption] = useState<string>("no selected option");
-  const[branchName, setBranchName] = useState<string>(branch);
-  const[commitMessage, setCommitMessage] = useState<string>("");
-  const[prTitle, setPrTitle] = useState<string>("");
-  const[prBody, setPrBody] = useState<string>("");
-
+  const [selectedOption, setSelectedOption] = useState<string>("no selected option");
+  const [branchName, setBranchName] = useState<string>(branch);
+  const [commitMessage, setCommitMessage] = useState<string>(initialCommitMessage || "");
+  const [prTitle, setPrTitle] = useState<string>("");
+  const [prBody, setPrBody] = useState<string>("");
 
   useEffect(() => {
     setMessages(conversation);
@@ -48,30 +47,23 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
     if (selectedOption === 'git pull origin main') {
       gitPullOriginMain();
-    } 
-    else if (selectedOption === 'git switch main') {
+    } else if (selectedOption === 'git switch main') {
       gitSwitchOriginMain();
-    }
-    else if (selectedOption === 'git checkout -b') {
+    } else if (selectedOption === 'git checkout -b') {
       gitCheckoutBranch();
-    }
-    else if (selectedOption === 'git add .') {
+    } else if (selectedOption === 'git add .') {
       gitAddAll();
-    }
-    else if (selectedOption === 'git commit -m ') {
+    } else if (selectedOption === 'git commit -m ') {
       gitCommit();
-    }
-    else if (selectedOption === `git push origin ${branch}`) {
+    } else if (selectedOption === `git push origin ${branch}`) {
       gitPush();
-    }
-    else if (selectedOption === 'gh pr create --title ') {
+    } else if (selectedOption === 'gh pr create --title ') {
       createPullRequest();
-    } 
-    else {
+    } else {
       alert("Command not found");
     }
 
-    if(branchName) {
+    if (branchName) {
       getBranch();
     }
   };
@@ -121,7 +113,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     <div className="w-2/5 bg-gray-100 h-full flex flex-col shadow-lg">
       <div className="w-full flex-grow bg-white overflow-scroll p-4 border-b border-gray-300">
         {loading && <p className="text-center text-gray-500">Loading...</p>}
-        {conversation?.slice(1).map((message:any, index:number) => (
+        {conversation?.slice(1).map((message: any, index: number) => (
           <div key={index} className={`text-gray-800 ${message.role === 'user' ? 'text-right' : 'text-left'} mt-2`}> 
             <p className="bg-blue-100 p-2 rounded-lg inline-block max-w-xs">{message.content}</p>
           </div>
@@ -145,7 +137,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
             value={selectedOption}
           >
             <option value="no selected option">Select a command</option>
-            {commandsReadyToGo.map((command:string, index:number) => (
+            {commandsReadyToGo.map((command: string, index: number) => (
               <option key={index} value={command}>{command}</option>
             ))}
           </select>
