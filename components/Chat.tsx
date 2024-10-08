@@ -42,6 +42,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     ]);
   }, [branch]);
 
+  useEffect(() => {
+    setCommitMessage(initialCommitMessage);
+  }, [initialCommitMessage]);
+
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
 
