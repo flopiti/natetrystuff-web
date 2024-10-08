@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
-
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
@@ -14,6 +13,26 @@ const CodeCentral = () => {
     If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
     If the code is not a coding solution, simply do not include the property in the JSON object.`;
 
+    const [conversation, setConversation] = useState<any[]>([
+        { content: PROMPT, role: 'system', type: 'text' }
+    ]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
+    const [chatCodes, setChatCodes] = useState<any[]>([]);
+
+    useEffect(() => {
+        const lastMessage = conversation[conversation.length - 1];
+        if (lastMessage.role === 'user') {
+            setLoading(true);
+            // Assuming askChat is a function that handles the conversation
+            askChat(conversation, highlightedFiles, highlightedFilesContent);
+        }
+    }, [conversation, highlightedFiles, highlightedFilesContent]);
+
+    const addToConversation = (message: string) => {
+        setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
+    };
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
@@ -23,14 +42,9 @@ const CodeCentral = () => {
     const [projectFiles, setProjectFiles] = useState<string[]>([]);
     const [selectedFileName, setSelectedFileName] = useState<string>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
-    const [conversation, setConversation] = useState<{ content: string, role: string, type: string }[]>([{ content: PROMPT, role: 'system', type: 'text' }]);
     const [activeTab, setActiveTab] = useState<string>('file');
-    const [loading, setLoading] = useState<boolean>(false);
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
-    const [chatCodes, setChatCodes] = useState<any[]>([]);
-    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
@@ -74,14 +88,6 @@ const CodeCentral = () => {
     }, [dirPath]);
 
     useEffect(() => {
-        const lastMessage = conversation[conversation.length - 1];
-        if (lastMessage.role === 'user') {
-            setLoading(true);
-            askChat(conversation, highlightedFiles, highlightedFilesContent);
-        }
-    }, [conversation, highlightedFiles, highlightedFilesContent]);
-
-    useEffect(() => {
         if (selectedProject) {
             (async () => {
                 const data = await getProjectFiles(selectedProject);
@@ -104,10 +110,6 @@ const CodeCentral = () => {
     useEffect(() => {
         console.log('Dev Terminal ID during render:', devTerminalId);
     });
-
-    const addToConversation = (message: string) => {
-        setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
-    };
 
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
@@ -310,7 +312,7 @@ const CodeCentral = () => {
             console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
-                .then(data => { console.log('Commit Message:', data.answer) });
+                .then(data => {setCommitMessage(data.answer) });
         }
     }, [gitDiff]);
 
@@ -342,7 +344,7 @@ const CodeCentral = () => {
                 replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
                 loading={loading}
             />
-            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch}/>
+            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch} commitMessage={commitMessage} />
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
                 terminals={terminals}
