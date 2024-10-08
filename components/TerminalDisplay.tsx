@@ -11,9 +11,12 @@ const TerminalDisplay = ({
   selectedTerminal,
   setSelectedTerminal,
   runCommand,
+  runCommandInCurrentProject,
+  runCommandAndGetOutput,
   selectedProject,
   doesCurrentProjectHaveTerminal,
   setDoesCurrentProjectHaveTerminal,
+  devTerminalId,
   setDevTerminalId,
 }: any) => {
   const [prexistingTerminals, setPrexistingTerminals] = useState<any[]>([]);
@@ -202,6 +205,7 @@ const TerminalDisplay = ({
           isSelected={selectedTerminal === t.id}
           closeTerminal={closeTerminal}
           runCommand={runCommand}
+          runCommandAndGetOutput={runCommandAndGetOutput}
         />
       ))}
     </div>
