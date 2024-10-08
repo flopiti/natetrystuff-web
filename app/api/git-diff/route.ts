@@ -10,7 +10,9 @@ export async function GET(request: NextRequest) {
         headers: {
           'Content-Type': 'application/json',
         },
+        cache: 'no-store'
     });
+
 
     const resText = await res.text();
     console.log('Response:', resText); // Log the response as a string
@@ -20,10 +22,6 @@ export async function GET(request: NextRequest) {
         status: 200,
         headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-            'Surrogate-Control': 'no-store'
         },
     });
 }
