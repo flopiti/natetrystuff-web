@@ -316,6 +316,11 @@ const CodeCentral = () => {
         }
     }, [gitDiff]);
 
+    const handleReplaceCode = async () => {
+        await replaceCode(selectedProject.name, chatCodes);
+        fetchGitDiff(); // Fetch git diff after replacing code
+    };
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
@@ -341,7 +346,7 @@ const CodeCentral = () => {
                 selectedFileContent={selectedFileContent} 
                 selectedChatCode={selectedChatCode} 
                 selectedFileName={selectedFileName} 
-                replaceCode={() => replaceCode(selectedProject.name, chatCodes)} 
+                replaceCode={handleReplaceCode} 
                 loading={loading}
             />
             <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch} commitMessage={commitMessage} />
@@ -361,7 +366,6 @@ const CodeCentral = () => {
                 selectedProject={selectedProject}
             />            </div>
             <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
-            <button onClick={fetchGitDiff}>Fetch Git Diff</button>
             </div>
         </div>
     );
