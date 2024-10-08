@@ -24,7 +24,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const [commitMessageState, setCommitMessage] = useState<string>(commitMessage || "");
   const [prTitle, setPrTitle] = useState<string>("");
   const [prBody, setPrBody] = useState<string>("");
-
+  console.log(commitMessage)
+  
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
@@ -127,7 +128,6 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
             <p className="bg-blue-100 p-2 rounded-lg inline-block max-w-xs">{message.content}</p>
           </div>
         ))}
-        {console.log('Commit message:', commitMessage)}
       </div>
       <div className="w-full h-1/5 bg-gray-200 flex flex-col justify-between p-4">
         <textarea 
