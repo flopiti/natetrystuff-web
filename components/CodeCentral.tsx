@@ -5,7 +5,6 @@ import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
 import Chat from './Chat';
-import useConversation from '../hooks/useConversation';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -14,16 +13,26 @@ const CodeCentral = () => {
     If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
     If the code is not a coding solution, simply do not include the property in the JSON object.`;
 
-    const {
-        conversation,
-        loading,
-        addToConversation,
-        setHighlightedFiles,
-        setHighlightedFilesContent,
-        chatCodes,
-        setChatCodes
-    } = useConversation(PROMPT);
+    const [conversation, setConversation] = useState<any[]>([
+        { content: PROMPT, role: 'system', type: 'text' }
+    ]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
+    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
+    const [chatCodes, setChatCodes] = useState<any[]>([]);
 
+    useEffect(() => {
+        const lastMessage = conversation[conversation.length - 1];
+        if (lastMessage.role === 'user') {
+            setLoading(true);
+            // Assuming askChat is a function that handles the conversation
+            askChat(conversation, highlightedFiles, highlightedFilesContent);
+        }
+    }, [conversation, highlightedFiles, highlightedFilesContent]);
+
+    const addToConversation = (message: string) => {
+        setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
+    };
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
@@ -36,8 +45,6 @@ const CodeCentral = () => {
     const [activeTab, setActiveTab] = useState<string>('file');
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
-    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
