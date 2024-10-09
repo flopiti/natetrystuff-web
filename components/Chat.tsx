@@ -24,8 +24,9 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const [commitMessageState, setCommitMessage] = useState<string>(commitMessage || "");
   const [prTitle, setPrTitle] = useState<string>(initialPrTitle || "");
   const [prBody, setPrBody] = useState<string>(initialPrBody || "");
-  console.log(commitMessage)
-  
+  const [currentTextInput, setCurrentTextInput] = useState<string>("");
+  const [changeDescription, setChangeDescription] = useState<string>("");
+
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
@@ -89,6 +90,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const handleStartButton = () => {
+    setChangeDescription(currentTextInput); // Save the input to changeDescription
+    setCurrentTextInput(''); // Clear the textarea input
     goMain();
     getBranch(); // Directly call getBranch after goMain
   }
@@ -160,10 +163,12 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       <div className="w-full h-1/5 bg-gray-200 flex flex-col justify-between p-4">
         <textarea 
           className="w-full h-3/5 text-gray-700 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={currentTextInput}
+          onChange={(e) => setCurrentTextInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
               addToConversation(e.currentTarget.value);
-              e.currentTarget.value = '';
+              setCurrentTextInput('');
               e.preventDefault(); 
             }
           }}
