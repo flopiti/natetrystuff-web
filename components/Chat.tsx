@@ -95,6 +95,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const gitSwitchOriginMain = () => {
     runCommand('git switch main');
+    getBranch();
   }
 
   const gitPullOriginMain = () => {
