@@ -91,10 +91,13 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       gitCheckoutBranch();
     } else if (selectedOption === 'git add .') {
       gitAddAll();
+      setSelectedOption('git commit -m ');
     } else if (selectedOption === 'git commit -m ') {
       gitCommit();
+      setSelectedOption(`git push origin ${branch}`);
     } else if (selectedOption === `git push origin ${branch}`) {
       gitPush();
+      setSelectedOption('gh pr create --title ');
     } else if (selectedOption === 'gh pr create --title ') {
       createPullRequest();
     } else {
@@ -112,6 +115,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     goMain();
     gitCheckoutBranch(); // Run gitCheckoutBranch after goMain
     getBranch(); // Directly call getBranch after gitCheckoutBranch
+    setSelectedOption('git add .'); // Set initial selected option to 'git add .'
   }
 
   
