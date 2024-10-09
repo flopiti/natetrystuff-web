@@ -75,9 +75,11 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   , [changeDescription]);
 
   useEffect(() => {
-    if(newChangeBranch) {
+    if(newChangeBranch && selectedProject) {
     console.log('New change branch:', newChangeBranch);
     gitCheckoutBranch(); // Run gitCheckoutBranch after goMain
+    getBranch(); // Directly call getBranch after gitCheckoutBranch
+
     }
   }, [newChangeBranch]);
 
@@ -115,7 +117,6 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     setChangeDescription(currentTextInput); // Save the input to changeDescription
     setCurrentTextInput(''); // Clear the textarea input
     goMain();
-    getBranch(); // Directly call getBranch after gitCheckoutBranch
     setSelectedOption('git add .'); // Set initial selected option to 'git add .'
   }
 
