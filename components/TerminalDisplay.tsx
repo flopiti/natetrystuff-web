@@ -12,7 +12,6 @@ const TerminalDisplay = ({
   setSelectedTerminal,
   runCommand,
   runCommandInCurrentProject,
-  runCommandAndGetOutput,
   selectedProject,
   doesCurrentProjectHaveTerminal,
   setDoesCurrentProjectHaveTerminal,
