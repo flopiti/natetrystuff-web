@@ -355,6 +355,7 @@ const CodeCentral = () => {
                 commitMessage={commitMessage} 
                 prTitle={prTitle} 
                 prBody={prBody} 
+                selectedProject={selectedProject} 
             />
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
