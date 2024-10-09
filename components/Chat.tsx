@@ -97,6 +97,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     setChangeDescription(currentTextInput); // Save the input to changeDescription
     setCurrentTextInput(''); // Clear the textarea input
     goMain();
+    generateBranchName(); // Call function to generate branch name
     getBranch(); // Directly call getBranch after goMain
   }
 
@@ -105,6 +106,18 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       .then(response => response.json())
       .then(data => console.log('API response:', data))
       .catch(error => console.error('Error fetching the API:', error));
+  }
+
+  const generateBranchName = () => {
+    const initialMessage = { role: 'user', content: `Please provide a git branch name that summarizes the following change description into a maximum of three words, using dashes instead of spaces: "${changeDescription}".` };
+    askChatNoStream([initialMessage])
+      .then(response => {
+        // Handle response
+        console.log('Branch Name Suggestion:', response);
+        // Assuming response content contains the branch name
+        setBranchName(response.content);
+      })
+      .catch(error => console.error('Error in generating branch name:', error));
   }
   
   const gitSwitchOriginMain = () => {
