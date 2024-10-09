@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
         apiKey: process.env.OPEN_AI_API_KEY
     });
 
+    // Create a readable stream to handle the AI chat completion
     const stream = new ReadableStream({
         async start(controller) {
             const chatCompletion = await openai.chat.completions.create({
