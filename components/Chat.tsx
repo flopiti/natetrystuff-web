@@ -63,6 +63,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     setPrBody(initialPrBody);
   }, [initialPrBody]);
 
+  useEffect(() => {
+    console.log('Change description updated:', changeDescription);
+  }, [changeDescription]);
+
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
 
