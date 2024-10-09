@@ -6,7 +6,7 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage, prTitle: initialPrTitle, prBody: initialPrBody, selectedProject }: any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage, prTitle: initialPrTitle, prBody: initialPrBody, selectedProject,askChatNoStream }: any) => {
   console.log('Branch argument received:', branch);
 
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
@@ -111,13 +111,13 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const generateBranchName = () => {
     const initialMessage = { role: 'user', content: `Please provide a git branch name that summarizes the following change description into a maximum of three words, using dashes instead of spaces: "${changeDescription}".` };
     askChatNoStream([initialMessage])
-      .then(response => {
+      .then((response: { content: React.SetStateAction<string>; }) => {
         // Handle response
         console.log('Branch Name Suggestion:', response);
         // Assuming response content contains the branch name
         setBranchName(response.content);
       })
-      .catch(error => console.error('Error in generating branch name:', error));
+      .catch((error: any) => console.error('Error in generating branch name:', error));
   }
   
   const gitSwitchOriginMain = () => {
