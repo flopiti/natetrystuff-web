@@ -297,9 +297,12 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
+            console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' fields containing the PR title and body based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {
+                    console.log('Received PR Title:', data.answer.title);
+                    console.log('Received PR Body:', data.answer.body);
                     setPrTitle(data.answer.title);
                     setPrBody(data.answer.body);
                 });
