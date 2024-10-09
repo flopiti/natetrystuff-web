@@ -222,8 +222,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
               type="text" 
               className="p-2 border border-gray-400 text-gray-700 rounded-md"
               placeholder="Branch Name"
-              value={branchName}
-              onChange={(e) => setBranchName(e.target.value)}
+              value={newChangeBranch}
+              onChange={(e) => setNewChangeBranch(e.target.value)}
             />
           )}
           {selectedOption === 'git commit -m ' && (
