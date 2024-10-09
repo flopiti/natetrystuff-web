@@ -149,7 +149,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const gitCheckoutBranch = () => {
     if (branchName.trim()) {
-      runCommand(`git checkout -b ${branchName}`);
+      runCommand(`git checkout -b ${newChangeBranch}`);
       setTimeout(() => {
         getBranch();
       }, 5000);
