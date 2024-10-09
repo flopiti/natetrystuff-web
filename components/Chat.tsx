@@ -6,7 +6,7 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage, prTitle: initialPrTitle, prBody: initialPrBody }: any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage, prTitle: initialPrTitle, prBody: initialPrBody, selectedProject }: any) => {
   console.log('Branch argument received:', branch);
 
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
@@ -93,7 +93,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   }
 
   const goMain = () => {
-    fetch(`/api/go-main?projectName=${branchName}`)
+    fetch(`/api/go-main?projectName=${selectedProject}`)
       .then(response => response.json())
       .then(data => console.log('API response:', data))
       .catch(error => console.error('Error fetching the API:', error));
