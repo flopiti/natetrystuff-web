@@ -147,38 +147,7 @@ const CodeCentral = () => {
         }
       };
     
-    const runCommandAndGetOutput = async (command: string): Promise<string> => {
-        const terminal = terminals.find((t) => t.id === selectedTerminal);
-        if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
-          return new Promise((resolve, reject) => {
-            const sessionId = `session-${selectedTerminal}`;
-            const ws = terminal.ws;
-            let capture = false;
     
-            const handleMessage = (event: MessageEvent) => {
-              const message = JSON.parse(event.data);
-              if(message.data.includes('git branch --show-current')){
-                capture = true;
-              }
-    
-              if (message.type === 'commandOutput' && message.id === sessionId) {
-                ws?.removeEventListener('message', handleMessage);
-                resolve(message.data.trim());
-              } else if (message.type === 'commandError' && message.id === sessionId) {
-                ws?.removeEventListener('message', handleMessage);
-                reject(message.error);
-              }
-            };
-    
-            ws?.addEventListener('message', handleMessage);
-    
-            ws?.send(JSON.stringify({ type: 'command', id: sessionId, data: command + '\r' }));
-          });
-        } else {
-          console.error('No active terminal selected or WebSocket not connected.');
-          return Promise.reject('No active terminal selected or WebSocket not connected.');
-        }
-      };
 
     const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
@@ -358,7 +327,6 @@ const CodeCentral = () => {
                 setSelectedTerminal={setSelectedTerminal}
                 runCommand={runCommand}
                 runCommandInCurrentProject={runCommandInCurrentProject}
-                runCommandAndGetOutput={runCommandAndGetOutput}
                 doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal}
                 setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
                 devTerminalId={devTerminalId}
