@@ -93,7 +93,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   }
 
   const goMain = () => {
-    fetch(`/api/go-main?projectName=${selectedProject}`)
+    fetch(`/api/go-main?projectName=${selectedProject.name}`)
       .then(response => response.json())
       .then(data => console.log('API response:', data))
       .catch(error => console.error('Error fetching the API:', error));
