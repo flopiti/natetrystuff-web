@@ -26,6 +26,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const [prBody, setPrBody] = useState<string>(initialPrBody || "");
   const [currentTextInput, setCurrentTextInput] = useState<string>("");
   const [changeDescription, setChangeDescription] = useState<string>("");
+  const [newChangeBranch, setNewChangeBranch] = useState<string>("");
 
   useEffect(() => {
     setMessages(conversation);
@@ -67,6 +68,18 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     console.log('Change description updated:', changeDescription);
   }, [changeDescription]);
 
+
+  useEffect(() => {
+    generateBranchName(); // Call function to generate branch name
+  }
+  , [changeDescription]);
+
+  useEffect(() => {
+    console.log('New change branch:', newChangeBranch);
+
+  }, [newChangeBranch]);
+
+
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
 
@@ -97,9 +110,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     setChangeDescription(currentTextInput); // Save the input to changeDescription
     setCurrentTextInput(''); // Clear the textarea input
     goMain();
-    generateBranchName(); // Call function to generate branch name
     getBranch(); // Directly call getBranch after goMain
   }
+
+  
 
   const goMain = () => {
     fetch(`/api/go-main?projectName=${selectedProject.name}`)
@@ -109,13 +123,15 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   }
 
   const generateBranchName = () => {
-    const initialMessage = { role: 'user', content: `Please provide a git branch name that summarizes the following change description into a maximum of three words, using dashes instead of spaces: "${changeDescription}".` };
+    console.log(changeDescription)
+    const initialMessage = { role: 'user', content: `Please provide a git branch name that summarizes the following change description into a maximum of three words, using dashes instead of spaces: "${changeDescription}". The response must in a JSON with the only field being branchName` };
     askChatNoStream([initialMessage])
-      .then((response: { content: React.SetStateAction<string>; }) => {
+      .then((response: { branchName: string }) => {
         // Handle response
+        console.log(response)
         console.log('Branch Name Suggestion:', response);
         // Assuming response content contains the branch name
-        setBranchName(response.content);
+        setNewChangeBranch(response.branchName);
       })
       .catch((error: any) => console.error('Error in generating branch name:', error));
   }
