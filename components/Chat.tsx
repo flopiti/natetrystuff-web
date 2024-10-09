@@ -148,11 +148,11 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitCheckoutBranch = () => {
-    if (branchName.trim()) {
-      runCommand(`git checkout -b ${newChangeBranch}`);
-      setTimeout(() => {
-        getBranch();
-      }, 5000);
+    if (newChangeBranch.trim()) {
+      fetch(`/api/create-branch?project=${selectedProject.name}&branchName=${newChangeBranch}`)
+        .then(response => response.json())
+        .then(data => console.log('API response:', data))
+        .catch(error => console.error('Error fetching the API:', error));
     } else {
       alert('Please enter a branch name');
     }
