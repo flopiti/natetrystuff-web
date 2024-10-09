@@ -110,7 +110,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     setChangeDescription(currentTextInput); // Save the input to changeDescription
     setCurrentTextInput(''); // Clear the textarea input
     goMain();
-    getBranch(); // Directly call getBranch after goMain
+    gitCheckoutBranch(); // Run gitCheckoutBranch after goMain
+    getBranch(); // Directly call getBranch after gitCheckoutBranch
   }
 
   
