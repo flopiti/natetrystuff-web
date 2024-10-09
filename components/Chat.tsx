@@ -92,11 +92,11 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     gitSwitchOriginMain();
     gitPullOriginMain();
   }
-
   const gitSwitchOriginMain = () => {
-    runCommand('git switch main').then(() => {
-    getBranch();
-    });
+    runCommand('git switch main');
+    setTimeout(() => {
+      getBranch();
+    }, 5000);
   }
 
   const gitPullOriginMain = () => {
@@ -105,10 +105,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const gitCheckoutBranch = () => {
     if (branchName.trim()) {
-      runCommand(`git checkout -b ${branchName}`).then(() => {
+      runCommand(`git checkout -b ${branchName}`);
+      setTimeout(() => {
         getBranch();
-      }
-      );
+      }, 5000);
     } else {
       alert('Please enter a branch name');
     }
