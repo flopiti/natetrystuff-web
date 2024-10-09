@@ -89,9 +89,16 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const handleStartButton = () => {
-    gitSwitchOriginMain();
-    gitPullOriginMain();
+    goMain();
   }
+
+  const goMain = () => {
+    fetch(`/api/go-main?projectName=${branchName}`)
+      .then(response => response.json())
+      .then(data => console.log('API response:', data))
+      .catch(error => console.error('Error fetching the API:', error));
+  }
+  
   const gitSwitchOriginMain = () => {
     runCommand('git switch main');
     setTimeout(() => {
