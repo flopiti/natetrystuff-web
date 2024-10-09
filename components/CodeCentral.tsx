@@ -352,6 +352,7 @@ const CodeCentral = () => {
                 prTitle={prTitle} 
                 prBody={prBody} 
                 selectedProject={selectedProject} 
+                askChatNoStream={askChatNoStream} // Added prop here
             />
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
