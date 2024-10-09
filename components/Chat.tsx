@@ -75,10 +75,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   , [changeDescription]);
 
   useEffect(() => {
+    if(newChangeBranch) {
     console.log('New change branch:', newChangeBranch);
     gitCheckoutBranch(); // Run gitCheckoutBranch after goMain
-
-
+    }
   }, [newChangeBranch]);
 
 
