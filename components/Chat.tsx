@@ -90,6 +90,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
 
   const handleStartButton = () => {
     goMain();
+    getBranch(); // Directly call getBranch after goMain
   }
 
   const goMain = () => {
