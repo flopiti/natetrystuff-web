@@ -62,6 +62,17 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     setPrBody(initialPrBody);
   }, [initialPrBody]);
 
+  const goMain = (selectedProject: string) => {
+    fetch(`/api/go-main?projectName=${selectedProject}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('API response:', data);
+      })
+      .catch(error => {
+        console.error('Error calling goMain API:', error);
+      });
+  };
+
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
 
