@@ -88,6 +88,11 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     }
   };
 
+  const handleStartButton = () => {
+    gitSwitchOriginMain();
+    gitPullOriginMain();
+  }
+
   const gitSwitchOriginMain = () => {
     runCommand('git switch main');
   }
@@ -203,6 +208,12 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
             disabled={selectedOption === 'no selected option'}
           >
             Run
+          </button>
+          <button 
+            onClick={handleStartButton} 
+            className="p-2 bg-green-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            Start
           </button>
         </div> 
       </div>
