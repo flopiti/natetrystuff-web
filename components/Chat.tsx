@@ -6,7 +6,7 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage }: any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage, prTitle: initialPrTitle, prBody: initialPrBody }: any) => {
   console.log('Branch argument received:', branch);
 
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
@@ -22,8 +22,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const [selectedOption, setSelectedOption] = useState<string>("no selected option");
   const [branchName, setBranchName] = useState<string>(branch);
   const [commitMessageState, setCommitMessage] = useState<string>(commitMessage || "");
-  const [prTitle, setPrTitle] = useState<string>("");
-  const [prBody, setPrBody] = useState<string>("");
+  const [prTitle, setPrTitle] = useState<string>(initialPrTitle || "");
+  const [prBody, setPrBody] = useState<string>(initialPrBody || "");
   console.log(commitMessage)
   
   useEffect(() => {
@@ -51,6 +51,16 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     console.log('Initial commit message changed:', commitMessage);
     setCommitMessage(commitMessage);
   }, [commitMessage]);
+
+  useEffect(() => {
+    console.log('Initial PR Title changed:', initialPrTitle);
+    setPrTitle(initialPrTitle);
+  }, [initialPrTitle]);
+
+  useEffect(() => {
+    console.log('Initial PR Body changed:', initialPrBody);
+    setPrBody(initialPrBody);
+  }, [initialPrBody]);
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);

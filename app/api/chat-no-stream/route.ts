@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 export async function POST(request: NextRequest) {
     try {
-        console.log("Received POST request");
+        console.log("Received POST request"); // Log when a POST request is received
         const body = await request.json();
         console.log("Request body:", body);
         const openai = new OpenAI({

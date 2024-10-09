@@ -301,6 +301,8 @@ const CodeCentral = () => {
             const message = `Please provide a JSON response with the 'answer' fields containing the PR title and body based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {
+                    const additionalMessage = `PR Title: ${data.answer.title}, PR Body: ${data.answer.body}`;
+                    addToConversation(additionalMessage);
                     console.log('Received PR Title:', data.answer.title);
                     console.log('Received PR Body:', data.answer.body);
                     setPrTitle(data.answer.title);
@@ -342,7 +344,18 @@ const CodeCentral = () => {
                 replaceCode={handleReplaceCode} 
                 loading={loading}
             />
-            <Chat addToConversation={addToConversation} conversation={conversation} loading={loading} setMessages={setConversation} runCommand={runCommandInCurrentProject}  getBranch={getBranch} branch={branch} commitMessage={commitMessage} />
+            <Chat 
+                addToConversation={addToConversation} 
+                conversation={conversation} 
+                loading={loading} 
+                setMessages={setConversation} 
+                runCommand={runCommandInCurrentProject}  
+                getBranch={getBranch} 
+                branch={branch} 
+                commitMessage={commitMessage} 
+                prTitle={prTitle} 
+                prBody={prBody} 
+            />
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
                 terminals={terminals}
