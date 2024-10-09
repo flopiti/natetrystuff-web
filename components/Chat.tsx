@@ -6,7 +6,7 @@ interface Message {
   type: string;
 }
 
-const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage, prTitle: initialPrTitle, prBody: initialPrBody, selectedProject }: any) => {
+const Chat = ({ conversation, loading, addToConversation, setMessages, runCommand, getBranch, branch, commitMessage, prTitle: initialPrTitle, prBody: initialPrBody, selectedProject,askChatNoStream }: any) => {
   console.log('Branch argument received:', branch);
 
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
@@ -24,8 +24,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   const [commitMessageState, setCommitMessage] = useState<string>(commitMessage || "");
   const [prTitle, setPrTitle] = useState<string>(initialPrTitle || "");
   const [prBody, setPrBody] = useState<string>(initialPrBody || "");
-  console.log(commitMessage)
-  
+  const [currentTextInput, setCurrentTextInput] = useState<string>("");
+  const [changeDescription, setChangeDescription] = useState<string>("");
+  const [newChangeBranch, setNewChangeBranch] = useState<string>("");
+
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
@@ -62,6 +64,22 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     setPrBody(initialPrBody);
   }, [initialPrBody]);
 
+  useEffect(() => {
+    console.log('Change description updated:', changeDescription);
+  }, [changeDescription]);
+
+
+  useEffect(() => {
+    generateBranchName(); // Call function to generate branch name
+  }
+  , [changeDescription]);
+
+  useEffect(() => {
+    console.log('New change branch:', newChangeBranch);
+
+  }, [newChangeBranch]);
+
+
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
 
@@ -89,15 +107,33 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const handleStartButton = () => {
+    setChangeDescription(currentTextInput); // Save the input to changeDescription
+    setCurrentTextInput(''); // Clear the textarea input
     goMain();
     getBranch(); // Directly call getBranch after goMain
   }
+
+  
 
   const goMain = () => {
     fetch(`/api/go-main?projectName=${selectedProject.name}`)
       .then(response => response.json())
       .then(data => console.log('API response:', data))
       .catch(error => console.error('Error fetching the API:', error));
+  }
+
+  const generateBranchName = () => {
+    console.log(changeDescription)
+    const initialMessage = { role: 'user', content: `Please provide a git branch name that summarizes the following change description into a maximum of three words, using dashes instead of spaces: "${changeDescription}". The response must in a JSON with the only field being branchName` };
+    askChatNoStream([initialMessage])
+      .then((response: { branchName: string }) => {
+        // Handle response
+        console.log(response)
+        console.log('Branch Name Suggestion:', response);
+        // Assuming response content contains the branch name
+        setNewChangeBranch(response.branchName);
+      })
+      .catch((error: any) => console.error('Error in generating branch name:', error));
   }
   
   const gitSwitchOriginMain = () => {
@@ -160,10 +196,12 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       <div className="w-full h-1/5 bg-gray-200 flex flex-col justify-between p-4">
         <textarea 
           className="w-full h-3/5 text-gray-700 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={currentTextInput}
+          onChange={(e) => setCurrentTextInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
               addToConversation(e.currentTarget.value);
-              e.currentTarget.value = '';
+              setCurrentTextInput('');
               e.preventDefault(); 
             }
           }}
@@ -184,8 +222,8 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
               type="text" 
               className="p-2 border border-gray-400 text-gray-700 rounded-md"
               placeholder="Branch Name"
-              value={branchName}
-              onChange={(e) => setBranchName(e.target.value)}
+              value={newChangeBranch}
+              onChange={(e) => setNewChangeBranch(e.target.value)}
             />
           )}
           {selectedOption === 'git commit -m ' && (
