@@ -54,10 +54,20 @@ const CodeCentral = () => {
     const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
     const [commitMessage, setCommitMessage] = useState<string>('');
+    const [prTitle, setPrTitle] = useState<string>('');
+    const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
 
     const handleCommitMessageChange = (newMessage: string) => {
         setCommitMessage(newMessage);
+    };
+
+    const handlePrTitleChange = (newTitle: string) => {
+        setPrTitle(newTitle);
+    };
+
+    const handlePrBodyChange = (newBody: string) => {
+        setPrBody(newBody);
     };
 
     const getBranch = async () => {
@@ -313,6 +323,17 @@ const CodeCentral = () => {
             const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {setCommitMessage(data.answer) });
+        }
+    }, [gitDiff]);
+
+    useEffect(() => {
+        if (gitDiff && gitDiff.data.diff !== '') {
+            const message = `Please provide a JSON response with the 'answer' fields containing the PR title and body based on these changes: ${gitDiff.data.diff}`;
+            askChatNoStream([{ role: 'user', content: message }])
+                .then(data => {
+                    setPrTitle(data.answer.title);
+                    setPrBody(data.answer.body);
+                });
         }
     }, [gitDiff]);
 
