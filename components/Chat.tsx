@@ -104,6 +104,7 @@ const Chat = ({
     console.log('just ran goMain');
     console.log('now checking out branch:', newBranchName);
     await gitCheckoutBranch(newBranchName,selectedProject.name);
+    console.log('just ran gitCheckoutBranch about to getBranch');
     getBranch();
     setSelectedOption("git-send-it");
   };
