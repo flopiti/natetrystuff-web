@@ -1,7 +1,6 @@
 import { LinesOptions, Change, Callback, CallbackOptions } from "diff";
 
 export const getProjects = async (dirPath:string) => {
-    console.log('calling getProjects'); 
     const res = await fetch(`api/get-projects?dirPath=${dirPath}`, {
         headers: {
             'Content-Type': 'application/json',
