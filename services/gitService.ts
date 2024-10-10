@@ -11,6 +11,7 @@ export const gitCheckoutBranch = (checkoutBranch: string, projectName:string) =>
         `/api/create-branch?project=${projectName}&branchName=${checkoutBranch}`
       )
         .then((response) => response.json())
+        .then((data) => console.log("API response:", data))
         .catch((error) => console.error("Error fetching the API:", error));
     } else {
       alert("Please enter a branch name");
