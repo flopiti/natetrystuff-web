@@ -120,7 +120,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
   };
 
   const gitCheckoutBranch = (checkoutBranch:string) => {
-    if (newChangeBranch.trim()) {
+    if (checkoutBranch.trim()) {
       fetch(`/api/create-branch?project=${selectedProject.name}&branchName=${checkoutBranch}`)
         .then(response => response.json())
         .catch(error => console.error('Error fetching the API:', error));
