@@ -298,7 +298,7 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
-            <div className="flex h-full flex-row w-full">
+            <div className="flex h-full flex-col w-full">
                 <div>
                     {branch && <p>Current Branch: {branch}</p>}
                 </div>
