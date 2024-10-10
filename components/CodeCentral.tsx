@@ -48,8 +48,7 @@ const CodeCentral = () => {
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
-    console.log('selected Chat Code:');
-    console.log(selectedChatCode);
+    console.log('selected Chat Code:', selectedChatCode);
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
@@ -120,7 +119,17 @@ const CodeCentral = () => {
             }
         }
     }, [chatCodes]);
-    
+
+    useEffect(() => {
+        if(selectedChatCode) {
+            setChatCodes(prevChatCodes => {
+                return prevChatCodes.map(fileData =>
+                    fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
+                );
+            });
+        }
+    }, [selectedChatCode]);
+
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
@@ -129,7 +138,7 @@ const CodeCentral = () => {
           console.error('No active terminal selected or WebSocket not connected.');
         }
       };
-    
+
     const runCommandInCurrentProject = (command: any) => {
         const terminal = terminals.find((t) => t.id === devTerminalId);
         if (terminal && terminal.ws) {
@@ -151,8 +160,7 @@ const CodeCentral = () => {
             console.error('No active terminal for current project or WebSocket not connected.');
         }
       };
-    
-    
+
 
     const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
@@ -174,12 +182,12 @@ const CodeCentral = () => {
             },
             body: JSON.stringify({ messages })
         });
-    
+
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let done = false;
         let chatCompletion = '';
-    
+
         while (!done) {
             const { value, done: doneReading } = await reader?.read()!;
             done = doneReading;
@@ -215,7 +223,7 @@ const CodeCentral = () => {
         setLoading(false);
 
         setChatCodes(JSON.parse(chatCompletion).files);
-    
+
         return  
     }
 
