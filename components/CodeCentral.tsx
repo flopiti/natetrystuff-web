@@ -5,6 +5,7 @@ import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
 import Chat from './Chat';
+import { askChatNoStream } from '@/services/chatService';
 
 const CodeCentral = () => {
     const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
@@ -224,24 +225,6 @@ const CodeCentral = () => {
         return  
     }
 
-    const askChatNoStream = async (messages: any[]): Promise<any> => {
-        const response = await fetch('/api/chat-no-stream', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ messages })
-        });
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Response from chat-no-stream:', data);
-            // Handle the response data accordingly
-            return data;
-            // If there are files, you can update the state to reflect them as well
-        } else {
-            console.error('Error calling chat-no-stream:', response.statusText);
-        }
-    };
 
     const handleFileSelect = async (fileName: string) => {
         setSelectedFileName(fileName);
@@ -352,7 +335,6 @@ const CodeCentral = () => {
                 prTitle={prTitle} 
                 prBody={prBody} 
                 selectedProject={selectedProject} 
-                askChatNoStream={askChatNoStream} 
             />
             <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
             <TerminalDisplay
