@@ -1,3 +1,5 @@
+import { generateBranchName } from "@/services/chatService";
+import { gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import React, { useState, useEffect } from "react";
 
 interface Message {
@@ -74,7 +76,7 @@ const Chat = ({
     } else if (selectedOption === "git switch main") {
       gitSwitchOriginMain();
     } else if (selectedOption === "git checkout -b") {
-      gitCheckoutBranch(newChangeBranch);
+      gitCheckoutBranch(newChangeBranch, selectedProject.name);
     } else if (selectedOption === "git add .") {
       gitAddAll();
       setSelectedOption("git commit -m ");
@@ -87,7 +89,7 @@ const Chat = ({
     } else if (selectedOption === "gh pr create --title ") {
       createPullRequest();
     } else if (selectedOption === "git-send-it") {
-      gitSendIt();
+      gitSendIt(commitMessageState, branchName, selectedProject.name);
     } else {
       alert("Command not found");
     }
@@ -99,35 +101,14 @@ const Chat = ({
   const handleStartButton = async () => {
     const branchName = await generateBranchName(currentTextInput);
     setCurrentTextInput("");
-    goMain();
-    gitCheckoutBranch(branchName);
+    goMain(selectedProject.name);
+    gitCheckoutBranch(branchName,selectedProject.name);
     getBranch();
     setSelectedOption("git-send-it");
   };
 
-  const goMain = () => {
-    fetch(`/api/go-main?projectName=${selectedProject.name}`)
-      .then((response) => response.json())
-      .then((data) => console.log("API response:", data))
-      .catch((error) => console.error("Error fetching the API:", error));
-  };
 
-  const generateBranchName = async (
-    changeDescription: string
-  ): Promise<string> => {
-    const initialMessage = {
-      role: "user",
-      content: `Please provide a git branch name that summarizes the following change description into a maximum of three words, using dashes instead of spaces: "${changeDescription}". The response must be in a JSON with the only field being branchName`,
-    };
-    try {
-      const response = await askChatNoStream([initialMessage]);
-      console.log("Branch Name Suggestion:", response);
-      return response.branchName;
-    } catch (error) {
-      console.error("Error in generating branch name:", error);
-      throw error;
-    }
-  };
+
 
   const gitSwitchOriginMain = () => {
     runCommand("git switch main");
@@ -140,27 +121,7 @@ const Chat = ({
     runCommand("git pull origin main");
   };
 
-  const gitCheckoutBranch = (checkoutBranch: string) => {
-    if (checkoutBranch.trim()) {
-      fetch(
-        `/api/create-branch?project=${selectedProject.name}&branchName=${checkoutBranch}`
-      )
-        .then((response) => response.json())
-        .catch((error) => console.error("Error fetching the API:", error));
-    } else {
-      alert("Please enter a branch name");
-    }
-  };
 
-  const gitSendIt = () => {
-    if (commitMessageState.trim() && branchName) {
-      fetch(
-        `/api/send-it?project=${selectedProject.name}&branchName=${branchName}&commitMessage=${commitMessageState}`
-      )
-        .then((response) => response.json())
-        .catch((error) => console.error("Error fetching the API:", error));
-    }
-  };
 
   const gitAddAll = () => {
     runCommand("git add .");
