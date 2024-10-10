@@ -74,7 +74,6 @@ const CodeCentral = () => {
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
         const { data } = await response.json();
-        console.log('received branch though : ' , data.branchName);
         setBranch(data.branchName);
     }
     useEffect(() => {
@@ -117,16 +116,10 @@ const CodeCentral = () => {
             }
         }
     }, [chatCodes]);
-
-    // Log devTerminalId on every render
-    useEffect(() => {
-        console.log('Dev Terminal ID during render:', devTerminalId);
-    });
-
+    
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
-          console.log("sending command", command);
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
         } else {
           console.error('No active terminal selected or WebSocket not connected.');
@@ -134,17 +127,13 @@ const CodeCentral = () => {
       };
     
     const runCommandInCurrentProject = (command: any) => {
-        console.log(`Current devTerminalId before running command:`, devTerminalId);
         const terminal = terminals.find((t) => t.id === devTerminalId);
-        console.log(`Found terminal:`, terminal);
-        console.log(`Terminal WebSocket ready state:`, terminal?.ws?.readyState);
         if (terminal && terminal.ws) {
             let attempts = 0;
             const maxAttempts = 5;
             setTimeout(() => {
                 const interval = setInterval(() => {
                     if (terminal.ws?.readyState === WebSocket.OPEN) {
-                        console.log("WebSocket is open, sending command", command);
                         terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
                         clearInterval(interval);
                     } else if (terminal.ws?.readyState !== WebSocket.CONNECTING || attempts >= maxAttempts) {
@@ -261,7 +250,6 @@ const CodeCentral = () => {
                 const response = await fetch(`/api/git-diff?projectName=${selectedProject.name}`);
                 const result = await response.json();
                 setGitDiff(result);
-                console.log('Git Diff Result:', result);
             } catch (error) {
                 console.error('Error fetching git diff:', error);
             }
@@ -272,7 +260,6 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
-            console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {setCommitMessage(data.answer) });
@@ -281,7 +268,6 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
-            console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' fields containing the PR title and body based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {
