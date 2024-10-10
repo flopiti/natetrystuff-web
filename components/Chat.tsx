@@ -20,7 +20,6 @@ const Chat = ({
   prTitle: initialPrTitle,
   prBody: initialPrBody,
   selectedProject,
-  askChatNoStream,
 }: any) => {
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
