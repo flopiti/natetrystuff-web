@@ -109,9 +109,6 @@ const Chat = ({
     setSelectedOption("git-send-it");
   };
 
-
-
-
   const gitSwitchOriginMain = () => {
     runCommand("git switch main");
     setTimeout(() => {
@@ -122,8 +119,6 @@ const Chat = ({
   const gitPullOriginMain = () => {
     runCommand("git pull origin main");
   };
-
-
 
   const gitAddAll = () => {
     runCommand("git add .");

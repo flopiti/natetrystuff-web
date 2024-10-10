@@ -1,13 +1,13 @@
-export const goMain = (projectName:string) => {
-    fetch(`/api/go-main?projectName=${projectName}`)
+export const goMain = async (projectName:string) => {
+    await fetch(`/api/go-main?projectName=${projectName}`)
       .then((response) => response.json())
       .then((data) => console.log("API response:", data))
       .catch((error) => console.error("Error fetching the API:", error));
   };
 
-export const gitCheckoutBranch = (checkoutBranch: string, projectName:string) => {
+export const gitCheckoutBranch = async (checkoutBranch: string, projectName:string) => {
     if (checkoutBranch.trim()) {
-      fetch(
+      await fetch(
         `/api/create-branch?project=${projectName}&branchName=${checkoutBranch}`
       )
         .then((response) => response.json())
