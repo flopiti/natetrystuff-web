@@ -21,20 +21,14 @@ const Schedule = () => {
     days,
     setDays,
   } = useScheduleState();
-
-  console.log("Meals Schedule: ", mealsSchedule); // added log statement
-
   const [firstDay, setFirstDay] = useState(new Date());
   const [officeDays, setOfficeDays] = useState<number | null>(null);
   const [nextMonthOfficeDays, setNextMonthOfficeDays] = useState<number | null>(null);
 
   const fetchOfficeDays = async (year: number, month: number, setOfficeDays: (days: number) => void) => {
     const apiUrl = `/api/days/office-days?year=${year}&month=${month}`;
-    console.log(`Request URL: ${apiUrl}`);
-
     try {
       const response = await fetchAPI(apiUrl);
-      console.log("API Response: ", response.data);
       setOfficeDays(response.data);
     } catch (error) {
       console.error("Error fetching office days: ", error);
