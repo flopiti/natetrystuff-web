@@ -16,6 +16,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     "git commit -m ",
     `git push origin ${branch}`,
     "gh pr create --title ",
+    "git-send-it"
   ]);
 
   const [selectedOption, setSelectedOption] = useState<string>("no selected option");
@@ -40,6 +41,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       "git commit -m ",
       `git push origin ${branch}`,
       "gh pr create --title ",
+      "git-send-it"
     ]);
   }, [branch]);
 
@@ -71,7 +73,10 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       setSelectedOption('gh pr create --title ');
     } else if (selectedOption === 'gh pr create --title ') {
       createPullRequest();
-    } else {
+    } else if (selectedOption === 'git-send-it') {
+      gitSendIt();
+    }
+    else {
       alert("Command not found");
     }
     if (branchName) {
@@ -85,8 +90,7 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
     goMain();
     gitCheckoutBranch(branchName);
     getBranch();
-    setSelectedOption('git add .');
-
+    setSelectedOption('git-send-it');
   }
 
   const goMain = () => {
@@ -128,6 +132,14 @@ const Chat = ({ conversation, loading, addToConversation, setMessages, runComman
       alert('Please enter a branch name');
     }
   };
+
+  const gitSendIt = () => {
+    if(commitMessageState.trim()&&branchName){
+      fetch(`/api/send-it?project=${selectedProject.name}&branchName=${branchName}&commitMessage=${commitMessageState}`)
+        .then(response => response.json())
+        .catch(error => console.error('Error fetching the API:', error));
+    }
+  }
 
   const gitAddAll = () => {
     runCommand('git add .');
