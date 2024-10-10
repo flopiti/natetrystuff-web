@@ -47,6 +47,7 @@ const CodeCentral = () => {
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
+    const [isSelectedChatCodeUpdated, setIsSelectedChatCodeUpdated] = useState<boolean>(false);
 
     console.log('selected Chat Code:', selectedChatCode);
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
@@ -116,19 +117,21 @@ const CodeCentral = () => {
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
                 setSelectedChatCode(chatCode.code);
+                setIsSelectedChatCodeUpdated(false);
             }
         }
     }, [chatCodes]);
 
     useEffect(() => {
-        if(selectedChatCode) {
+        if (selectedChatCode && !isSelectedChatCodeUpdated) {
             setChatCodes(prevChatCodes => {
                 return prevChatCodes.map(fileData =>
                     fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
                 );
             });
+            setIsSelectedChatCodeUpdated(true);
         }
-    }, [selectedChatCode]);
+    }, [selectedChatCode, isSelectedChatCodeUpdated]);
 
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
@@ -235,6 +238,7 @@ const CodeCentral = () => {
         const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
+            setIsSelectedChatCodeUpdated(false);
         }
         else{
             setSelectedChatCode('');
