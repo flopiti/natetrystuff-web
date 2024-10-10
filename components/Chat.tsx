@@ -175,7 +175,7 @@ const Chat = ({
             }
           }}
         />
-        <div className="w-full flex flex-row items-center mt-2 space-x-2">
+        <div className="w-full flex flex-row items-center mt-2 space-x-2 flex-wrap">
           <select
             className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => setSelectedOption(e.target.value)}
