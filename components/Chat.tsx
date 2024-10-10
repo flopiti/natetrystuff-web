@@ -98,10 +98,12 @@ const Chat = ({
   };
 
   const handleStartButton = async () => {
-    const branchName = await generateBranchName(currentTextInput);
+    const newBranchName = await generateBranchName(currentTextInput);
     setCurrentTextInput("");
     goMain(selectedProject.name);
-    gitCheckoutBranch(branchName,selectedProject.name);
+    console.log('just ran goMain');
+    console.log('now checking out branch:', newBranchName);
+    gitCheckoutBranch(newBranchName,selectedProject.name);
     getBranch();
     setSelectedOption("git-send-it");
   };
