@@ -301,57 +301,59 @@ const CodeCentral = () => {
             <div>
                 {branch && <p>Current Branch: {branch}</p>}
             </div>
-            <div className="flex h-full flex-row w-full">
-            <FileListDropdown
-                setDirPath={setDirPath}
-                projects={projects}
-                selectedProject={selectedProject}
-                setSelectedProject={setSelectedProject}
-                projectFiles={projectFiles}
-                handleFlightClick={(fileName, event) => setHighlightedFiles((prev: any) => handleFlightClick(fileName, event, prev, handleFileSelect))}
-                selectedFileName={selectedFileName}
-                highlightedFiles={highlightedFiles}
-                chatCodes={chatCodes}
-                setSelectedChatCode={setSelectedChatCode}
-            />
-            <FileViewer
-                setSelectedChatCode={setSelectedChatCode}
-                activeTab={activeTab} 
-                setActiveTab={setActiveTab} 
-                selectedFileContent={selectedFileContent} 
-                selectedChatCode={selectedChatCode} 
-                selectedFileName={selectedFileName} 
-                replaceCode={handleReplaceCode} 
-                loading={loading}
-            />
-            <Chat 
-                addToConversation={addToConversation} 
-                conversation={conversation} 
-                loading={loading} 
-                setMessages={setConversation} 
-                runCommand={runCommandInCurrentProject}  
-                getBranch={getBranch} 
-                branch={branch} 
-                commitMessage={commitMessage} 
-                prTitle={prTitle} 
-                prBody={prBody} 
-                selectedProject={selectedProject} 
-            />
-            <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
-            <TerminalDisplay
-                terminals={terminals}
-                setTerminals={setTerminals}
-                selectedTerminal={selectedTerminal}
-                setSelectedTerminal={setSelectedTerminal}
-                runCommand={runCommand}
-                runCommandInCurrentProject={runCommandInCurrentProject}
-                doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal}
-                setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
-                devTerminalId={devTerminalId}
-                setDevTerminalId={setDevTerminalId}
-                selectedProject={selectedProject}
-            />            </div>
-            <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
+            <div className="flex flex-grow flex-col">
+                <div className="flex flex-row w-full h-full">
+                    <FileListDropdown
+                        setDirPath={setDirPath}
+                        projects={projects}
+                        selectedProject={selectedProject}
+                        setSelectedProject={setSelectedProject}
+                        projectFiles={projectFiles}
+                        handleFlightClick={(fileName, event) => setHighlightedFiles((prev: any) => handleFlightClick(fileName, event, prev, handleFileSelect))}
+                        selectedFileName={selectedFileName}
+                        highlightedFiles={highlightedFiles}
+                        chatCodes={chatCodes}
+                        setSelectedChatCode={setSelectedChatCode}
+                    />
+                    <FileViewer
+                        setSelectedChatCode={setSelectedChatCode}
+                        activeTab={activeTab} 
+                        setActiveTab={setActiveTab} 
+                        selectedFileContent={selectedFileContent} 
+                        selectedChatCode={selectedChatCode} 
+                        selectedFileName={selectedFileName} 
+                        replaceCode={handleReplaceCode} 
+                        loading={loading}
+                    />
+                    <Chat 
+                        addToConversation={addToConversation} 
+                        conversation={conversation} 
+                        loading={loading} 
+                        setMessages={setConversation} 
+                        runCommand={runCommandInCurrentProject}  
+                        getBranch={getBranch} 
+                        branch={branch} 
+                        commitMessage={commitMessage} 
+                        prTitle={prTitle} 
+                        prBody={prBody} 
+                        selectedProject={selectedProject} 
+                    />
+                    <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
+                    <TerminalDisplay
+                        terminals={terminals}
+                        setTerminals={setTerminals}
+                        selectedTerminal={selectedTerminal}
+                        setSelectedTerminal={setSelectedTerminal}
+                        runCommand={runCommand}
+                        runCommandInCurrentProject={runCommandInCurrentProject}
+                        doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal}
+                        setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
+                        devTerminalId={devTerminalId}
+                        setDevTerminalId={setDevTerminalId}
+                        selectedProject={selectedProject}
+                    />            </div>
+                    <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
+                </div>
             </div>
         </div>
     );

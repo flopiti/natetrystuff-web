@@ -162,9 +162,9 @@ const Chat = ({
           </div>
         ))}
       </div>
-      <div className="w-full h-1/5 bg-gray-200 flex flex-col justify-between p-4">
+      <div className="w-full bg-gray-200 flex flex-col justify-between p-4">
         <textarea
-          className="w-full h-3/5 text-gray-700 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full text-gray-700 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={currentTextInput}
           onChange={(e) => setCurrentTextInput(e.target.value)}
           onKeyDown={(e) => {
@@ -175,7 +175,7 @@ const Chat = ({
             }
           }}
         />
-        <div className="w-full flex flex-row items-center mt-2 space-x-2">
+        <div className="w-full flex flex-row items-center mt-2 space-x-2 flex-wrap">
           <select
             className="p-2 bg-blue-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onChange={(e) => setSelectedOption(e.target.value)}
