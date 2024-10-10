@@ -74,7 +74,7 @@ const CodeCentral = () => {
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
         const { data } = await response.json();
-        console.log('received branch though:')
+        console.log('received branch though : ' , data.branchName);
         setBranch(data.branchName);
     }
     useEffect(() => {
