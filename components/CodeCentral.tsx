@@ -108,6 +108,8 @@ const CodeCentral = () => {
     }, [selectedProject]);
 
     useEffect(() => {
+        console.log('DUDE THE CHAT CODES : ');
+        console.log(chatCodes);
         if (chatCodes?.length > 0) {
             setActiveTab('chat'); 
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
