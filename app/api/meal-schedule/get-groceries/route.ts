@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const firstDate = searchParams.get('startDate');
     const lastDate = searchParams.get('endDate');
+    // Obtain the access token required for authorization
     const token = (await getAccessToken()).accessToken;
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meal-schedules/get-groceries?startDate=${firstDate}&endDate=${lastDate}`, {
         headers: {
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {  
+    // Get the access token and prepare for a POST request with a JSON body
     const token = (await getAccessToken()).accessToken;
     const body = await request.json()
     const res = await fetch(`${process.env.SPRING_BOOT_URL}/meals-schedule`, {
