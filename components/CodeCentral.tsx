@@ -48,6 +48,10 @@ const CodeCentral = () => {
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
+<<<<<<< HEAD
+=======
+    console.log('selected Chat Code:', selectedChatCode);
+>>>>>>> 030f0ba5c0ee783c1de1e1d84f99150a5fe4c569
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
