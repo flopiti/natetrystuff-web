@@ -348,7 +348,7 @@ const CodeCentral = () => {
                         setSelectedChatCode={setSelectedChatCode}
                     />
                     <FileViewer
-                        setSelectedChatCode={setSelectedChatCode}
+                        setSelectedChatCode={updateChatCode}  // Changed this prop
                         activeTab={activeTab} 
                         setActiveTab={setActiveTab} 
                         selectedFileContent={selectedFileContent} 
