@@ -47,9 +47,7 @@ const CodeCentral = () => {
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
-    const [isSelectedChatCodeUpdated, setIsSelectedChatCodeUpdated] = useState<boolean>(false);
 
-    console.log('selected Chat Code:', selectedChatCode);
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
@@ -76,6 +74,7 @@ const CodeCentral = () => {
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
         const { data } = await response.json();
+        console.log('received branch though : ' , data.branchName);
         setBranch(data.branchName);
     }
     useEffect(() => {
@@ -110,46 +109,42 @@ const CodeCentral = () => {
     }, [selectedProject]);
 
     useEffect(() => {
-        console.log('DUDE THE CHAT CODES : ');
-        console.log(chatCodes);
         if (chatCodes?.length > 0) {
             setActiveTab('chat'); 
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
                 setSelectedChatCode(chatCode.code);
-                setIsSelectedChatCodeUpdated(false);
             }
         }
     }, [chatCodes]);
 
+    // Log devTerminalId on every render
     useEffect(() => {
-        if (selectedChatCode && !isSelectedChatCodeUpdated) {
-            setChatCodes(prevChatCodes => {
-                return prevChatCodes.map(fileData =>
-                    fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
-                );
-            });
-            setIsSelectedChatCodeUpdated(true);
-        }
-    }, [selectedChatCode, isSelectedChatCodeUpdated]);
+        console.log('Dev Terminal ID during render:', devTerminalId);
+    });
 
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
+          console.log("sending command", command);
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
         } else {
           console.error('No active terminal selected or WebSocket not connected.');
         }
       };
-
+    
     const runCommandInCurrentProject = (command: any) => {
+        console.log(`Current devTerminalId before running command:`, devTerminalId);
         const terminal = terminals.find((t) => t.id === devTerminalId);
+        console.log(`Found terminal:`, terminal);
+        console.log(`Terminal WebSocket ready state:`, terminal?.ws?.readyState);
         if (terminal && terminal.ws) {
             let attempts = 0;
             const maxAttempts = 5;
             setTimeout(() => {
                 const interval = setInterval(() => {
                     if (terminal.ws?.readyState === WebSocket.OPEN) {
+                        console.log("WebSocket is open, sending command", command);
                         terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
                         clearInterval(interval);
                     } else if (terminal.ws?.readyState !== WebSocket.CONNECTING || attempts >= maxAttempts) {
@@ -163,7 +158,8 @@ const CodeCentral = () => {
             console.error('No active terminal for current project or WebSocket not connected.');
         }
       };
-
+    
+    
 
     const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
@@ -185,12 +181,12 @@ const CodeCentral = () => {
             },
             body: JSON.stringify({ messages })
         });
-
+    
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let done = false;
         let chatCompletion = '';
-
+    
         while (!done) {
             const { value, done: doneReading } = await reader?.read()!;
             done = doneReading;
@@ -226,7 +222,7 @@ const CodeCentral = () => {
         setLoading(false);
 
         setChatCodes(JSON.parse(chatCompletion).files);
-
+    
         return  
     }
 
@@ -238,7 +234,6 @@ const CodeCentral = () => {
         const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
-            setIsSelectedChatCodeUpdated(false);
         }
         else{
             setSelectedChatCode('');
@@ -266,6 +261,7 @@ const CodeCentral = () => {
                 const response = await fetch(`/api/git-diff?projectName=${selectedProject.name}`);
                 const result = await response.json();
                 setGitDiff(result);
+                console.log('Git Diff Result:', result);
             } catch (error) {
                 console.error('Error fetching git diff:', error);
             }
@@ -276,6 +272,7 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
+            console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {setCommitMessage(data.answer) });
@@ -284,6 +281,7 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
+            console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' fields containing the PR title and body based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {
