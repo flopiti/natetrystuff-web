@@ -21,19 +21,27 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
+    const [isChatStreamOngoing, setIsChatStreamOngoing] = useState<boolean>(false); // New state for tracking stream
+    
+    useEffect(() => {
+        console.log('Chat Codes updated:', chatCodes);
+    }, [chatCodes]);
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             setLoading(true);
-            // Assuming askChat is a function that handles the conversation
-            askChat(conversation, highlightedFiles, highlightedFilesContent);
+            setIsChatStreamOngoing(true); // Set to true when starting the chat stream
+            askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
+                setIsChatStreamOngoing(false); // Set to false when the chat stream ends
+            });
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
+
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
@@ -47,7 +55,7 @@ const CodeCentral = () => {
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
-
+    console.log('selected Chat Code:', selectedChatCode);
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
@@ -118,7 +126,7 @@ const CodeCentral = () => {
         }
     }, [chatCodes]);
 
-    // Log devTerminalId on every render
+
     useEffect(() => {
         console.log('Dev Terminal ID during render:', devTerminalId);
     });
@@ -296,6 +304,15 @@ const CodeCentral = () => {
         fetchGitDiff(); // Fetch git diff after replacing code
     };
 
+    const updateChatCode = (code: string) => {
+        setChatCodes(prevChatCodes => {
+            const updatedChatCodes = prevChatCodes.map(fileData =>
+                fileData.fileName === selectedFileName ? { ...fileData, code } : fileData
+            );
+            return updatedChatCodes;
+        });
+    };
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
@@ -316,7 +333,7 @@ const CodeCentral = () => {
                         setSelectedChatCode={setSelectedChatCode}
                     />
                     <FileViewer
-                        setSelectedChatCode={setSelectedChatCode}
+                        setSelectedChatCode={updateChatCode}  // Changed this prop
                         activeTab={activeTab} 
                         setActiveTab={setActiveTab} 
                         selectedFileContent={selectedFileContent} 
