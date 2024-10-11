@@ -25,10 +25,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
 }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
-  console.log('in the file viewer');
-  console.log(selectedFileContent);
-  console.log(selectedChatCode);
   const diff = diffLines(selectedFileContent, selectedChatCode);
   let lineNumber = 0;
 
