@@ -132,6 +132,7 @@ const CodeCentral = () => {
         if (selectedChatCode && !isChatStreamOngoing) { // Add check for ongoing chat stream
             console.log('Updating chatCodes for file:', selectedFileName);
             console.log(selectedChatCode)
+            console.log(chatCodes)
             // setChatCodes(prevChatCodes => {
             //     console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
             //     const updated = prevChatCodes.map(fileData =>
