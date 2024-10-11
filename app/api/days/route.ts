@@ -1,4 +1,3 @@
-// Import necessary functions from Auth0 and Next.js
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 
