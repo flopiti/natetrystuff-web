@@ -133,14 +133,14 @@ const CodeCentral = () => {
             console.log('Updating chatCodes for file:', selectedFileName);
             console.log(selectedChatCode)
             console.log(chatCodes)
-            // setChatCodes(prevChatCodes => {
-            //     console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
-            //     const updated = prevChatCodes.map(fileData =>
-            //         fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
-            //     );
-            //     console.log('Updated chatCodes:', JSON.stringify(updated));
-            //     return updated;
-            // });
+            setChatCodes(prevChatCodes => {
+                console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
+                const updated = prevChatCodes.map(fileData =>
+                    fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
+                );
+                console.log('Updated chatCodes:', JSON.stringify(updated));
+                return updated;
+            });
         }
     }, [selectedChatCode, isChatStreamOngoing]); // Add isChatStreamOngoing to dependencies
 
