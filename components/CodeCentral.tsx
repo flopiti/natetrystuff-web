@@ -142,7 +142,7 @@ const CodeCentral = () => {
             //     return updated;
             // });
         }
-    }, [selectedChatCode, isChatStreamOngoing]); // Add isChatStreamOngoing to dependencies
+    }, [selectedChatCode]);
 
     useEffect(() => {
         console.log('Dev Terminal ID during render:', devTerminalId);
