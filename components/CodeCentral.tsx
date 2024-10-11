@@ -47,6 +47,7 @@ const CodeCentral = () => {
     const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
+    const [isSelectedChatCodeUpdated, setIsSelectedChatCodeUpdated] = useState<boolean>(false);
     console.log('selected Chat Code:', selectedChatCode);
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
@@ -118,7 +119,17 @@ const CodeCentral = () => {
         }
     }, [chatCodes]);
 
-    // Log devTerminalId on every render
+    useEffect(() => {
+        if (selectedChatCode && !isSelectedChatCodeUpdated) {
+            setChatCodes(prevChatCodes => {
+                return prevChatCodes.map(fileData =>
+                    fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
+                );
+            });
+            setIsSelectedChatCodeUpdated(true);
+        }
+    }, [selectedChatCode]);
+
     useEffect(() => {
         console.log('Dev Terminal ID during render:', devTerminalId);
     });
