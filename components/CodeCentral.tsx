@@ -23,6 +23,10 @@ const CodeCentral = () => {
     const [chatCodes, setChatCodes] = useState<any[]>([]);
 
     useEffect(() => {
+        console.log('Chat Codes updated:', chatCodes);
+    }, [chatCodes]);
+
+    useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             setLoading(true);
