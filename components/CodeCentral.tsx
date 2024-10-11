@@ -30,7 +30,8 @@ const CodeCentral = () => {
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            setChatCodes([]); // Clear chatCodes before running askChat
+            setChatCodes([]);
+            setSelectedChatCode('');
             setLoading(true);
             setIsChatStreamOngoing(true); // Set to true when starting the chat stream
             askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
