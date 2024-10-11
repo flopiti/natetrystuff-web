@@ -21,7 +21,7 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
-
+    
     useEffect(() => {
         console.log('Chat Codes updated:', chatCodes);
     }, [chatCodes]);
@@ -124,11 +124,18 @@ const CodeCentral = () => {
     }, [chatCodes]);
 
     useEffect(() => {
+        console.log('Executing selectedChatCode useEffect');
+        console.log('selectedChatCode:', selectedChatCode);
+        console.log('isSelectedChatCodeUpdated:', isSelectedChatCodeUpdated);
         if (selectedChatCode && !isSelectedChatCodeUpdated) {
+            console.log('Updating chatCodes for file:', selectedFileName);
             setChatCodes(prevChatCodes => {
-                return prevChatCodes.map(fileData =>
+                console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
+                const updated = prevChatCodes.map(fileData =>
                     fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
                 );
+                console.log('Updated chatCodes:', JSON.stringify(updated));
+                return updated;
             });
             setIsSelectedChatCodeUpdated(true);
         }
