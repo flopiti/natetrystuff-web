@@ -117,21 +117,6 @@ const CodeCentral = () => {
     }, [selectedProject]);
 
     useEffect(() => {
-        console.log('Executing chatCodes useEffect');
-        console.log('selectedChatCode:', selectedChatCode);
-        if (selectedChatCode && !isChatStreamOngoing) { // Add check for ongoing chat stream
-            console.log('Updating chatCodes for file:', selectedFileName);
-            console.log(selectedChatCode)
-            console.log(chatCodes)
-            // setChatCodes(prevChatCodes => {
-            //     console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
-            //     const updated = prevChatCodes.map(fileData =>
-            //         fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
-            //     );
-            //     console.log('Updated chatCodes:', JSON.stringify(updated));
-            //     return updated;
-            // });
-        }
         if (chatCodes?.length > 0) {
             setActiveTab('chat'); 
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
