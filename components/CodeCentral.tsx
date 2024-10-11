@@ -21,6 +21,7 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
+    const [isChatStreamOngoing, setIsChatStreamOngoing] = useState<boolean>(false); // New state for tracking stream
     
     useEffect(() => {
         console.log('Chat Codes updated:', chatCodes);
@@ -30,14 +31,17 @@ const CodeCentral = () => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             setLoading(true);
-            // Assuming askChat is a function that handles the conversation
-            askChat(conversation, highlightedFiles, highlightedFilesContent);
+            setIsChatStreamOngoing(true); // Set to true when starting the chat stream
+            askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
+                setIsChatStreamOngoing(false); // Set to false when the chat stream ends
+            });
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
     const addToConversation = (message: string) => {
         setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
     };
+
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
@@ -127,7 +131,7 @@ const CodeCentral = () => {
         console.log('Executing selectedChatCode useEffect');
         console.log('selectedChatCode:', selectedChatCode);
         console.log('isSelectedChatCodeUpdated:', isSelectedChatCodeUpdated);
-        if (selectedChatCode && !isSelectedChatCodeUpdated) {
+        if (selectedChatCode && !isSelectedChatCodeUpdated && !isChatStreamOngoing) { // Add check for ongoing chat stream
             console.log('Updating chatCodes for file:', selectedFileName);
             setChatCodes(prevChatCodes => {
                 console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
@@ -139,7 +143,7 @@ const CodeCentral = () => {
             });
             setIsSelectedChatCodeUpdated(true);
         }
-    }, [selectedChatCode]);
+    }, [selectedChatCode, isChatStreamOngoing]); // Add isChatStreamOngoing to dependencies
 
     useEffect(() => {
         console.log('Dev Terminal ID during render:', devTerminalId);
