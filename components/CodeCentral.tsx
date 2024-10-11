@@ -117,17 +117,7 @@ const CodeCentral = () => {
     }, [selectedProject]);
 
     useEffect(() => {
-        if (chatCodes?.length > 0) {
-            setActiveTab('chat'); 
-            const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
-            if (chatCode) {
-                setSelectedChatCode(chatCode.code);
-            }
-        }
-    }, [chatCodes]);
-
-    useEffect(() => {
-        console.log('Executing selectedChatCode useEffect');
+        console.log('Executing chatCodes useEffect');
         console.log('selectedChatCode:', selectedChatCode);
         if (selectedChatCode && !isChatStreamOngoing) { // Add check for ongoing chat stream
             console.log('Updating chatCodes for file:', selectedFileName);
@@ -142,7 +132,15 @@ const CodeCentral = () => {
             //     return updated;
             // });
         }
-    }, [selectedChatCode]);
+        if (chatCodes?.length > 0) {
+            setActiveTab('chat'); 
+            const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
+            if (chatCode) {
+                setSelectedChatCode(chatCode.code);
+            }
+        }
+    }, [chatCodes]);
+
 
     useEffect(() => {
         console.log('Dev Terminal ID during render:', devTerminalId);
