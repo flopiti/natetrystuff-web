@@ -127,23 +127,23 @@ const CodeCentral = () => {
         }
     }, [chatCodes]);
 
-    useEffect(() => {
-        console.log('Executing selectedChatCode useEffect');
-        console.log('selectedChatCode:', selectedChatCode);
-        console.log('isSelectedChatCodeUpdated:', isSelectedChatCodeUpdated);
-        if (selectedChatCode && !isSelectedChatCodeUpdated && !isChatStreamOngoing) { // Add check for ongoing chat stream
-            console.log('Updating chatCodes for file:', selectedFileName);
-            setChatCodes(prevChatCodes => {
-                console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
-                const updated = prevChatCodes.map(fileData =>
-                    fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
-                );
-                console.log('Updated chatCodes:', JSON.stringify(updated));
-                return updated;
-            });
-            setIsSelectedChatCodeUpdated(true);
-        }
-    }, [selectedChatCode, isChatStreamOngoing]); // Add isChatStreamOngoing to dependencies
+    // useEffect(() => {
+    //     console.log('Executing selectedChatCode useEffect');
+    //     console.log('selectedChatCode:', selectedChatCode);
+    //     console.log('isSelectedChatCodeUpdated:', isSelectedChatCodeUpdated);
+    //     if (selectedChatCode && !isSelectedChatCodeUpdated && !isChatStreamOngoing) { // Add check for ongoing chat stream
+    //         console.log('Updating chatCodes for file:', selectedFileName);
+    //         setChatCodes(prevChatCodes => {
+    //             console.log('Current chatCodes:', JSON.stringify(prevChatCodes));
+    //             const updated = prevChatCodes.map(fileData =>
+    //                 fileData.fileName === selectedFileName ? { ...fileData, code: selectedChatCode } : fileData
+    //             );
+    //             console.log('Updated chatCodes:', JSON.stringify(updated));
+    //             return updated;
+    //         });
+    //         setIsSelectedChatCodeUpdated(true);
+    //     }
+    // }, [selectedChatCode, isChatStreamOngoing]); // Add isChatStreamOngoing to dependencies
 
     useEffect(() => {
         console.log('Dev Terminal ID during render:', devTerminalId);
