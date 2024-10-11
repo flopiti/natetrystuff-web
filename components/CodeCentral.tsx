@@ -319,6 +319,15 @@ const CodeCentral = () => {
         fetchGitDiff(); // Fetch git diff after replacing code
     };
 
+    const updateChatCode = (code: string) => {
+        setChatCodes(prevChatCodes => {
+            const updatedChatCodes = prevChatCodes.map(fileData =>
+                fileData.fileName === selectedFileName ? { ...fileData, code } : fileData
+            );
+            return updatedChatCodes;
+        });
+    };
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
