@@ -81,7 +81,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
           <div className='h-full inline-block'>
             <pre>
               {diff.map((part, index) => {
-                const lines = part.value.split('\n').slice(0, -1);
+                const lines = part.value.split('\n');
                 const x = <div key={index}>
                 {
                   lines.map((line, lineIndex) => {
