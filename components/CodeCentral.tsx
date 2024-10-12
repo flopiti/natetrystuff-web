@@ -30,7 +30,6 @@ const CodeCentral = () => {
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            setChatCodes([]);
             setSelectedChatCode('');
             console.log('restarting')
             setLoading(true);
@@ -122,6 +121,7 @@ const CodeCentral = () => {
     useEffect(() => {
         if (chatCodes?.length > 0) {
             console.log('running the chat codes use effect')
+            console.log(chatCodes);
             setActiveTab('chat'); 
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
@@ -175,6 +175,7 @@ const CodeCentral = () => {
     
 
     const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
+
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
         });
@@ -199,7 +200,9 @@ const CodeCentral = () => {
         const decoder = new TextDecoder();
         let done = false;
         let chatCompletion = '';
-    
+
+        console.log('Starting chat stream');
+        console.log(chatCodes)
         while (!done) {
             const { value, done: doneReading } = await reader?.read()!;
             done = doneReading;
@@ -221,9 +224,11 @@ const CodeCentral = () => {
                                 let arrayElementsValues = files.map((element) => {
                                     return getTopLevelValues(element);
                                 });
-                                arrayElementsValues.forEach((element) => {
-                                    setChatCodes([...chatCodes, { fileName: element[0], code: element[1] ? element[1]:'' }]);
-                                });
+                                const newChatCodes = arrayElementsValues.map((element) => ({
+                                    fileName: element[0],
+                                    code: element[1] ? element[1] : ''
+                                }));
+                                setChatCodes(newChatCodes);
                             }
                         });
                     }
