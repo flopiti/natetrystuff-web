@@ -32,6 +32,7 @@ const CodeCentral = () => {
         if (lastMessage.role === 'user') {
             setChatCodes([]);
             setSelectedChatCode('');
+            console.log('restarting')
             setLoading(true);
             setIsChatStreamOngoing(true); // Set to true when starting the chat stream
             askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
@@ -120,9 +121,11 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (chatCodes?.length > 0) {
+            console.log('running the chat codes use effect')
             setActiveTab('chat'); 
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
+
                 setSelectedChatCode(chatCode.code);
             }
         }
