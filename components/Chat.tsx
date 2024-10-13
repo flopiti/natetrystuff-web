@@ -42,7 +42,8 @@ const Chat = ({
   const [prBody, setPrBody] = useState<string>(initialPrBody || "");
   const [currentTextInput, setCurrentTextInput] = useState<string>("");
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
-
+  const [featbugDescription, setFeatbugDescription] = useState<string>("");
+  
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
@@ -98,6 +99,7 @@ const Chat = ({
   };
 
   const handleStartButton = async () => {
+    setFeatbugDescription(currentTextInput); // Save the current text input
     const newBranchName = await generateBranchName(currentTextInput);
     setCurrentTextInput("");
     await goMain(selectedProject.name);
