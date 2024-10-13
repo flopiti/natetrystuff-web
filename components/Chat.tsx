@@ -20,7 +20,8 @@ const Chat = ({
   prTitle: initialPrTitle,
   prBody: initialPrBody,
   selectedProject,
-  handleNewHighlitghtedFiles
+  handleNewHighlitghtedFiles,
+  handleNewSelectedFile,
 }: any) => {
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
@@ -57,6 +58,7 @@ const Chat = ({
 
             if (chatResponse.answer) {
                 handleNewHighlitghtedFiles(chatResponse.answer);
+                handleNewSelectedFile(chatResponse.answer[0]);
             }
             console.log('ChatGPT Response:', chatResponse);
         } catch (error) {

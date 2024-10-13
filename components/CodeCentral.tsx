@@ -331,6 +331,12 @@ const CodeCentral = () => {
         const newHighlightedFiles = filenames.filter(filename => projectFiles.includes(filename));
         setHighlightedFiles(newHighlightedFiles);
     }
+
+    const handleNewSelectedFile = (filename: string) => {
+        setSelectedFileName(filename);
+        setSelectedChatCode('');
+    }
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
@@ -361,6 +367,7 @@ const CodeCentral = () => {
                         loading={loading}
                     />
                     <Chat 
+                        handleNewSelectedFile={handleNewSelectedFile}
                         handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
                         addToConversation={addToConversation} 
                         conversation={conversation} 
