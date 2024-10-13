@@ -1,3 +1,4 @@
+//DESC: This file handles the POST request for AI chat completion using OpenAI's API in a streaming manner.
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
