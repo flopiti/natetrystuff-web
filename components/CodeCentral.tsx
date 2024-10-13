@@ -268,11 +268,20 @@ const CodeCentral = () => {
     useEffect(() => {
         if (highlightedFiles.length > 0) {
             (async () => {
-                const content = await fetchHighlightedFilesContent(highlightedFiles, selectedProject.name);
+                const contentPromises = highlightedFiles.map(async (fileName) => {
+                    const chatCode = chatCodes.find(chatCode => chatCode.fileName === fileName);
+                    if (chatCode) {
+                        return chatCode.code;  // Use chat code if available
+                    } else {
+                        const fileContent = await fetchHighlightedFilesContent([fileName], selectedProject.name);
+                        return fileContent[0];
+                    }
+                });
+                const content = await Promise.all(contentPromises);
                 setHighlightedFilesContent(content);
             })();
         }
-    }, [highlightedFiles, selectedProject]);
+    }, [highlightedFiles, selectedProject, chatCodes]);
 
     const fetchGitDiff = async () => {
         if (selectedProject) {
