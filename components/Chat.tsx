@@ -59,6 +59,13 @@ const Chat = ({
         }
     }
 };
+
+  useEffect(() => {
+    if (featbugDescription) {
+      fetchAndAskChatGPT();
+    }
+  }, [featbugDescription]);
+
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
@@ -254,8 +261,6 @@ const Chat = ({
           >
             Start
           </button>
-          <button onClick={fetchAndAskChatGPT}>Ask ChatGPT for File Names</button>
-
         </div>
       </div>
     </div>
