@@ -22,23 +22,8 @@ const CodeCentral = () => {
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const [isChatStreamOngoing, setIsChatStreamOngoing] = useState<boolean>(false); // New state for tracking stream
-    const [featbugDescription, setFeatbugDescription] = useState<string>('');
     
-    const fetchAndAskChatGPT = async () => {
-        if (featbugDescription) {
-            try {
-                const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
-                const result = await response.json();
-                const descComments = JSON.stringify(result.data);
-                const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription} with additional comments: ${descComments}`;
-                const messages = [{ role: 'user', content: message }];
-                const chatResponse = await askChatNoStream(messages);
-                console.log('ChatGPT Response:', chatResponse);
-            } catch (error) {
-                console.error('Error fetching and asking ChatGPT:', error);
-            }
-        }
-    };
+
 
     useEffect(() => {
         console.log('Chat Codes updated:', chatCodes);
@@ -424,7 +409,6 @@ const CodeCentral = () => {
                 </div>
             </div>
             <button onClick={fetchDescComments}>Fetch DESC Comments</button>
-            <button onClick={fetchAndAskChatGPT}>Ask ChatGPT for File Names</button>
         </div>
     );
 }
