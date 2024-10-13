@@ -23,18 +23,10 @@ const CodeCentral = () => {
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const [isChatStreamOngoing, setIsChatStreamOngoing] = useState<boolean>(false); // New state for tracking stream
     
-
-
-    useEffect(() => {
-        console.log('Chat Codes updated:', chatCodes);
-    }, [chatCodes]);
-
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            console.log('Current conversation:', conversation); // Log the current conversation
             setSelectedChatCode('');
-            console.log('restarting')
             setLoading(true);
             setIsChatStreamOngoing(true); // Set to true when starting the chat stream
             askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
@@ -57,10 +49,8 @@ const CodeCentral = () => {
     const [selectedFileName, setSelectedFileName] = useState<string>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
-    const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
-    console.log('selected Chat Code:', selectedChatCode);
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
@@ -71,18 +61,6 @@ const CodeCentral = () => {
     const [prTitle, setPrTitle] = useState<string>('');
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
-
-    const handleCommitMessageChange = (newMessage: string) => {
-        setCommitMessage(newMessage);
-    };
-
-    const handlePrTitleChange = (newTitle: string) => {
-        setPrTitle(newTitle);
-    };
-
-    const handlePrBodyChange = (newBody: string) => {
-        setPrBody(newBody);
-    };
 
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
@@ -349,6 +327,16 @@ const CodeCentral = () => {
         }
     };
 
+    const handleNewHighlitghtedFiles = (filenames: string[]) => {
+        const newHighlightedFiles = filenames.filter(filename => projectFiles.includes(filename));
+        setHighlightedFiles(newHighlightedFiles);
+    }
+
+    const handleNewSelectedFile = (filename: string) => {
+        setSelectedFileName(filename);
+        setSelectedChatCode('');
+    }
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
@@ -379,6 +367,8 @@ const CodeCentral = () => {
                         loading={loading}
                     />
                     <Chat 
+                        handleNewSelectedFile={handleNewSelectedFile}
+                        handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
                         addToConversation={addToConversation} 
                         conversation={conversation} 
                         loading={loading} 

@@ -20,6 +20,8 @@ const Chat = ({
   prTitle: initialPrTitle,
   prBody: initialPrBody,
   selectedProject,
+  handleNewHighlitghtedFiles,
+  handleNewSelectedFile,
 }: any) => {
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "git pull origin main",
@@ -53,12 +55,26 @@ const Chat = ({
             const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription}, and here are the files with with additional comments: ${descComments}. Please make sure to return a JSON with the 'answer' field containing the file names in a array.`;
             const messages = [{ role: 'user', content: message }];
             const chatResponse = await askChatNoStream(messages);
+
+            if (chatResponse.answer) {
+                handleNewHighlitghtedFiles(chatResponse.answer);
+                handleNewSelectedFile(chatResponse.answer[0]);
+            }
             console.log('ChatGPT Response:', chatResponse);
         } catch (error) {
             console.error('Error fetching and asking ChatGPT:', error);
         }
     }
 };
+
+  useEffect(() => {
+    console.log('featbugDescription:', featbugDescription);
+    if (featbugDescription) {
+      console.log('fetching and asking ChatGPT');
+      fetchAndAskChatGPT();
+    }
+  }, [featbugDescription]);
+
   useEffect(() => {
     setMessages(conversation);
   }, [conversation]);
@@ -254,8 +270,6 @@ const Chat = ({
           >
             Start
           </button>
-          <button onClick={fetchAndAskChatGPT}>Ask ChatGPT for File Names</button>
-
         </div>
       </div>
     </div>

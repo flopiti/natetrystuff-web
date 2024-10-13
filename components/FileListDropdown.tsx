@@ -72,7 +72,6 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         }
     };
 
-    const filteredFiles = projectFiles.filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '');
     useEffect(() => {
         fetchProjectPaths().then((data: ProjectFile[]) => {
             setProjectPaths(data);
@@ -83,6 +82,16 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         });
     }, []); 
 
+    const filteredFiles = projectFiles
+        .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
+        .sort((a, b) => {
+            const aIsHighlighted = highlightedFiles.includes(a);
+            const bIsHighlighted = highlightedFiles.includes(b);
+            if (aIsHighlighted && !bIsHighlighted) return -1;
+            if (!aIsHighlighted && bIsHighlighted) return 1;
+            return 0;
+        });
+
     const filteredOptions = projectPaths.filter((option) =>
         option.path.toLowerCase().includes(inputValue.toLowerCase())
     );
@@ -90,7 +99,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     return (
         <div className="w-1/5 overflow-auto bg-gray-100 text-black">
             <div className="sticky top-0 bg-gray-100 p-2">
-            <input
+                <input
                     type="text"
                     value={inputValue}
                     onChange={handleInputChange}
