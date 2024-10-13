@@ -51,7 +51,6 @@ const CodeCentral = () => {
     const [activeTab, setActiveTab] = useState<string>('file');
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
-    console.log('selected Chat Code:', selectedChatCode);
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
