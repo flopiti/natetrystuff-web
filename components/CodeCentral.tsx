@@ -26,9 +26,7 @@ const CodeCentral = () => {
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
-            console.log('Current conversation:', conversation); // Log the current conversation
             setSelectedChatCode('');
-            console.log('restarting')
             setLoading(true);
             setIsChatStreamOngoing(true); // Set to true when starting the chat stream
             askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
