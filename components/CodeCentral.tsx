@@ -268,11 +268,20 @@ const CodeCentral = () => {
     useEffect(() => {
         if (highlightedFiles.length > 0) {
             (async () => {
-                const content = await fetchHighlightedFilesContent(highlightedFiles, selectedProject.name);
+                const contentPromises = highlightedFiles.map(async (fileName) => {
+                    const chatCode = chatCodes.find(chatCode => chatCode.fileName === fileName);
+                    if (chatCode) {
+                        return chatCode.code;  // Use chat code if available
+                    } else {
+                        const fileContent = await fetchHighlightedFilesContent([fileName], selectedProject.name);
+                        return fileContent[0];
+                    }
+                });
+                const content = await Promise.all(contentPromises);
                 setHighlightedFilesContent(content);
             })();
         }
-    }, [highlightedFiles, selectedProject]);
+    }, [highlightedFiles, selectedProject, chatCodes]);
 
     const fetchGitDiff = async () => {
         if (selectedProject) {
@@ -322,6 +331,20 @@ const CodeCentral = () => {
             );
             return updatedChatCodes;
         });
+    };
+
+    const fetchDescComments = async () => {
+        if (selectedProject) {
+            try {
+                const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
+                const result = await response.json();
+                console.log('DESC Comments:', result.data);
+            } catch (error) {
+                console.error('Error fetching DESC comments:', error);
+            }
+        } else {
+            console.error('No project selected.');
+        }
     };
 
     return (
@@ -383,6 +406,7 @@ const CodeCentral = () => {
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
             </div>
+            <button onClick={fetchDescComments}>Fetch DESC Comments</button>
         </div>
     );
 }

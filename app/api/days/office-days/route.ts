@@ -1,3 +1,4 @@
+//DESC: This file handles the API request to fetch office days for a specific year and month using Auth0 authentication.
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 
