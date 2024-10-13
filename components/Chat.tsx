@@ -50,7 +50,7 @@ const Chat = ({
             const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
             const result = await response.json();
             const descComments = JSON.stringify(result.data);
-            const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription} with additional comments: ${descComments}`;
+            const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription}, and here are the files with with additional comments: ${descComments}. Please make sure to return a JSON with the 'answer' field containing the file names in a array.`;
             const messages = [{ role: 'user', content: message }];
             const chatResponse = await askChatNoStream(messages);
             console.log('ChatGPT Response:', chatResponse);
