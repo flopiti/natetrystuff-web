@@ -1,3 +1,4 @@
+//DESC: This file handles the creation of a new resource for a specified ID using a POST request.
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 

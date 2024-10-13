@@ -1,3 +1,4 @@
+//DESC: This file defines the API route that handles POST requests to analyze code projects using CodeAnalyzer.
 import CodeAnalyzer from "@/utils/codeAnalyzer";
 import { NextRequest, NextResponse } from "next/server";
 

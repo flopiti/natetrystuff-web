@@ -1,3 +1,4 @@
+//DESC: This file handles updates to day data for a specific ID using a PUT request and Auth0 authentication.
 import { getAccessToken } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 
