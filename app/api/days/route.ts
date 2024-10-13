@@ -1,3 +1,4 @@
+//DESC: This file handles POST and GET requests to interact with the '/days' endpoint in a Spring Boot application, leveraging Auth0 for authentication.
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 
