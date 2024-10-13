@@ -1,3 +1,4 @@
+//DESC: This file handles the creation of a new branch by making an API request to CODE_HELPER_URL using project and branchName query parameters.
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 
