@@ -333,6 +333,20 @@ const CodeCentral = () => {
         });
     };
 
+    const fetchDescComments = async () => {
+        if (selectedProject) {
+            try {
+                const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
+                const result = await response.json();
+                console.log('DESC Comments:', result.data);
+            } catch (error) {
+                console.error('Error fetching DESC comments:', error);
+            }
+        } else {
+            console.error('No project selected.');
+        }
+    };
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
@@ -392,6 +406,7 @@ const CodeCentral = () => {
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
             </div>
+            <button onClick={fetchDescComments}>Fetch DESC Comments</button>
         </div>
     );
 }
