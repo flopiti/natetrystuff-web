@@ -1,3 +1,4 @@
+//DESC: This file handles the API request to retrieve the current Git branch for a specified directory path.
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
