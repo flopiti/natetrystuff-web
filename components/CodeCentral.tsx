@@ -23,12 +23,6 @@ const CodeCentral = () => {
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const [isChatStreamOngoing, setIsChatStreamOngoing] = useState<boolean>(false); // New state for tracking stream
     
-
-
-    useEffect(() => {
-        console.log('Chat Codes updated:', chatCodes);
-    }, [chatCodes]);
-
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
@@ -57,7 +51,6 @@ const CodeCentral = () => {
     const [selectedFileName, setSelectedFileName] = useState<string>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
-    const [messageStreamCompleted, setMessageStreamCompleted] = useState<boolean>(false);
 
     const [selectedChatCode, setSelectedChatCode] = useState<string>('');
     console.log('selected Chat Code:', selectedChatCode);
@@ -71,18 +64,6 @@ const CodeCentral = () => {
     const [prTitle, setPrTitle] = useState<string>('');
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
-
-    const handleCommitMessageChange = (newMessage: string) => {
-        setCommitMessage(newMessage);
-    };
-
-    const handlePrTitleChange = (newTitle: string) => {
-        setPrTitle(newTitle);
-    };
-
-    const handlePrBodyChange = (newBody: string) => {
-        setPrBody(newBody);
-    };
 
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
