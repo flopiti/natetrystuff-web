@@ -18,18 +18,11 @@ const Chat = ({
   handleNewSelectedFile,
 }: any) => {
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
-    "git pull origin main",
-    "git checkout -b",
-    "git switch main",
-    "git add .",
-    "git commit -m ",
-    `git push origin ${branch}`,
     "gh pr create --title ",
     "git-send-it",
   ]);
 
-  const [selectedOption, setSelectedOption] =
-    useState<string>("no selected option");
+  const [selectedOption, setSelectedOption] = useState<string>("no selected option");
   const [branchName, setBranchName] = useState<string>(branch);
   
   const [commitMessageEdit, setCommitMessage] = useState<string>( commitMessage || ""  );
@@ -76,12 +69,6 @@ const Chat = ({
   useEffect(() => {
     setBranchName(branch);
     setCommandsReadyToGo([
-      "git pull origin main",
-      "git checkout -b",
-      "git switch main",
-      "git add .",
-      "git commit -m ",
-      `git push origin ${branch}`,
       "gh pr create --title ",
       "git-send-it",
     ]);
@@ -94,24 +81,7 @@ const Chat = ({
   }, [commitMessage, prTitle, prBody]);
 
   const handleRunCommand = () => {
-    console.log(`Running command: ${selectedOption}`);
-
-    if (selectedOption === "git pull origin main") {
-      gitPullOriginMain();
-    } else if (selectedOption === "git switch main") {
-      gitSwitchOriginMain();
-    } else if (selectedOption === "git checkout -b") {
-      gitCheckoutBranch(newChangeBranch, selectedProject.name);
-    } else if (selectedOption === "git add .") {
-      gitAddAll();
-      setSelectedOption("git commit -m ");
-    } else if (selectedOption === "git commit -m ") {
-      gitCommit();
-      setSelectedOption(`git push origin ${branch}`);
-    } else if (selectedOption === `git push origin ${branch}`) {
-      gitPush();
-      setSelectedOption("gh pr create --title ");
-    } else if (selectedOption === "gh pr create --title ") {
+    if (selectedOption === "gh pr create --title ") {
       createPullRequest();
     } else if (selectedOption === "git-send-it") {
       gitSendIt(commitMessageEdit, branchName, selectedProject.name);
@@ -128,41 +98,11 @@ const Chat = ({
     const newBranchName = await generateBranchName(currentTextInput);
     setCurrentTextInput("");
     await goMain(selectedProject.name);
-    console.log('just ran goMain');
-    console.log('now checking out branch:', newBranchName);
     await gitCheckoutBranch(newBranchName,selectedProject.name);
-    console.log('just ran gitCheckoutBranch about to getBranch');
     getBranch();
     setSelectedOption("git-send-it");
   };
 
-  const gitSwitchOriginMain = () => {
-    runCommand("git switch main");
-    setTimeout(() => {
-      getBranch();
-    }, 5000);
-  };
-
-  const gitPullOriginMain = () => {
-    runCommand("git pull origin main");
-  };
-
-  const gitAddAll = () => {
-    runCommand("git add .");
-  };
-
-  const gitCommit = () => {
-    if (commitMessageEdit.trim()) {
-      runCommand(`git commit -m "${commitMessageEdit}"`);
-    } else {
-      alert("Please enter a commit message");
-    }
-  };
-
-  const gitPush = () => {
-    console.log(`Pushing to branch: ${branchName}`);
-    runCommand(`git push origin ${branchName}`);
-  };
 
   const createPullRequest = () => {
     if (prTitleEdit.trim() && prBodyEdit.trim()) {
