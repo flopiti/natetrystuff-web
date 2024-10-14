@@ -1,12 +1,6 @@
-import { askChatNoStream, generateBranchName } from "@/services/chatService";
+import { askChatNoStream, fetchAndAskChatGPT, generateBranchName } from "@/services/chatService";
 import { gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import React, { useState, useEffect } from "react";
-
-interface Message {
-  content: string;
-  role: string;
-  type: string;
-}
 
 const Chat = ({
   conversation,
@@ -17,61 +11,33 @@ const Chat = ({
   getBranch,
   branch,
   commitMessage,
-  prTitle: initialPrTitle,
-  prBody: initialPrBody,
+  prTitle,
+  prBody,
   selectedProject,
   handleNewHighlitghtedFiles,
   handleNewSelectedFile,
 }: any) => {
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
-    "git pull origin main",
-    "git checkout -b",
-    "git switch main",
-    "git add .",
-    "git commit -m ",
-    `git push origin ${branch}`,
     "gh pr create --title ",
     "git-send-it",
   ]);
 
-  const [selectedOption, setSelectedOption] =
-    useState<string>("no selected option");
+  const [selectedOption, setSelectedOption] = useState<string>("no selected option");
   const [branchName, setBranchName] = useState<string>(branch);
-  const [commitMessageState, setCommitMessage] = useState<string>(
-    commitMessage || ""
-  );
-  const [prTitle, setPrTitle] = useState<string>(initialPrTitle || "");
-  const [prBody, setPrBody] = useState<string>(initialPrBody || "");
+  
+  const [commitMessageEdit, setCommitMessage] = useState<string>( commitMessage || ""  );
+  const [prTitleEdit, setPrTitle] = useState<string>(prTitle || "");
+  const [prBodyEdit, setPrBody] = useState<string>(prBody || "");
+
   const [currentTextInput, setCurrentTextInput] = useState<string>("");
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
   const [featbugDescription, setFeatbugDescription] = useState<string>("");
   
-  const fetchAndAskChatGPT = async () => {
-    if (featbugDescription) {
-        try {
-            const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
-            const result = await response.json();
-            const descComments = JSON.stringify(result.data);
-            const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription}, and here are the files with with additional comments: ${descComments}. Please make sure to return a JSON with the 'answer' field containing the file names in a array.`;
-            const messages = [{ role: 'user', content: message }];
-            const chatResponse = await askChatNoStream(messages);
-
-            if (chatResponse.answer) {
-                handleNewHighlitghtedFiles(chatResponse.answer);
-                handleNewSelectedFile(chatResponse.answer[0]);
-            }
-            console.log('ChatGPT Response:', chatResponse);
-        } catch (error) {
-            console.error('Error fetching and asking ChatGPT:', error);
-        }
-    }
-};
-
   useEffect(() => {
     console.log('featbugDescription:', featbugDescription);
     if (featbugDescription) {
       console.log('fetching and asking ChatGPT');
-      fetchAndAskChatGPT();
+      fetchAndAskChatGPT(featbugDescription, selectedProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
     }
   }, [featbugDescription]);
 
@@ -82,12 +48,6 @@ const Chat = ({
   useEffect(() => {
     setBranchName(branch);
     setCommandsReadyToGo([
-      "git pull origin main",
-      "git checkout -b",
-      "git switch main",
-      "git add .",
-      "git commit -m ",
-      `git push origin ${branch}`,
       "gh pr create --title ",
       "git-send-it",
     ]);
@@ -95,32 +55,15 @@ const Chat = ({
 
   useEffect(() => {
     setCommitMessage(commitMessage);
-    setPrTitle(initialPrTitle);
-    setPrBody(initialPrBody);
-  }, [commitMessage, initialPrTitle, initialPrBody]);
+    setPrTitle(prTitle);
+    setPrBody(prBody);
+  }, [commitMessage, prTitle, prBody]);
 
   const handleRunCommand = () => {
-    console.log(`Running command: ${selectedOption}`);
-
-    if (selectedOption === "git pull origin main") {
-      gitPullOriginMain();
-    } else if (selectedOption === "git switch main") {
-      gitSwitchOriginMain();
-    } else if (selectedOption === "git checkout -b") {
-      gitCheckoutBranch(newChangeBranch, selectedProject.name);
-    } else if (selectedOption === "git add .") {
-      gitAddAll();
-      setSelectedOption("git commit -m ");
-    } else if (selectedOption === "git commit -m ") {
-      gitCommit();
-      setSelectedOption(`git push origin ${branch}`);
-    } else if (selectedOption === `git push origin ${branch}`) {
-      gitPush();
-      setSelectedOption("gh pr create --title ");
-    } else if (selectedOption === "gh pr create --title ") {
+    if (selectedOption === "gh pr create --title ") {
       createPullRequest();
     } else if (selectedOption === "git-send-it") {
-      gitSendIt(commitMessageState, branchName, selectedProject.name);
+      gitSendIt(commitMessageEdit, branchName, selectedProject.name);
     } else {
       alert("Command not found");
     }
@@ -134,45 +77,15 @@ const Chat = ({
     const newBranchName = await generateBranchName(currentTextInput);
     setCurrentTextInput("");
     await goMain(selectedProject.name);
-    console.log('just ran goMain');
-    console.log('now checking out branch:', newBranchName);
     await gitCheckoutBranch(newBranchName,selectedProject.name);
-    console.log('just ran gitCheckoutBranch about to getBranch');
     getBranch();
     setSelectedOption("git-send-it");
   };
 
-  const gitSwitchOriginMain = () => {
-    runCommand("git switch main");
-    setTimeout(() => {
-      getBranch();
-    }, 5000);
-  };
-
-  const gitPullOriginMain = () => {
-    runCommand("git pull origin main");
-  };
-
-  const gitAddAll = () => {
-    runCommand("git add .");
-  };
-
-  const gitCommit = () => {
-    if (commitMessageState.trim()) {
-      runCommand(`git commit -m "${commitMessageState}"`);
-    } else {
-      alert("Please enter a commit message");
-    }
-  };
-
-  const gitPush = () => {
-    console.log(`Pushing to branch: ${branchName}`);
-    runCommand(`git push origin ${branchName}`);
-  };
 
   const createPullRequest = () => {
-    if (prTitle.trim() && prBody.trim()) {
-      runCommand(`gh pr create --title "${prTitle}" --body "${prBody}"`);
+    if (prTitleEdit.trim() && prBodyEdit.trim()) {
+      runCommand(`gh pr create --title "${prTitleEdit}" --body "${prBodyEdit}"`);
     } else {
       alert("Please enter both PR title and body");
     }
@@ -235,7 +148,7 @@ const Chat = ({
               type="text"
               className="p-2 border border-gray-400 text-gray-700 rounded-md"
               placeholder="Commit Message"
-              value={commitMessageState}
+              value={commitMessageEdit}
               onChange={(e) => setCommitMessage(e.target.value)}
             />
           )}
@@ -245,7 +158,7 @@ const Chat = ({
                 type="text"
                 className="p-2 border border-gray-400 text-gray-700 rounded-md"
                 placeholder="PR Title"
-                value={prTitle}
+                value={prTitleEdit}
                 onChange={(e) => setPrTitle(e.target.value)}
               />
               <input
