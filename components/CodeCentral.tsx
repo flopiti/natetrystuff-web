@@ -1,3 +1,4 @@
+//DESC: This file is responsible for managing a central code viewing and editing interface that includes functionalities for file handling, project selection, and interactive chat operations with automated coding responses.
 import { useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
 import FileViewer from './FileViewer';
