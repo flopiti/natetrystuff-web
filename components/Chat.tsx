@@ -2,12 +2,6 @@ import { askChatNoStream, generateBranchName } from "@/services/chatService";
 import { gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import React, { useState, useEffect } from "react";
 
-interface Message {
-  content: string;
-  role: string;
-  type: string;
-}
-
 const Chat = ({
   conversation,
   loading,
@@ -17,8 +11,8 @@ const Chat = ({
   getBranch,
   branch,
   commitMessage,
-  prTitle: initialPrTitle,
-  prBody: initialPrBody,
+  prTitle,
+  prBody,
   selectedProject,
   handleNewHighlitghtedFiles,
   handleNewSelectedFile,
@@ -37,11 +31,11 @@ const Chat = ({
   const [selectedOption, setSelectedOption] =
     useState<string>("no selected option");
   const [branchName, setBranchName] = useState<string>(branch);
-  const [commitMessageState, setCommitMessage] = useState<string>(
-    commitMessage || ""
-  );
-  const [prTitle, setPrTitle] = useState<string>(initialPrTitle || "");
-  const [prBody, setPrBody] = useState<string>(initialPrBody || "");
+  
+  const [commitMessageEdit, setCommitMessage] = useState<string>( commitMessage || ""  );
+  const [prTitleEdit, setPrTitle] = useState<string>(prTitle || "");
+  const [prBodyEdit, setPrBody] = useState<string>(prBody || "");
+
   const [currentTextInput, setCurrentTextInput] = useState<string>("");
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
   const [featbugDescription, setFeatbugDescription] = useState<string>("");
@@ -95,9 +89,9 @@ const Chat = ({
 
   useEffect(() => {
     setCommitMessage(commitMessage);
-    setPrTitle(initialPrTitle);
-    setPrBody(initialPrBody);
-  }, [commitMessage, initialPrTitle, initialPrBody]);
+    setPrTitle(prTitle);
+    setPrBody(prBody);
+  }, [commitMessage, prTitle, prBody]);
 
   const handleRunCommand = () => {
     console.log(`Running command: ${selectedOption}`);
@@ -120,7 +114,7 @@ const Chat = ({
     } else if (selectedOption === "gh pr create --title ") {
       createPullRequest();
     } else if (selectedOption === "git-send-it") {
-      gitSendIt(commitMessageState, branchName, selectedProject.name);
+      gitSendIt(commitMessageEdit, branchName, selectedProject.name);
     } else {
       alert("Command not found");
     }
@@ -158,8 +152,8 @@ const Chat = ({
   };
 
   const gitCommit = () => {
-    if (commitMessageState.trim()) {
-      runCommand(`git commit -m "${commitMessageState}"`);
+    if (commitMessageEdit.trim()) {
+      runCommand(`git commit -m "${commitMessageEdit}"`);
     } else {
       alert("Please enter a commit message");
     }
@@ -171,8 +165,8 @@ const Chat = ({
   };
 
   const createPullRequest = () => {
-    if (prTitle.trim() && prBody.trim()) {
-      runCommand(`gh pr create --title "${prTitle}" --body "${prBody}"`);
+    if (prTitleEdit.trim() && prBodyEdit.trim()) {
+      runCommand(`gh pr create --title "${prTitleEdit}" --body "${prBodyEdit}"`);
     } else {
       alert("Please enter both PR title and body");
     }
@@ -235,7 +229,7 @@ const Chat = ({
               type="text"
               className="p-2 border border-gray-400 text-gray-700 rounded-md"
               placeholder="Commit Message"
-              value={commitMessageState}
+              value={commitMessageEdit}
               onChange={(e) => setCommitMessage(e.target.value)}
             />
           )}
@@ -245,7 +239,7 @@ const Chat = ({
                 type="text"
                 className="p-2 border border-gray-400 text-gray-700 rounded-md"
                 placeholder="PR Title"
-                value={prTitle}
+                value={prTitleEdit}
                 onChange={(e) => setPrTitle(e.target.value)}
               />
               <input
