@@ -1,3 +1,4 @@
+//DESC: This file defines the Hub component used for navigating between Schedule, Meals, and Code Central components.
 'use client';
 
 import { useState } from "react";
