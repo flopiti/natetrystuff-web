@@ -1,4 +1,4 @@
-import { askChatNoStream, generateBranchName } from "@/services/chatService";
+import { askChatNoStream, fetchAndAskChatGPT, generateBranchName } from "@/services/chatService";
 import { gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import React, { useState, useEffect } from "react";
 
@@ -33,32 +33,13 @@ const Chat = ({
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
   const [featbugDescription, setFeatbugDescription] = useState<string>("");
   
-  const fetchAndAskChatGPT = async () => {
-    if (featbugDescription) {
-        try {
-            const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
-            const result = await response.json();
-            const descComments = JSON.stringify(result.data);
-            const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription}, and here are the files with with additional comments: ${descComments}. Please make sure to return a JSON with the 'answer' field containing the file names in a array.`;
-            const messages = [{ role: 'user', content: message }];
-            const chatResponse = await askChatNoStream(messages);
 
-            if (chatResponse.answer) {
-                handleNewHighlitghtedFiles(chatResponse.answer);
-                handleNewSelectedFile(chatResponse.answer[0]);
-            }
-            console.log('ChatGPT Response:', chatResponse);
-        } catch (error) {
-            console.error('Error fetching and asking ChatGPT:', error);
-        }
-    }
-};
 
   useEffect(() => {
     console.log('featbugDescription:', featbugDescription);
     if (featbugDescription) {
       console.log('fetching and asking ChatGPT');
-      fetchAndAskChatGPT();
+      fetchAndAskChatGPT(featbugDescription, selectedProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
     }
   }, [featbugDescription]);
 
