@@ -8,8 +8,8 @@ interface FileViewerProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   selectedFileContent: string;
-  selectedChatCode: string;
-  selectedFileName: string;
+  selectedChatCode: string | null;
+  selectedFileName: string ;
   replaceCode: () => void;
   setSelectedChatCode: (code: string) => void;
 }
@@ -27,7 +27,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const diff = diffLines(selectedFileContent, selectedChatCode);
+  const diff = diffLines(selectedFileContent, selectedChatCode ? selectedChatCode : '');
   let lineNumber = 0;
 
   const handleReplaceCode = async () => {
