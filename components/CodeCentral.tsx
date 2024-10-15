@@ -19,7 +19,7 @@ export interface ProjectFile {
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
     
-    const [highlightedStuffs, setHighlightedStuffs] = useState<ProjectFile[]>([]);
+    const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const conversation = useSelector((state: RootState) => state.Messages.messages);
 
@@ -28,9 +28,9 @@ const CodeCentral = () => {
         if (lastMessage.role === 'user') {
             setSelectedChatCode('');
             dispatch(setLoading(true));
-            askChat(conversation, highlightedStuffs);
+            askChat(conversation, highlightedFiles);
         }
-    }, [conversation,highlightedStuffs]);
+    }, [conversation,highlightedFiles]);
 
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
@@ -270,7 +270,7 @@ const CodeCentral = () => {
         Promise.all(newHighlightedFileNames.map(async (filename) => {
             return { name: filename, content: await getFile(filename, selectedProject.name) };
         })).then(newHighlightedFiles => {
-            setHighlightedStuffs(newHighlightedFiles);
+            setHighlightedFiles(newHighlightedFiles);
         }).catch(error => {
             console.error('Error fetching file contents:', error);
         });
@@ -288,14 +288,14 @@ const CodeCentral = () => {
         
         //if shift key is pressed, if it is already highlighted, remove it, if not, add it
         if (event.shiftKey) {
-            const isItAlreadyHighlighted = highlightedStuffs.find((highlightedStuff) => highlightedStuff.name === fileName);
+            const isItAlreadyHighlighted = highlightedFiles.find((highlightedStuff) => highlightedStuff.name === fileName);
             // newSelectedFiles =  highlightedFiles.includes(fileName) ? highlightedFiles.filter((flight: any) => flight !== fileName) : [...highlightedFiles, fileName];
             // setHighlightedFiles(newSelectedFiles);
             if (!isItAlreadyHighlighted) {
                 const hightlightedFileContent = await getFile(fileName, selectedProject.name);
-                setHighlightedStuffs([...highlightedStuffs, { name: fileName, content: hightlightedFileContent }]);
+                setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
             }
-            setHighlightedStuffs(highlightedStuffs.filter((highlightedStuff) => highlightedStuff.name !== fileName));
+            setHighlightedFiles(highlightedFiles.filter((highlightedStuff) => highlightedStuff.name !== fileName));
             
         } else {
         setSelectedFileName(fileName);
@@ -309,9 +309,9 @@ const CodeCentral = () => {
         else{
             setSelectedChatCode('');
         }
-        if (!highlightedStuffs.map((highlightedStuff) => highlightedStuff.name).includes(fileName)) {
+        if (!highlightedFiles.map((highlightedStuff) => highlightedStuff.name).includes(fileName)) {
             const hightlightedFileContent = await getFile(fileName, selectedProject.name);
-            setHighlightedStuffs([...highlightedStuffs, { name: fileName, content: hightlightedFileContent }]);
+            setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
         }
         }
 
@@ -332,7 +332,7 @@ const CodeCentral = () => {
                         projectFiles={projectFiles}
                         handleFlightClick={handleThisShit}
                         selectedFileName={selectedFileName}
-                        highlightedFiles={highlightedStuffs}
+                        highlightedFiles={highlightedFiles}
                         chatCodes={chatCodes}
                         setSelectedChatCode={setSelectedChatCode}
                     />
