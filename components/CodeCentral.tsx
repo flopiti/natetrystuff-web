@@ -11,6 +11,8 @@ import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
+import { setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
+import { gitBranch } from '@/services/gitService';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -18,29 +20,26 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
-    const conversation = useSelector((state: RootState) => state.Messages.messages);
+    const chatMessages = useSelector((state: RootState) => state.Messages.messages);
+    const {projectDir, currentProjectFileNames, currentProject} = useSelector((state: RootState) => state.Projects);
 
+    // when there is a new message, check if it is a user message and if so, ask the chat
     useEffect(() => {
-        const lastMessage = conversation[conversation.length - 1];
+        const lastMessage = chatMessages[chatMessages.length - 1];
         if (lastMessage.role === 'user') {
-            setSelectedChatCode('');
+            setSelectedFileName(null);
             dispatch(setLoading(true));
-            askChat(conversation, highlightedFiles);
+            askChat(chatMessages, highlightedFiles);
         }
-    }, [conversation]);
+    }, [chatMessages]);
 
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
-    const [dirPath, setDirPath] = useState<string>('');
-    const [projects, setProjects] = useState<any[]>([]);
-    const [selectedProject, setSelectedProject] = useState<any>(null);
-    const [projectFiles, setProjectFiles] = useState<string[]>([]);
-    const [selectedFileName, setSelectedFileName] = useState<string>('');
+    const [selectedFileName, setSelectedFileName] = useState<string | null>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
 
-    const [selectedChatCode, setSelectedChatCode] = useState<string>('');
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
@@ -52,50 +51,51 @@ const CodeCentral = () => {
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
 
-    const getBranch = async () => {
-        const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
-        const { data } = await response.json();
-        console.log('received branch though : ' , data.branchName);
-        setBranch(data.branchName);
-    }
-    useEffect(() => {
-        if (selectedProject && doesCurrentProjectHaveTerminal) {
-            const runCommandWithLogging = `cd /dev-projects/${selectedProject.name}`;
-            runCommandInCurrentProject(runCommandWithLogging);
-        }
-    }, [selectedProject, doesCurrentProjectHaveTerminal, terminals]);
-    useEffect(() => {
-        if (selectedProject) {
-            getBranch();
-        }
-    }, [selectedProject]);
 
     useEffect(() => {
-        if (dirPath.length > 1) {
-            getProjects(dirPath).then((data) => {
-                setProjects(data);
+        if (currentProject && doesCurrentProjectHaveTerminal) {
+            const runCommandWithLogging = `cd /dev-projects/${currentProject.name}`;
+            runCommandInCurrentProject(runCommandWithLogging);
+        }
+    }, [currentProject, doesCurrentProjectHaveTerminal, terminals]);
+
+    useEffect(() => {
+        if (currentProject) {
+            gitBranch(currentProject.name, projectDir).then((branchName) => {
+                setBranch(branchName);
+            }).catch((error) => {
+                console.error('Error:', error);
+            }   
+            );
+        }
+    }, [currentProject]);
+
+    useEffect(() => {
+        if (projectDir.length > 1) {
+            getProjects(projectDir).then((data) => {
+                dispatch(setProjects(data));
             }).catch((error) => {
                 console.error('Error:', error);
             });
         }
-    }, [dirPath]);
+    }, [projectDir]);
 
     useEffect(() => {
-        if (selectedProject) {
+        if (currentProject) {
             (async () => {
-                const data = await getProjectFiles(selectedProject);
-                setProjectFiles(data);
+                const data = await getProjectFiles(currentProject);
+                dispatch(setCurrentProjectFileNames(data));
             })();
         }
-    }, [selectedProject]);
+    }, [currentProject]);
+
 
     useEffect(() => {
         if (editedFiles?.length > 0) {
             setActiveTab('chat'); 
             const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === selectedFileName) ?? null;
             if (chatCode) {
-
-                setSelectedChatCode(chatCode.content);
+                setSelectedFileName(chatCode.name);
             }
         }
     }, [editedFiles]);
@@ -103,7 +103,6 @@ const CodeCentral = () => {
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
-          console.log("sending command", command);
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
         } else {
           console.error('No active terminal selected or WebSocket not connected.');
@@ -111,17 +110,13 @@ const CodeCentral = () => {
       };
     
     const runCommandInCurrentProject = (command: any) => {
-        console.log(`Current devTerminalId before running command:`, devTerminalId);
         const terminal = terminals.find((t) => t.id === devTerminalId);
-        console.log(`Found terminal:`, terminal);
-        console.log(`Terminal WebSocket ready state:`, terminal?.ws?.readyState);
         if (terminal && terminal.ws) {
             let attempts = 0;
             const maxAttempts = 5;
             setTimeout(() => {
                 const interval = setInterval(() => {
                     if (terminal.ws?.readyState === WebSocket.OPEN) {
-                        console.log("WebSocket is open, sending command", command);
                         terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
                         clearInterval(interval);
                     } else if (terminal.ws?.readyState !== WebSocket.CONNECTING || attempts >= maxAttempts) {
@@ -221,8 +216,12 @@ const CodeCentral = () => {
     }, [gitDiff]);
 
     const handleReplaceCode = async () => {
-        await replaceCode(selectedProject.name, editedFiles);
-        setGitDiff(await gitDiff(selectedProject.name));
+        if (!currentProject) {
+            console.error('No project selected.');
+            return;
+        }
+        await replaceCode(currentProject.name, editedFiles);
+        setGitDiff(await gitDiff(currentProject.name));
     };
 
     const updateChatCode = (code: string) => {
@@ -235,9 +234,9 @@ const CodeCentral = () => {
     };
 
     const fetchDescComments = async () => {
-        if (selectedProject) {
+        if (currentProject) {
             try {
-                const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
+                const response = await fetch(`/api/get-desc-comments?project=${currentProject.name}`);
                 const result = await response.json();
                 console.log('DESC Comments:', result.data);
             } catch (error) {
@@ -249,9 +248,13 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
-        const newHighlightedFileNames = filenames.filter(filename => projectFiles.includes(filename));
+        if (!currentProject) {
+            console.error('No project selected.');
+            return;
+        }
+        const newHighlightedFileNames = filenames.filter(filename => currentProjectFileNames.includes(filename));
         Promise.all(newHighlightedFileNames.map(async (filename) => {
-            return { name: filename, content: await getFile(filename, selectedProject.name) };
+            return { name: filename, content: await getFile(filename, currentProject.name) };
         })).then(newHighlightedFiles => {
             setHighlightedFiles(newHighlightedFiles);
         }).catch(error => {
@@ -261,33 +264,36 @@ const CodeCentral = () => {
 
     const handleNewSelectedFile = (filename: string) => {
         setSelectedFileName(filename);
-        setSelectedChatCode('');
+        setSelectedFileName(null);
     }
 
-
-
-    const handleThisShit = async (fileName: any, event: { shiftKey: any; }) => {
+    const handleHighlight = async (fileName: any, event: { shiftKey: any; }) => {
+        if (!currentProject) {
+            console.error('No project selected.');
+            return;
+        }
         if (event.shiftKey) {
             const isItAlreadyHighlighted = highlightedFiles.find((highlightedStuff) => highlightedStuff.name === fileName);
             if (!isItAlreadyHighlighted) {
-                const hightlightedFileContent = await getFile(fileName, selectedProject.name);
+                
+                const hightlightedFileContent = await getFile(fileName, currentProject.name);
                 setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
             }
             setHighlightedFiles(highlightedFiles.filter((highlightedStuff) => highlightedStuff.name !== fileName));
             
         } else {
         setSelectedFileName(fileName);
-        const content = await getFile(fileName, selectedProject.name);
+        const content = await getFile(fileName, currentProject.name);
         setSelectedFileContent(content);
         const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === fileName) ?? null;
         if (chatCode) {
-            setSelectedChatCode(chatCode.content);
+            setSelectedFileName(chatCode.name);
         }
         else{
-            setSelectedChatCode('');
+            setSelectedFileName(null);
         }
         if (!highlightedFiles.map((highlightedStuff) => highlightedStuff.name).includes(fileName)) {
-            const hightlightedFileContent = await getFile(fileName, selectedProject.name);
+            const hightlightedFileContent = await getFile(fileName, currentProject.name);
             setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
         }}
     }
@@ -300,37 +306,33 @@ const CodeCentral = () => {
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
-                        setDirPath={setDirPath}
-                        projects={projects}
-                        selectedProject={selectedProject}
-                        setSelectedProject={setSelectedProject}
-                        projectFiles={projectFiles}
-                        handleFlightClick={handleThisShit}
+                        projectFiles={currentProjectFileNames}
+                        handleFlightClick={handleHighlight}
                         selectedFileName={selectedFileName}
                         highlightedFiles={highlightedFiles}
                         chatCodes={editedFiles}
-                        setSelectedChatCode={setSelectedChatCode}
+                        setSelectedFileName={setSelectedFileName}
                     />
                     <FileViewer
                         setSelectedChatCode={updateChatCode}  // Changed this prop
                         activeTab={activeTab} 
                         setActiveTab={setActiveTab} 
                         selectedFileContent={selectedFileContent} 
-                        selectedChatCode={selectedChatCode} 
+                        selectedChatCode={editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null}
                         selectedFileName={selectedFileName} 
                         replaceCode={handleReplaceCode} 
                     />
                     <Chat 
                         handleNewSelectedFile={handleNewSelectedFile}
                         handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
-                        conversation={conversation} 
+                        conversation={chatMessages} 
                         runCommand={runCommandInCurrentProject}  
-                        getBranch={getBranch} 
+                        getBranch={gitBranch} 
                         branch={branch} 
                         commitMessage={commitMessage} 
                         prTitle={prTitle} 
                         prBody={prBody} 
-                        selectedProject={selectedProject} 
+                        selectedProject={currentProject} 
                     />
                     <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
                     <TerminalDisplay
@@ -344,7 +346,7 @@ const CodeCentral = () => {
                         setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
                         devTerminalId={devTerminalId}
                         setDevTerminalId={setDevTerminalId}
-                        selectedProject={selectedProject}
+                        selectedProject={currentProject}
                     />            </div>
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>

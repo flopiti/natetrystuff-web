@@ -1,26 +1,24 @@
 import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
-import { ProjectFile } from '@/types/project';
+import { Project, ProjectFile } from '@/types/project';
+import { setCurrentProject, setProjectDir } from '@/slices/ProjectSlice';
+import { AppDispatch, RootState } from '@/store';
+import { useDispatch, useSelector } from 'react-redux';
 
-interface Project {
-    name: string;
-}
 
 interface FileListDropdownProps {
-    projects: Project[],
-    selectedProject: Project | null,
-    setSelectedProject: (project: Project | null) => void,
     projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
-    selectedFileName: string,
+    selectedFileName: string | null,
     highlightedFiles: ProjectFile[],
     chatCodes: ProjectFile[],
-    setSelectedChatCode: (code: string) => void, 
-    setDirPath: (dirPath: string) => void
+    setSelectedFileName: (code: string) => void, 
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, setDirPath }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
+    const dispatch: AppDispatch = useDispatch();
+    const {projects, currentProject} = useSelector((state: RootState) => state.Projects);
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -33,7 +31,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
     const handleOptionClick = (option: any) => {
         setInputValue(option.path);
         setShowOptions(false);
-        setDirPath(option.path);
+        dispatch(setProjectDir(option.path));
     };
 
     const handleKeyDown = async (event: KeyboardEvent<HTMLInputElement>) => {
@@ -54,7 +52,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
 
     const handleSelectedProjectChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const pr = projects.find((project) => project.name === event.target.value);
-        setSelectedProject(pr ? pr : null);
+        dispatch(setCurrentProject(pr ? pr : null));
     };
 
     const handleRemoveOption = async (option: any) => {
@@ -71,7 +69,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
         fetchProjectPaths().then((data: any[]) => {
             setProjectPaths(data);
             if (data.length === 1) {
-                setDirPath(data[0].path);
+                dispatch(setProjectDir(data[0].path));
                 setInputValue(data[0].path);
             }
         });
@@ -122,7 +120,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
                         ))}
                     </ul>
                 )}
-                <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
+                <select value={currentProject ? currentProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
                     {projects?.map((project) => (
                         <option key={project.name} value={project.name}>
@@ -162,7 +160,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
                 {chatCodes?.filter(({ name }) => name !== '' && !projectFiles.includes(name)).map(({ name, content }, index) => (
                     <div
                         key={projectFiles.length + index}
-                        onClick={() => setSelectedChatCode(content)}
+                        onClick={() => setSelectedFileName(name)}
                         className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
                         <div className="overflow-x-auto">
