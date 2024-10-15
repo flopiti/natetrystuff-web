@@ -1,5 +1,5 @@
 //DESC: This file is responsible for managing a central code viewing and editing interface that includes functionalities for file handling, project selection, and interactive chat operations with automated coding responses.
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
@@ -11,7 +11,7 @@ import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 
-interface ProjectFile {
+export interface ProjectFile {
     name: string;
     content: string;
 }
@@ -19,23 +19,18 @@ interface ProjectFile {
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
     
-    const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
-    const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [highlightedStuffs, setHighlightedStuffs] = useState<ProjectFile[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const conversation = useSelector((state: RootState) => state.Messages.messages);
 
-    console.log(highlightedFiles);
-    console.log(highlightedFilesContent);
-    console.log(highlightedStuffs);
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             setSelectedChatCode('');
             dispatch(setLoading(true));
-            askChat(conversation, highlightedFiles, highlightedFilesContent);
+            askChat(conversation, highlightedStuffs);
         }
-    }, [conversation, highlightedFiles, highlightedFilesContent]);
+    }, [conversation,highlightedStuffs]);
 
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
@@ -107,15 +102,6 @@ const CodeCentral = () => {
             }
         }
     }, [chatCodes]);
-
-    const handleFlightClick = (fileName: any, event: { shiftKey: any; }, highlightedFiles: any[], handleFileSelect: { (fileName: any): Promise<void>; (arg0: any): void; }) => {
-        if (event.shiftKey) {
-            return highlightedFiles.includes(fileName) ? highlightedFiles.filter((flight: any) => flight !== fileName) : [...highlightedFiles, fileName];
-        } else {
-            handleFileSelect(fileName);
-        }
-        return highlightedFiles;
-    }
     
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
@@ -155,18 +141,13 @@ const CodeCentral = () => {
     
     
 
-    const askChat = async (conversation: any[] , highlightedFiles: any[], highlightedFilesContent: any[]) => {
-
+    const askChat = async (conversation: any[] , highlightedFiles: ProjectFile[]) => {
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
         });
         const lastMessage = messages[messages.length - 1];
         messages.pop();
-        const highlightedFilesMap = highlightedFiles.reduce((acc: any, fileName: any, index: any) => ({
-            ...acc,
-            [fileName]: highlightedFilesContent[index]
-        }), {});
-        const highlightedFilesText = JSON.stringify(highlightedFilesMap);
+        const highlightedFilesText = highlightedFiles.map((highlightedFile) => `${highlightedFile.name}: ${highlightedFile.content}` )
         messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
         const response = await fetch('api/chat', {
             method: 'POST',
@@ -176,14 +157,10 @@ const CodeCentral = () => {
             },
             body: JSON.stringify({ messages })
         });
-    
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let done = false;
         let chatCompletion = '';
-
-        console.log('Starting chat stream');
-        console.log(chatCodes)
         while (!done) {
             const { value, done: doneReading } = await reader?.read()!;
             done = doneReading;
@@ -223,45 +200,6 @@ const CodeCentral = () => {
     
         return  
     }
-
-
-    const handleFileSelect = async (fileName: string) => {
-        console.log('Selected file:', fileName);
-        setSelectedFileName(fileName);
-        const content = await getFile(fileName, selectedProject.name);
-        setSelectedFileContent(content);
-        const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
-        
-        if (chatCode) {
-            setSelectedChatCode(chatCode.code);
-        }
-        else{
-            setSelectedChatCode('');
-        }
-        if (!highlightedFiles.includes(fileName)) {
-            setHighlightedFiles([...highlightedFiles, fileName]);
-            const hightlightedFileContent = await getFile(fileName, selectedProject.name);
-            setHighlightedStuffs([...highlightedStuffs, { name: fileName, content: hightlightedFileContent }]);
-        }
-    };
-
-    useEffect(() => {
-        if (highlightedFiles.length > 0) {
-            (async () => {
-                const contentPromises = highlightedFiles.map(async (fileName) => {
-                    const chatCode = chatCodes.find(chatCode => chatCode.fileName === fileName);
-                    if (chatCode) {
-                        return chatCode.code;  // Use chat code if available
-                    } else {
-                        const fileContent = await fetchHighlightedFilesContent([fileName], selectedProject.name);
-                        return fileContent[0];
-                    }
-                });
-                const content = await Promise.all(contentPromises);
-                setHighlightedFilesContent(content);
-            })();
-        }
-    }, [highlightedFiles, selectedProject, chatCodes]);
 
     const fetchGitDiff = async () => {
         if (selectedProject) {
@@ -328,8 +266,14 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
-        const newHighlightedFiles = filenames.filter(filename => projectFiles.includes(filename));
-        setHighlightedFiles(newHighlightedFiles);
+        const newHighlightedFileNames = filenames.filter(filename => projectFiles.includes(filename));
+        Promise.all(newHighlightedFileNames.map(async (filename) => {
+            return { name: filename, content: await getFile(filename, selectedProject.name) };
+        })).then(newHighlightedFiles => {
+            setHighlightedStuffs(newHighlightedFiles);
+        }).catch(error => {
+            console.error('Error fetching file contents:', error);
+        });
     }
 
     const handleNewSelectedFile = (filename: string) => {
@@ -337,6 +281,41 @@ const CodeCentral = () => {
         setSelectedChatCode('');
     }
 
+
+
+    const handleThisShit = async (fileName: any, event: { shiftKey: any; }) => {
+        let newSelectedFiles: SetStateAction<string[]> = [];
+        
+        //if shift key is pressed, if it is already highlighted, remove it, if not, add it
+        if (event.shiftKey) {
+            const isItAlreadyHighlighted = highlightedStuffs.find((highlightedStuff) => highlightedStuff.name === fileName);
+            // newSelectedFiles =  highlightedFiles.includes(fileName) ? highlightedFiles.filter((flight: any) => flight !== fileName) : [...highlightedFiles, fileName];
+            // setHighlightedFiles(newSelectedFiles);
+            if (!isItAlreadyHighlighted) {
+                const hightlightedFileContent = await getFile(fileName, selectedProject.name);
+                setHighlightedStuffs([...highlightedStuffs, { name: fileName, content: hightlightedFileContent }]);
+            }
+            setHighlightedStuffs(highlightedStuffs.filter((highlightedStuff) => highlightedStuff.name !== fileName));
+            
+        } else {
+        setSelectedFileName(fileName);
+        const content = await getFile(fileName, selectedProject.name);
+        setSelectedFileContent(content);
+        const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
+        
+        if (chatCode) {
+            setSelectedChatCode(chatCode.code);
+        }
+        else{
+            setSelectedChatCode('');
+        }
+        if (!highlightedStuffs.map((highlightedStuff) => highlightedStuff.name).includes(fileName)) {
+            const hightlightedFileContent = await getFile(fileName, selectedProject.name);
+            setHighlightedStuffs([...highlightedStuffs, { name: fileName, content: hightlightedFileContent }]);
+        }
+        }
+
+    }
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
@@ -351,9 +330,9 @@ const CodeCentral = () => {
                         selectedProject={selectedProject}
                         setSelectedProject={setSelectedProject}
                         projectFiles={projectFiles}
-                        handleFlightClick={(fileName, event) => setHighlightedFiles((prev: any) => handleFlightClick(fileName, event, prev, handleFileSelect))}
+                        handleFlightClick={handleThisShit}
                         selectedFileName={selectedFileName}
-                        highlightedFiles={highlightedFiles}
+                        highlightedFiles={highlightedStuffs}
                         chatCodes={chatCodes}
                         setSelectedChatCode={setSelectedChatCode}
                     />

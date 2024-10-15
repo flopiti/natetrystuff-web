@@ -1,6 +1,7 @@
-import { ProjectFile, addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
+import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
+import { ProjectFile } from './CodeCentral';
 
 interface Project {
     name: string;
@@ -18,7 +19,7 @@ interface FileListDropdownProps {
     projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
     selectedFileName: string,
-    highlightedFiles: string[],
+    highlightedFiles: ProjectFile[],
     chatCodes: ChatCode[],
     setSelectedChatCode: (code: string) => void, 
     setDirPath: (dirPath: string) => void
@@ -26,7 +27,7 @@ interface FileListDropdownProps {
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [projectPaths, setProjectPaths] = useState<ProjectFile[]>([]);
+    const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
 
@@ -35,7 +36,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
         setShowOptions(true);
     };
 
-    const handleOptionClick = (option: ProjectFile) => {
+    const handleOptionClick = (option: any) => {
         setInputValue(option.path);
         setShowOptions(false);
         setDirPath(option.path);
@@ -62,7 +63,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
         setSelectedProject(pr ? pr : null);
     };
 
-    const handleRemoveOption = async (option: ProjectFile) => {
+    const handleRemoveOption = async (option: any) => {
         try {
             await removeProjectPath(option.path);
             const updatedPaths = await fetchProjectPaths();
@@ -73,7 +74,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
     };
 
     useEffect(() => {
-        fetchProjectPaths().then((data: ProjectFile[]) => {
+        fetchProjectPaths().then((data: any[]) => {
             setProjectPaths(data);
             if (data.length === 1) {
                 setDirPath(data[0].path);
@@ -85,8 +86,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
     const filteredFiles = projectFiles
         .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
         .sort((a, b) => {
-            const aIsHighlighted = highlightedFiles.includes(a);
-            const bIsHighlighted = highlightedFiles.includes(b);
+            const aIsHighlighted = highlightedFiles.map((highlightedFile) => highlightedFile.name).includes(a);
+            const bIsHighlighted = highlightedFiles.map((highlightedFile) => highlightedFile.name).includes(b);
             if (aIsHighlighted && !bIsHighlighted) return -1;
             if (!aIsHighlighted && bIsHighlighted) return 1;
             return 0;
@@ -145,7 +146,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
             </div>
             <div className="overflow-auto">
                 {filteredFiles.map((projectFile, index) => {
-                    const isHighlighted = highlightedFiles.includes(projectFile);
+                    const isHighlighted = highlightedFiles.map(
+                        (highlightedFile) => highlightedFile.name
+                    ).includes(projectFile);
                     const chatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
                     return (
                         <div
