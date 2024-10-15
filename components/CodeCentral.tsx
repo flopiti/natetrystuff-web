@@ -17,17 +17,20 @@ const CodeCentral = () => {
     
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
+    const [selectedChatCode, setSelectedChatCode] = useState<string>('');
 
-    const conversation = useSelector((state: RootState) => state.Messages.messages);
+    const chatMessages = useSelector((state: RootState) => state.Messages.messages);
 
     useEffect(() => {
-        const lastMessage = conversation[conversation.length - 1];
+        const lastMessage = chatMessages[chatMessages.length - 1];
         if (lastMessage.role === 'user') {
             setSelectedChatCode('');
             dispatch(setLoading(true));
-            askChat(conversation, highlightedFiles);
+            askChat(chatMessages, highlightedFiles);
         }
-    }, [conversation]);
+    }, [chatMessages]);
+
+    console.log(selectedChatCode)
 
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
@@ -40,7 +43,6 @@ const CodeCentral = () => {
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
 
-    const [selectedChatCode, setSelectedChatCode] = useState<string>('');
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
     const [branch, setBranch] = useState<string | null>(null);
@@ -55,7 +57,6 @@ const CodeCentral = () => {
     const getBranch = async () => {
         const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
         const { data } = await response.json();
-        console.log('received branch though : ' , data.branchName);
         setBranch(data.branchName);
     }
     useEffect(() => {
@@ -103,7 +104,6 @@ const CodeCentral = () => {
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
-          console.log("sending command", command);
           terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${selectedTerminal}`, data: command + '\r' }));
         } else {
           console.error('No active terminal selected or WebSocket not connected.');
@@ -111,17 +111,13 @@ const CodeCentral = () => {
       };
     
     const runCommandInCurrentProject = (command: any) => {
-        console.log(`Current devTerminalId before running command:`, devTerminalId);
         const terminal = terminals.find((t) => t.id === devTerminalId);
-        console.log(`Found terminal:`, terminal);
-        console.log(`Terminal WebSocket ready state:`, terminal?.ws?.readyState);
         if (terminal && terminal.ws) {
             let attempts = 0;
             const maxAttempts = 5;
             setTimeout(() => {
                 const interval = setInterval(() => {
                     if (terminal.ws?.readyState === WebSocket.OPEN) {
-                        console.log("WebSocket is open, sending command", command);
                         terminal.ws.send(JSON.stringify({ type: 'command', id: `session-${devTerminalId}`, data: command + '\r' }));
                         clearInterval(interval);
                     } else if (terminal.ws?.readyState !== WebSocket.CONNECTING || attempts >= maxAttempts) {
@@ -323,7 +319,7 @@ const CodeCentral = () => {
                     <Chat 
                         handleNewSelectedFile={handleNewSelectedFile}
                         handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
-                        conversation={conversation} 
+                        conversation={chatMessages} 
                         runCommand={runCommandInCurrentProject}  
                         getBranch={getBranch} 
                         branch={branch} 
