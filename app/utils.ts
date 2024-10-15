@@ -1,4 +1,4 @@
-import { LinesOptions, Change, Callback, CallbackOptions } from "diff";
+import { ProjectFile } from "@/types/project";
 
 export const getProjects = async (dirPath:string) => {
     console.log('calling getProjects'); 
@@ -71,7 +71,7 @@ export const fetchHighlightedFilesContent = async (highlightedFiles: any[], proj
     return filesContent;
 };
 
-export const replaceCode = async (projectName: any, chatCodes: any[]) => {
+export const replaceCode = async (projectName: any, chatCodes: ProjectFile[]) => {
     const response = await fetch('/api/replace-code', {
         method: 'POST',
         headers: {
@@ -84,15 +84,6 @@ export const replaceCode = async (projectName: any, chatCodes: any[]) => {
         throw new Error('Failed to replace code');
     }
 };
-
-export const handleFlightClick = (fileName: any, event: { shiftKey: any; }, highlightedFiles: any[], handleFileSelect: { (fileName: any): Promise<void>; (arg0: any): void; }) => {
-    if (event.shiftKey) {
-        return highlightedFiles.includes(fileName) ? highlightedFiles.filter((flight: any) => flight !== fileName) : [...highlightedFiles, fileName];
-    } else {
-        handleFileSelect(fileName);
-    }
-    return highlightedFiles;
-}
 
 export const getTopLevelKeys = (jsonString: string): string[] => {
     const keys: string[] = [];

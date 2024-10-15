@@ -1,14 +1,10 @@
-import { ProjectFile, addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
+import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
+import { ProjectFile } from '@/types/project';
 
 interface Project {
     name: string;
-}
-
-interface ChatCode {
-    fileName: string;
-    code: string;
 }
 
 interface FileListDropdownProps {
@@ -18,24 +14,23 @@ interface FileListDropdownProps {
     projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
     selectedFileName: string,
-    highlightedFiles: string[],
-    chatCodes: ChatCode[],
+    highlightedFiles: ProjectFile[],
+    chatCodes: ProjectFile[],
     setSelectedChatCode: (code: string) => void, 
     setDirPath: (dirPath: string) => void
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedProject, setSelectedProject, projectFiles, handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, setDirPath }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [projectPaths, setProjectPaths] = useState<ProjectFile[]>([]);
+    const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
-
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setShowOptions(true);
     };
 
-    const handleOptionClick = (option: ProjectFile) => {
+    const handleOptionClick = (option: any) => {
         setInputValue(option.path);
         setShowOptions(false);
         setDirPath(option.path);
@@ -62,7 +57,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
         setSelectedProject(pr ? pr : null);
     };
 
-    const handleRemoveOption = async (option: ProjectFile) => {
+    const handleRemoveOption = async (option: any) => {
         try {
             await removeProjectPath(option.path);
             const updatedPaths = await fetchProjectPaths();
@@ -73,7 +68,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     };
 
     useEffect(() => {
-        fetchProjectPaths().then((data: ProjectFile[]) => {
+        fetchProjectPaths().then((data: any[]) => {
             setProjectPaths(data);
             if (data.length === 1) {
                 setDirPath(data[0].path);
@@ -85,8 +80,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
     const filteredFiles = projectFiles
         .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
         .sort((a, b) => {
-            const aIsHighlighted = highlightedFiles.includes(a);
-            const bIsHighlighted = highlightedFiles.includes(b);
+            const aIsHighlighted = highlightedFiles.map((highlightedFile) => highlightedFile.name).includes(a);
+            const bIsHighlighted = highlightedFiles.map((highlightedFile) => highlightedFile.name).includes(b);
             if (aIsHighlighted && !bIsHighlighted) return -1;
             if (!aIsHighlighted && bIsHighlighted) return 1;
             return 0;
@@ -145,8 +140,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
             </div>
             <div className="overflow-auto">
                 {filteredFiles.map((projectFile, index) => {
-                    const isHighlighted = highlightedFiles.includes(projectFile);
-                    const chatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
+                    const isHighlighted = highlightedFiles.map(
+                        (highlightedFile) => highlightedFile.name
+                    ).includes(projectFile);
+                    const chatCode = chatCodes?.find((fileData) => fileData.name === projectFile);
                     return (
                         <div
                             key={index}
@@ -162,15 +159,15 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects, selectedP
                         </div>
                     );
                 })}
-                {chatCodes?.filter(({ fileName }) => fileName !== '' && !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
+                {chatCodes?.filter(({ name }) => name !== '' && !projectFiles.includes(name)).map(({ name, content }, index) => (
                     <div
                         key={projectFiles.length + index}
-                        onClick={() => setSelectedChatCode(code)}
+                        onClick={() => setSelectedChatCode(content)}
                         className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
                         <div className="overflow-x-auto">
-                            <p className={`whitespace-nowrap ${selectedFileName === fileName ? 'font-bold' : 'font-normal'}`}>
-                                {fileName}
+                            <p className={`whitespace-nowrap ${selectedFileName === name ? 'font-bold' : 'font-normal'}`}>
+                                {name}
                             </p>
                         </div>
                     </div>

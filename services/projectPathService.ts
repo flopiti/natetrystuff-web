@@ -1,8 +1,6 @@
-export interface ProjectFile {
-    path: string;
-}
 
-export async function fetchProjectPaths(): Promise<ProjectFile[]> {
+
+export async function fetchProjectPaths(): Promise<any[]> {
     const response = await fetch('/api/project-paths');
     if (!response.ok) {
         throw new Error(`Failed to fetch project paths: ${response.statusText}`);

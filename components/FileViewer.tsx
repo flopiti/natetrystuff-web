@@ -1,6 +1,8 @@
 import { unescapeString } from '@/app/utils';
+import { RootState } from '@/store';
 import { diffLines } from 'diff';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 interface FileViewerProps {
   activeTab: string;
@@ -9,7 +11,6 @@ interface FileViewerProps {
   selectedChatCode: string;
   selectedFileName: string;
   replaceCode: () => void;
-  loading: boolean;
   setSelectedChatCode: (code: string) => void;
 }
 
@@ -20,9 +21,10 @@ const FileViewer: React.FC<FileViewerProps> = ({
   selectedChatCode,
   selectedFileName,
   replaceCode,
-  loading,
   setSelectedChatCode
 }) => {
+  const loading = useSelector((state: RootState) => state.Messages.loading);
+
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const diff = diffLines(selectedFileContent, selectedChatCode);
