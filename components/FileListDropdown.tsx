@@ -16,11 +16,11 @@ interface FileListDropdownProps {
     selectedFileName: string,
     highlightedFiles: ProjectFile[],
     chatCodes: ProjectFile[],
-    setSelectedChatCode: (code: string) => void, 
+    setSelectedFileName: (code: string) => void, 
     setDirPath: (dirPath: string) => void
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedChatCode, setDirPath }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName, setDirPath }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -162,7 +162,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
                 {chatCodes?.filter(({ name }) => name !== '' && !projectFiles.includes(name)).map(({ name, content }, index) => (
                     <div
                         key={projectFiles.length + index}
-                        onClick={() => setSelectedChatCode(content)}
+                        onClick={() => setSelectedFileName(name)}
                         className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
                         <div className="overflow-x-auto">
