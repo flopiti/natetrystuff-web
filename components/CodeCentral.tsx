@@ -17,7 +17,6 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
-    const [isChatStreamOngoing, setIsChatStreamOngoing] = useState<boolean>(false); // New state for tracking stream
     const conversation = useSelector((state: RootState) => state.Messages.messages);
     const loading = useSelector((state: RootState) => state.Messages.loading);
 
@@ -26,10 +25,7 @@ const CodeCentral = () => {
         if (lastMessage.role === 'user') {
             setSelectedChatCode('');
             dispatch(setLoading(true));
-            setIsChatStreamOngoing(true); // Set to true when starting the chat stream
-            askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
-                setIsChatStreamOngoing(false); // Set to false when the chat stream ends
-            });
+            askChat(conversation, highlightedFiles, highlightedFilesContent);
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
