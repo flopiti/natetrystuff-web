@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface ProjectState {
     projectDir: string;
     projects: any[];
+    currentProjectFileNames: string[];
 }
 
 export const initialState: ProjectState = {
     projectDir: '',
     projects: [],
+    currentProjectFileNames: [],
 };
 
 const ProjectSlice = createSlice({
@@ -19,9 +21,12 @@ const ProjectSlice = createSlice({
     },
     setProjects(state, action: PayloadAction<any[]>) {
         state.projects = action.payload
-    }
+    },
+    setCurrentProjectFileNames(state, action: PayloadAction<string[]>) {
+        state.currentProjectFileNames = action.payload;
+    },
   },
 });
 
-export const {setProjectDir , setProjects} = ProjectSlice.actions;
+export const {setProjectDir , setProjects, setCurrentProjectFileNames} = ProjectSlice.actions;
 export default ProjectSlice.reducer;

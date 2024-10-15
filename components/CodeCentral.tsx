@@ -11,7 +11,7 @@ import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
-import { setProjects } from '@/slices/ProjectSlice';
+import { setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -20,7 +20,7 @@ const CodeCentral = () => {
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
-    const {projectDir, projects } = useSelector((state: RootState) => state.Projects);
+    const {projectDir, projects, currentProjectFileNames } = useSelector((state: RootState) => state.Projects);
 
     // when there is a new message, check if it is a user message and if so, ask the chat
     useEffect(() => {
@@ -39,7 +39,6 @@ const CodeCentral = () => {
 
     
     const [selectedProject, setSelectedProject] = useState<any>(null);
-    const [projectFiles, setProjectFiles] = useState<string[]>([]);
     const [selectedFileName, setSelectedFileName] = useState<string | null>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
@@ -87,7 +86,7 @@ const CodeCentral = () => {
         if (selectedProject) {
             (async () => {
                 const data = await getProjectFiles(selectedProject);
-                setProjectFiles(data);
+                dispatch(setCurrentProjectFileNames(data));
             })();
         }
     }, [selectedProject]);
@@ -247,7 +246,7 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
-        const newHighlightedFileNames = filenames.filter(filename => projectFiles.includes(filename));
+        const newHighlightedFileNames = filenames.filter(filename => currentProjectFileNames.includes(filename));
         Promise.all(newHighlightedFileNames.map(async (filename) => {
             return { name: filename, content: await getFile(filename, selectedProject.name) };
         })).then(newHighlightedFiles => {
@@ -299,7 +298,7 @@ const CodeCentral = () => {
                         projects={projects}
                         selectedProject={selectedProject}
                         setSelectedProject={setSelectedProject}
-                        projectFiles={projectFiles}
+                        projectFiles={currentProjectFileNames}
                         handleFlightClick={handleThisShit}
                         selectedFileName={selectedFileName}
                         highlightedFiles={highlightedFiles}
