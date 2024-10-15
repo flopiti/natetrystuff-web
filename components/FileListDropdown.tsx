@@ -7,11 +7,6 @@ interface Project {
     name: string;
 }
 
-interface ChatCode {
-    fileName: string;
-    code: string;
-}
-
 interface FileListDropdownProps {
     projects: Project[],
     selectedProject: Project | null,
@@ -20,7 +15,7 @@ interface FileListDropdownProps {
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
     selectedFileName: string,
     highlightedFiles: ProjectFile[],
-    chatCodes: ChatCode[],
+    chatCodes: ProjectFile[],
     setSelectedChatCode: (code: string) => void, 
     setDirPath: (dirPath: string) => void
 }
@@ -30,7 +25,6 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
-
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setShowOptions(true);
@@ -149,7 +143,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
                     const isHighlighted = highlightedFiles.map(
                         (highlightedFile) => highlightedFile.name
                     ).includes(projectFile);
-                    const chatCode = chatCodes?.find((fileData) => fileData.fileName === projectFile);
+                    const chatCode = chatCodes?.find((fileData) => fileData.name === projectFile);
                     return (
                         <div
                             key={index}
@@ -165,15 +159,15 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
                         </div>
                     );
                 })}
-                {chatCodes?.filter(({ fileName }) => fileName !== '' && !projectFiles.includes(fileName)).map(({ fileName, code }, index) => (
+                {chatCodes?.filter(({ name }) => name !== '' && !projectFiles.includes(name)).map(({ name, content }, index) => (
                     <div
                         key={projectFiles.length + index}
-                        onClick={() => setSelectedChatCode(code)}
+                        onClick={() => setSelectedChatCode(content)}
                         className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
                         <div className="overflow-x-auto">
-                            <p className={`whitespace-nowrap ${selectedFileName === fileName ? 'font-bold' : 'font-normal'}`}>
-                                {fileName}
+                            <p className={`whitespace-nowrap ${selectedFileName === name ? 'font-bold' : 'font-normal'}`}>
+                                {name}
                             </p>
                         </div>
                     </div>
