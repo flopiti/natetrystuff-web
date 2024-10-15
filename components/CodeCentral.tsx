@@ -62,6 +62,7 @@ const CodeCentral = () => {
             runCommandInCurrentProject(runCommandWithLogging);
         }
     }, [selectedProject, doesCurrentProjectHaveTerminal, terminals]);
+
     useEffect(() => {
         if (selectedProject) {
             getBranch();
