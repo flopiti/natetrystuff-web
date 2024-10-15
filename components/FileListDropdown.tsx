@@ -13,7 +13,7 @@ interface FileListDropdownProps {
     setSelectedProject: (project: Project | null) => void,
     projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
-    selectedFileName: string,
+    selectedFileName: string | null,
     highlightedFiles: ProjectFile[],
     chatCodes: ProjectFile[],
     setSelectedFileName: (code: string) => void, 

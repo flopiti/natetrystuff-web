@@ -9,7 +9,7 @@ interface FileViewerProps {
   setActiveTab: (tab: string) => void;
   selectedFileContent: string;
   selectedChatCode: string | null;
-  selectedFileName: string ;
+  selectedFileName: string | null;
   replaceCode: () => void;
   setSelectedChatCode: (code: string) => void;
 }
