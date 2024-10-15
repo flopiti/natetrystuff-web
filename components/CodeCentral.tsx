@@ -197,20 +197,7 @@ const CodeCentral = () => {
         return  
     }
 
-    const fetchGitDiff = async () => {
-        if (selectedProject) {
-            try {
-                const response = await fetch(`/api/git-diff?projectName=${selectedProject.name}`);
-                const result = await response.json();
-                setGitDiff(result);
-                console.log('Git Diff Result:', result);
-            } catch (error) {
-                console.error('Error fetching git diff:', error);
-            }
-        } else {
-            console.error('No project selected.');
-        }
-    };
+
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
@@ -235,7 +222,7 @@ const CodeCentral = () => {
 
     const handleReplaceCode = async () => {
         await replaceCode(selectedProject.name, editedFiles);
-        fetchGitDiff();
+        setGitDiff(await gitDiff(selectedProject.name));
     };
 
     const updateChatCode = (code: string) => {
