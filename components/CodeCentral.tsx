@@ -17,20 +17,18 @@ const CodeCentral = () => {
     
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
-    const [selectedChatCode, setSelectedChatCode] = useState<string>('');
+    const [selectedFileName_ , setSelectedFileName_] = useState<string | null>('');
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
 
     useEffect(() => {
         const lastMessage = chatMessages[chatMessages.length - 1];
         if (lastMessage.role === 'user') {
-            setSelectedChatCode('');
+            setSelectedFileName_(null);
             dispatch(setLoading(true));
             askChat(chatMessages, highlightedFiles);
         }
     }, [chatMessages]);
-
-    console.log(selectedChatCode)
 
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
@@ -95,8 +93,7 @@ const CodeCentral = () => {
             setActiveTab('chat'); 
             const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === selectedFileName) ?? null;
             if (chatCode) {
-
-                setSelectedChatCode(chatCode.content);
+                setSelectedFileName_(chatCode.name);
             }
         }
     }, [editedFiles]);
@@ -257,10 +254,8 @@ const CodeCentral = () => {
 
     const handleNewSelectedFile = (filename: string) => {
         setSelectedFileName(filename);
-        setSelectedChatCode('');
+        setSelectedFileName_(null);
     }
-
-
 
     const handleThisShit = async (fileName: any, event: { shiftKey: any; }) => {
         if (event.shiftKey) {
@@ -277,10 +272,10 @@ const CodeCentral = () => {
         setSelectedFileContent(content);
         const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === fileName) ?? null;
         if (chatCode) {
-            setSelectedChatCode(chatCode.content);
+            setSelectedFileName_(chatCode.name);
         }
         else{
-            setSelectedChatCode('');
+            setSelectedFileName_(null);
         }
         if (!highlightedFiles.map((highlightedStuff) => highlightedStuff.name).includes(fileName)) {
             const hightlightedFileContent = await getFile(fileName, selectedProject.name);
@@ -305,14 +300,14 @@ const CodeCentral = () => {
                         selectedFileName={selectedFileName}
                         highlightedFiles={highlightedFiles}
                         chatCodes={editedFiles}
-                        setSelectedChatCode={setSelectedChatCode}
+                        setSelectedFileName={setSelectedFileName_}
                     />
                     <FileViewer
                         setSelectedChatCode={updateChatCode}  // Changed this prop
                         activeTab={activeTab} 
                         setActiveTab={setActiveTab} 
                         selectedFileContent={selectedFileContent} 
-                        selectedChatCode={selectedChatCode} 
+                        selectedChatCode={editedFiles.find((fileData) => fileData.name === selectedFileName_)?.content ?? null}
                         selectedFileName={selectedFileName} 
                         replaceCode={handleReplaceCode} 
                     />
