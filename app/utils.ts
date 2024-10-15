@@ -85,15 +85,6 @@ export const replaceCode = async (projectName: any, chatCodes: any[]) => {
     }
 };
 
-export const handleFlightClick = (fileName: any, event: { shiftKey: any; }, highlightedFiles: any[], handleFileSelect: { (fileName: any): Promise<void>; (arg0: any): void; }) => {
-    if (event.shiftKey) {
-        return highlightedFiles.includes(fileName) ? highlightedFiles.filter((flight: any) => flight !== fileName) : [...highlightedFiles, fileName];
-    } else {
-        handleFileSelect(fileName);
-    }
-    return highlightedFiles;
-}
-
 export const getTopLevelKeys = (jsonString: string): string[] => {
     const keys: string[] = [];
     let inString = false;
