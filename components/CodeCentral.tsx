@@ -19,6 +19,7 @@ const CodeCentral = () => {
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
+    const dirPath = useSelector((state: RootState) => state.Projects.projectDir);
 
     useEffect(() => {
         const lastMessage = chatMessages[chatMessages.length - 1];
@@ -32,7 +33,9 @@ const CodeCentral = () => {
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
-    const [dirPath, setDirPath] = useState<string>('');
+    
+
+    
     const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [projectFiles, setProjectFiles] = useState<string[]>([]);
@@ -292,7 +295,6 @@ const CodeCentral = () => {
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
-                        setDirPath={setDirPath}
                         projects={projects}
                         selectedProject={selectedProject}
                         setSelectedProject={setSelectedProject}

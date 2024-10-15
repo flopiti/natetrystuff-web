@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import MessagesSlice from './slices/MessagesSlice';
+import ProjectSlice from './slices/ProjectSlice';
 
 const store = configureStore({
   reducer: {
     Messages: MessagesSlice,
+    Projects : ProjectSlice,
   },
 });
 

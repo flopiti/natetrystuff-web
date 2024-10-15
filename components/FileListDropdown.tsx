@@ -2,6 +2,9 @@ import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/service
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { ProjectFile } from '@/types/project';
+import { setProjectDir } from '@/slices/ProjectSlice';
+import { AppDispatch } from '@/store';
+import { useDispatch } from 'react-redux';
 
 interface Project {
     name: string;
@@ -17,10 +20,11 @@ interface FileListDropdownProps {
     highlightedFiles: ProjectFile[],
     chatCodes: ProjectFile[],
     setSelectedFileName: (code: string) => void, 
-    setDirPath: (dirPath: string) => void
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName, setDirPath }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
+    const dispatch: AppDispatch = useDispatch();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -33,7 +37,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
     const handleOptionClick = (option: any) => {
         setInputValue(option.path);
         setShowOptions(false);
-        setDirPath(option.path);
+        dispatch(setProjectDir(option.path));
     };
 
     const handleKeyDown = async (event: KeyboardEvent<HTMLInputElement>) => {
@@ -71,7 +75,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
         fetchProjectPaths().then((data: any[]) => {
             setProjectPaths(data);
             if (data.length === 1) {
-                setDirPath(data[0].path);
+                dispatch(setProjectDir(data[0].path));
                 setInputValue(data[0].path);
             }
         });
