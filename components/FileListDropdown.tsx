@@ -1,14 +1,11 @@
 import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
-import { ProjectFile } from '@/types/project';
+import { Project, ProjectFile } from '@/types/project';
 import { setProjectDir } from '@/slices/ProjectSlice';
 import { AppDispatch } from '@/store';
 import { useDispatch } from 'react-redux';
 
-interface Project {
-    name: string;
-}
 
 interface FileListDropdownProps {
     projects: Project[],

@@ -10,7 +10,7 @@ import { askChatNoStream } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
-import { ProjectFile } from '@/types/project';
+import { Project, ProjectFile } from '@/types/project';
 import { setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 
 const CodeCentral = () => {
@@ -38,7 +38,7 @@ const CodeCentral = () => {
     
 
     
-    const [selectedProject, setSelectedProject] = useState<any>(null);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [selectedFileName, setSelectedFileName] = useState<string | null>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
@@ -55,6 +55,10 @@ const CodeCentral = () => {
     const [gitDiff, setGitDiff] = useState<any>(null);
 
     const getBranch = async () => {
+        if (!selectedProject) {
+            console.error('No project selected.');
+            return;
+        }
         const response = await fetch(`api/current-branch?dirPath=${projectDir}/${selectedProject.name}`);
         const { data } = await response.json();
         setBranch(data.branchName);
@@ -218,6 +222,10 @@ const CodeCentral = () => {
     }, [gitDiff]);
 
     const handleReplaceCode = async () => {
+        if (!selectedProject) {
+            console.error('No project selected.');
+            return;
+        }
         await replaceCode(selectedProject.name, editedFiles);
         setGitDiff(await gitDiff(selectedProject.name));
     };
@@ -246,6 +254,10 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
+        if (!selectedProject) {
+            console.error('No project selected.');
+            return;
+        }
         const newHighlightedFileNames = filenames.filter(filename => currentProjectFileNames.includes(filename));
         Promise.all(newHighlightedFileNames.map(async (filename) => {
             return { name: filename, content: await getFile(filename, selectedProject.name) };
@@ -262,9 +274,14 @@ const CodeCentral = () => {
     }
 
     const handleThisShit = async (fileName: any, event: { shiftKey: any; }) => {
+        if (!selectedProject) {
+            console.error('No project selected.');
+            return;
+        }
         if (event.shiftKey) {
             const isItAlreadyHighlighted = highlightedFiles.find((highlightedStuff) => highlightedStuff.name === fileName);
             if (!isItAlreadyHighlighted) {
+                
                 const hightlightedFileContent = await getFile(fileName, selectedProject.name);
                 setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
             }
