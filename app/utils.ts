@@ -1,4 +1,4 @@
-import { LinesOptions, Change, Callback, CallbackOptions } from "diff";
+import { ProjectFile } from "@/types/project";
 
 export const getProjects = async (dirPath:string) => {
     console.log('calling getProjects'); 
@@ -71,7 +71,7 @@ export const fetchHighlightedFilesContent = async (highlightedFiles: any[], proj
     return filesContent;
 };
 
-export const replaceCode = async (projectName: any, chatCodes: any[]) => {
+export const replaceCode = async (projectName: any, chatCodes: ProjectFile[]) => {
     const response = await fetch('/api/replace-code', {
         method: 'POST',
         headers: {
