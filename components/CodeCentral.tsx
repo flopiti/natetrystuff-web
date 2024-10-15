@@ -16,7 +16,8 @@ const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
     
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
-    const [chatCodes, setChatCodes] = useState<ProjectFile[]>([]);
+    const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
+
     const conversation = useSelector((state: RootState) => state.Messages.messages);
 
     useEffect(() => {
@@ -26,7 +27,7 @@ const CodeCentral = () => {
             dispatch(setLoading(true));
             askChat(conversation, highlightedFiles);
         }
-    }, [conversation,highlightedFiles]);
+    }, [conversation]);
 
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
@@ -89,15 +90,15 @@ const CodeCentral = () => {
     }, [selectedProject]);
 
     useEffect(() => {
-        if (chatCodes?.length > 0) {
+        if (editedFiles?.length > 0) {
             setActiveTab('chat'); 
-            const chatCode: ProjectFile | null = chatCodes?.find((fileData: ProjectFile) => fileData.name === selectedFileName) ?? null;
+            const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === selectedFileName) ?? null;
             if (chatCode) {
 
                 setSelectedChatCode(chatCode.content);
             }
         }
-    }, [chatCodes]);
+    }, [editedFiles]);
     
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
@@ -182,7 +183,7 @@ const CodeCentral = () => {
                                     name: element[0],
                                     content: element[1] ? element[1] : ''
                                 }));
-                                setChatCodes(newChatCodes);
+                                setEditedFiles(newChatCodes);
                             }
                         });
                     }
@@ -192,7 +193,7 @@ const CodeCentral = () => {
             }
         }
         dispatch(setLoading(false));
-        setChatCodes(JSON.parse(chatCompletion).files);
+        setEditedFiles(JSON.parse(chatCompletion).files);
         return  
     }
 
@@ -233,12 +234,12 @@ const CodeCentral = () => {
     }, [gitDiff]);
 
     const handleReplaceCode = async () => {
-        await replaceCode(selectedProject.name, chatCodes);
+        await replaceCode(selectedProject.name, editedFiles);
         fetchGitDiff();
     };
 
     const updateChatCode = (code: string) => {
-        setChatCodes(prevChatCodes => {
+        setEditedFiles(prevChatCodes => {
             const updatedChatCodes = prevChatCodes.map(fileData =>
                 fileData.name === selectedFileName ? { ...fileData, code } : fileData
             );
@@ -291,7 +292,7 @@ const CodeCentral = () => {
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
-        const chatCode: ProjectFile | null = chatCodes?.find((fileData: ProjectFile) => fileData.name === fileName) ?? null;
+        const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === fileName) ?? null;
         if (chatCode) {
             setSelectedChatCode(chatCode.content);
         }
@@ -320,7 +321,7 @@ const CodeCentral = () => {
                         handleFlightClick={handleThisShit}
                         selectedFileName={selectedFileName}
                         highlightedFiles={highlightedFiles}
-                        chatCodes={chatCodes}
+                        chatCodes={editedFiles}
                         setSelectedChatCode={setSelectedChatCode}
                     />
                     <FileViewer
