@@ -18,7 +18,6 @@ const CodeCentral = () => {
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const conversation = useSelector((state: RootState) => state.Messages.messages);
-    const loading = useSelector((state: RootState) => state.Messages.loading);
 
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
@@ -346,7 +345,6 @@ const CodeCentral = () => {
                         selectedChatCode={selectedChatCode} 
                         selectedFileName={selectedFileName} 
                         replaceCode={handleReplaceCode} 
-                        loading={loading}
                     />
                     <Chat 
                         handleNewSelectedFile={handleNewSelectedFile}
