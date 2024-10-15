@@ -1,15 +1,18 @@
+import { Project } from '@/types/project';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProjectState {
     projectDir: string;
-    projects: any[];
+    projects: Project[];
     currentProjectFileNames: string[];
+    currentProject: Project | null;
 }
 
 export const initialState: ProjectState = {
     projectDir: '',
     projects: [],
     currentProjectFileNames: [],
+    currentProject: null,
 };
 
 const ProjectSlice = createSlice({
@@ -25,8 +28,11 @@ const ProjectSlice = createSlice({
     setCurrentProjectFileNames(state, action: PayloadAction<string[]>) {
         state.currentProjectFileNames = action.payload;
     },
+    setCurrentProject(state, action: PayloadAction<Project|null>) {
+        state.currentProject = action.payload;
+    }
   },
 });
 
-export const {setProjectDir , setProjects, setCurrentProjectFileNames} = ProjectSlice.actions;
+export const {setProjectDir , setProjects, setCurrentProjectFileNames, setCurrentProject} = ProjectSlice.actions;
 export default ProjectSlice.reducer;

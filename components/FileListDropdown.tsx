@@ -2,7 +2,7 @@ import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/service
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { Project, ProjectFile } from '@/types/project';
-import { setProjectDir } from '@/slices/ProjectSlice';
+import { setCurrentProject, setProjectDir } from '@/slices/ProjectSlice';
 import { AppDispatch } from '@/store';
 import { useDispatch } from 'react-redux';
 
@@ -10,7 +10,6 @@ import { useDispatch } from 'react-redux';
 interface FileListDropdownProps {
     projects: Project[],
     selectedProject: Project | null,
-    setSelectedProject: (project: Project | null) => void,
     projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
     selectedFileName: string | null,
@@ -19,7 +18,7 @@ interface FileListDropdownProps {
     setSelectedFileName: (code: string) => void, 
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, setSelectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
     const dispatch: AppDispatch = useDispatch();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -55,7 +54,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlig
 
     const handleSelectedProjectChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const pr = projects.find((project) => project.name === event.target.value);
-        setSelectedProject(pr ? pr : null);
+        dispatch(setCurrentProject(pr ? pr : null));
     };
 
     const handleRemoveOption = async (option: any) => {

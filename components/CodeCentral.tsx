@@ -10,7 +10,7 @@ import { askChatNoStream } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
-import { Project, ProjectFile } from '@/types/project';
+import { ProjectFile } from '@/types/project';
 import { setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 
 const CodeCentral = () => {
@@ -20,7 +20,7 @@ const CodeCentral = () => {
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
-    const {projectDir, projects, currentProjectFileNames } = useSelector((state: RootState) => state.Projects);
+    const {projectDir, projects, currentProjectFileNames, currentProject} = useSelector((state: RootState) => state.Projects);
 
     // when there is a new message, check if it is a user message and if so, ask the chat
     useEffect(() => {
@@ -38,7 +38,6 @@ const CodeCentral = () => {
     
 
     
-    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [selectedFileName, setSelectedFileName] = useState<string | null>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
@@ -55,26 +54,26 @@ const CodeCentral = () => {
     const [gitDiff, setGitDiff] = useState<any>(null);
 
     const getBranch = async () => {
-        if (!selectedProject) {
+        if (!currentProject) {
             console.error('No project selected.');
             return;
         }
-        const response = await fetch(`api/current-branch?dirPath=${projectDir}/${selectedProject.name}`);
+        const response = await fetch(`api/current-branch?dirPath=${projectDir}/${currentProject.name}`);
         const { data } = await response.json();
         setBranch(data.branchName);
     }
     useEffect(() => {
-        if (selectedProject && doesCurrentProjectHaveTerminal) {
-            const runCommandWithLogging = `cd /dev-projects/${selectedProject.name}`;
+        if (currentProject && doesCurrentProjectHaveTerminal) {
+            const runCommandWithLogging = `cd /dev-projects/${currentProject.name}`;
             runCommandInCurrentProject(runCommandWithLogging);
         }
-    }, [selectedProject, doesCurrentProjectHaveTerminal, terminals]);
+    }, [currentProject, doesCurrentProjectHaveTerminal, terminals]);
 
     useEffect(() => {
-        if (selectedProject) {
+        if (currentProject) {
             getBranch();
         }
-    }, [selectedProject]);
+    }, [currentProject]);
 
     useEffect(() => {
         if (projectDir.length > 1) {
@@ -87,13 +86,13 @@ const CodeCentral = () => {
     }, [projectDir]);
 
     useEffect(() => {
-        if (selectedProject) {
+        if (currentProject) {
             (async () => {
-                const data = await getProjectFiles(selectedProject);
+                const data = await getProjectFiles(currentProject);
                 dispatch(setCurrentProjectFileNames(data));
             })();
         }
-    }, [selectedProject]);
+    }, [currentProject]);
 
 
     useEffect(() => {
@@ -222,12 +221,12 @@ const CodeCentral = () => {
     }, [gitDiff]);
 
     const handleReplaceCode = async () => {
-        if (!selectedProject) {
+        if (!currentProject) {
             console.error('No project selected.');
             return;
         }
-        await replaceCode(selectedProject.name, editedFiles);
-        setGitDiff(await gitDiff(selectedProject.name));
+        await replaceCode(currentProject.name, editedFiles);
+        setGitDiff(await gitDiff(currentProject.name));
     };
 
     const updateChatCode = (code: string) => {
@@ -240,9 +239,9 @@ const CodeCentral = () => {
     };
 
     const fetchDescComments = async () => {
-        if (selectedProject) {
+        if (currentProject) {
             try {
-                const response = await fetch(`/api/get-desc-comments?project=${selectedProject.name}`);
+                const response = await fetch(`/api/get-desc-comments?project=${currentProject.name}`);
                 const result = await response.json();
                 console.log('DESC Comments:', result.data);
             } catch (error) {
@@ -254,13 +253,13 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
-        if (!selectedProject) {
+        if (!currentProject) {
             console.error('No project selected.');
             return;
         }
         const newHighlightedFileNames = filenames.filter(filename => currentProjectFileNames.includes(filename));
         Promise.all(newHighlightedFileNames.map(async (filename) => {
-            return { name: filename, content: await getFile(filename, selectedProject.name) };
+            return { name: filename, content: await getFile(filename, currentProject.name) };
         })).then(newHighlightedFiles => {
             setHighlightedFiles(newHighlightedFiles);
         }).catch(error => {
@@ -274,7 +273,7 @@ const CodeCentral = () => {
     }
 
     const handleThisShit = async (fileName: any, event: { shiftKey: any; }) => {
-        if (!selectedProject) {
+        if (!currentProject) {
             console.error('No project selected.');
             return;
         }
@@ -282,14 +281,14 @@ const CodeCentral = () => {
             const isItAlreadyHighlighted = highlightedFiles.find((highlightedStuff) => highlightedStuff.name === fileName);
             if (!isItAlreadyHighlighted) {
                 
-                const hightlightedFileContent = await getFile(fileName, selectedProject.name);
+                const hightlightedFileContent = await getFile(fileName, currentProject.name);
                 setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
             }
             setHighlightedFiles(highlightedFiles.filter((highlightedStuff) => highlightedStuff.name !== fileName));
             
         } else {
         setSelectedFileName(fileName);
-        const content = await getFile(fileName, selectedProject.name);
+        const content = await getFile(fileName, currentProject.name);
         setSelectedFileContent(content);
         const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === fileName) ?? null;
         if (chatCode) {
@@ -299,7 +298,7 @@ const CodeCentral = () => {
             setSelectedFileName(null);
         }
         if (!highlightedFiles.map((highlightedStuff) => highlightedStuff.name).includes(fileName)) {
-            const hightlightedFileContent = await getFile(fileName, selectedProject.name);
+            const hightlightedFileContent = await getFile(fileName, currentProject.name);
             setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
         }}
     }
@@ -313,8 +312,7 @@ const CodeCentral = () => {
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
                         projects={projects}
-                        selectedProject={selectedProject}
-                        setSelectedProject={setSelectedProject}
+                        selectedProject={currentProject}
                         projectFiles={currentProjectFileNames}
                         handleFlightClick={handleThisShit}
                         selectedFileName={selectedFileName}
@@ -341,7 +339,7 @@ const CodeCentral = () => {
                         commitMessage={commitMessage} 
                         prTitle={prTitle} 
                         prBody={prBody} 
-                        selectedProject={selectedProject} 
+                        selectedProject={currentProject} 
                     />
                     <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
                     <TerminalDisplay
@@ -355,7 +353,7 @@ const CodeCentral = () => {
                         setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
                         devTerminalId={devTerminalId}
                         setDevTerminalId={setDevTerminalId}
-                        selectedProject={selectedProject}
+                        selectedProject={currentProject}
                     />            </div>
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
