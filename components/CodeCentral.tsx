@@ -36,9 +36,6 @@ const CodeCentral = () => {
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
-    
-
-    
     const [selectedFileName, setSelectedFileName] = useState<string | null>('');
     const [selectedFileContent, setSelectedFileContent] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>('file');
@@ -270,7 +267,7 @@ const CodeCentral = () => {
         setSelectedFileName(null);
     }
 
-    const handleThisShit = async (fileName: any, event: { shiftKey: any; }) => {
+    const handleHighlight = async (fileName: any, event: { shiftKey: any; }) => {
         if (!currentProject) {
             console.error('No project selected.');
             return;
@@ -310,7 +307,7 @@ const CodeCentral = () => {
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
                         projectFiles={currentProjectFileNames}
-                        handleFlightClick={handleThisShit}
+                        handleFlightClick={handleHighlight}
                         selectedFileName={selectedFileName}
                         highlightedFiles={highlightedFiles}
                         chatCodes={editedFiles}
