@@ -29,7 +29,6 @@ const CodeCentral = () => {
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
-
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
