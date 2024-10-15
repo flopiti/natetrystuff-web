@@ -1,12 +1,12 @@
 import { askChatNoStream, fetchAndAskChatGPT, generateBranchName } from "@/services/chatService";
 import { gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
+import { addMessage } from "@/slices/MessagesSlice";
+import { AppDispatch, RootState } from "@/store";
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const Chat = ({
-  conversation,
   loading,
-  addToConversation,
-  setMessages,
   runCommand,
   getBranch,
   branch,
@@ -21,6 +21,8 @@ const Chat = ({
     "gh pr create --title ",
     "git-send-it",
   ]);
+  const dispatch: AppDispatch = useDispatch();
+  const conversation = useSelector((state: RootState) => state.Messages.messages);
 
   const [selectedOption, setSelectedOption] = useState<string>("no selected option");
   const [branchName, setBranchName] = useState<string>(branch);
@@ -41,9 +43,6 @@ const Chat = ({
     }
   }, [featbugDescription]);
 
-  useEffect(() => {
-    setMessages(conversation);
-  }, [conversation]);
 
   useEffect(() => {
     setBranchName(branch);
@@ -115,7 +114,7 @@ const Chat = ({
           onChange={(e) => setCurrentTextInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && e.currentTarget.value.trim() !== "") {
-              addToConversation(e.currentTarget.value);
+              dispatch(addMessage({ content: e.currentTarget.value, role: "user", type: "text" }));
               setCurrentTextInput("");
               e.preventDefault();
             }
