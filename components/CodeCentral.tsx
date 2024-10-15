@@ -21,7 +21,7 @@ const CodeCentral = () => {
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
-    const {projectDir, projects, currentProjectFileNames, currentProject} = useSelector((state: RootState) => state.Projects);
+    const {projectDir, currentProjectFileNames, currentProject} = useSelector((state: RootState) => state.Projects);
 
     // when there is a new message, check if it is a user message and if so, ask the chat
     useEffect(() => {
@@ -309,7 +309,6 @@ const CodeCentral = () => {
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
-                        projects={projects}
                         selectedProject={currentProject}
                         projectFiles={currentProjectFileNames}
                         handleFlightClick={handleThisShit}

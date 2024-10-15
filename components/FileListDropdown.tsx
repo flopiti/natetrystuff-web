@@ -3,12 +3,11 @@ import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { Project, ProjectFile } from '@/types/project';
 import { setCurrentProject, setProjectDir } from '@/slices/ProjectSlice';
-import { AppDispatch } from '@/store';
-import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '@/store';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 interface FileListDropdownProps {
-    projects: Project[],
     selectedProject: Project | null,
     projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
@@ -18,9 +17,9 @@ interface FileListDropdownProps {
     setSelectedFileName: (code: string) => void, 
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({ projects,handleFlightClick, selectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, selectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
     const dispatch: AppDispatch = useDispatch();
-
+    const {projects} = useSelector((state: RootState) => state.Projects);
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
