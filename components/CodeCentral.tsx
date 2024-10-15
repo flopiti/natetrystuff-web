@@ -11,6 +11,7 @@ import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
+import { setProjects } from '@/slices/ProjectSlice';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -19,8 +20,9 @@ const CodeCentral = () => {
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
-    const dirPath = useSelector((state: RootState) => state.Projects.projectDir);
+    const {projectDir, projects } = useSelector((state: RootState) => state.Projects);
 
+    // when there is a new message, check if it is a user message and if so, ask the chat
     useEffect(() => {
         const lastMessage = chatMessages[chatMessages.length - 1];
         if (lastMessage.role === 'user') {
@@ -36,7 +38,6 @@ const CodeCentral = () => {
     
 
     
-    const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [projectFiles, setProjectFiles] = useState<string[]>([]);
     const [selectedFileName, setSelectedFileName] = useState<string | null>('');
@@ -55,7 +56,7 @@ const CodeCentral = () => {
     const [gitDiff, setGitDiff] = useState<any>(null);
 
     const getBranch = async () => {
-        const response = await fetch(`api/current-branch?dirPath=${dirPath}/${selectedProject.name}`);
+        const response = await fetch(`api/current-branch?dirPath=${projectDir}/${selectedProject.name}`);
         const { data } = await response.json();
         setBranch(data.branchName);
     }
@@ -73,14 +74,14 @@ const CodeCentral = () => {
     }, [selectedProject]);
 
     useEffect(() => {
-        if (dirPath.length > 1) {
-            getProjects(dirPath).then((data) => {
-                setProjects(data);
+        if (projectDir.length > 1) {
+            getProjects(projectDir).then((data) => {
+                dispatch(setProjects(data));
             }).catch((error) => {
                 console.error('Error:', error);
             });
         }
-    }, [dirPath]);
+    }, [projectDir]);
 
     useEffect(() => {
         if (selectedProject) {
