@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
 import { setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
+import { gitBranch } from '@/services/gitService';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -53,15 +54,7 @@ const CodeCentral = () => {
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
 
-    const getBranch = async () => {
-        if (!currentProject) {
-            console.error('No project selected.');
-            return;
-        }
-        const response = await fetch(`api/current-branch?dirPath=${projectDir}/${currentProject.name}`);
-        const { data } = await response.json();
-        setBranch(data.branchName);
-    }
+
     useEffect(() => {
         if (currentProject && doesCurrentProjectHaveTerminal) {
             const runCommandWithLogging = `cd /dev-projects/${currentProject.name}`;
@@ -71,7 +64,12 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (currentProject) {
-            getBranch();
+            gitBranch(currentProject.name, projectDir).then((branchName) => {
+                setBranch(branchName);
+            }).catch((error) => {
+                console.error('Error:', error);
+            }   
+            );
         }
     }, [currentProject]);
 
@@ -334,7 +332,7 @@ const CodeCentral = () => {
                         handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
                         conversation={chatMessages} 
                         runCommand={runCommandInCurrentProject}  
-                        getBranch={getBranch} 
+                        getBranch={gitBranch} 
                         branch={branch} 
                         commitMessage={commitMessage} 
                         prTitle={prTitle} 

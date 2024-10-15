@@ -40,5 +40,10 @@ export const gitDiff = async (projectName:string) => {
         } catch (error) {
             console.error('Error fetching git diff:', error);
         }
-  
 };
+
+export const gitBranch = async (projectName:string, projectDir:string) => {
+  const response = await fetch(`api/current-branch?dirPath=${projectDir}/${projectName}`);
+  const { data } = await response.json();
+  return data.branchName
+}
