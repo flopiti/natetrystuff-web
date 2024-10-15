@@ -4,21 +4,30 @@ import { Terminal } from 'xterm';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
-import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
+import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
 import Chat from './Chat';
 import { askChatNoStream } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 
+interface ProjectFile {
+    name: string;
+    content: string;
+}
+
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
     
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
+    const [highlightedStuffs, setHighlightedStuffs] = useState<ProjectFile[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const conversation = useSelector((state: RootState) => state.Messages.messages);
 
+    console.log(highlightedFiles);
+    console.log(highlightedFilesContent);
+    console.log(highlightedStuffs);
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
@@ -99,6 +108,15 @@ const CodeCentral = () => {
         }
     }, [chatCodes]);
 
+    const handleFlightClick = (fileName: any, event: { shiftKey: any; }, highlightedFiles: any[], handleFileSelect: { (fileName: any): Promise<void>; (arg0: any): void; }) => {
+        if (event.shiftKey) {
+            return highlightedFiles.includes(fileName) ? highlightedFiles.filter((flight: any) => flight !== fileName) : [...highlightedFiles, fileName];
+        } else {
+            handleFileSelect(fileName);
+        }
+        return highlightedFiles;
+    }
+    
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
@@ -208,21 +226,22 @@ const CodeCentral = () => {
 
 
     const handleFileSelect = async (fileName: string) => {
+        console.log('Selected file:', fileName);
         setSelectedFileName(fileName);
         const content = await getFile(fileName, selectedProject.name);
         setSelectedFileContent(content);
         const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === fileName);
+        
         if (chatCode) {
             setSelectedChatCode(chatCode.code);
         }
         else{
             setSelectedChatCode('');
         }
-        const fileDataResponse = await fetch(`/api/get-file?fileName=${fileName}&project=${selectedProject.name}`);
-        const { splitFileData } = await fileDataResponse.json();
-
         if (!highlightedFiles.includes(fileName)) {
             setHighlightedFiles([...highlightedFiles, fileName]);
+            const hightlightedFileContent = await getFile(fileName, selectedProject.name);
+            setHighlightedStuffs([...highlightedStuffs, { name: fileName, content: hightlightedFileContent }]);
         }
     };
 
@@ -317,6 +336,7 @@ const CodeCentral = () => {
         setSelectedFileName(filename);
         setSelectedChatCode('');
     }
+
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
