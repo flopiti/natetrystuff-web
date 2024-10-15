@@ -113,11 +113,6 @@ const CodeCentral = () => {
         }
     }, [chatCodes]);
 
-
-    useEffect(() => {
-        console.log('Dev Terminal ID during render:', devTerminalId);
-    });
-
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
         if (terminal && terminal.ws && terminal.ws.readyState === WebSocket.OPEN) {
