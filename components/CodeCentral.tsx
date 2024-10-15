@@ -102,8 +102,6 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (chatCodes?.length > 0) {
-            console.log('running the chat codes use effect')
-            console.log(chatCodes);
             setActiveTab('chat'); 
             const chatCode: any = chatCodes?.find((fileData: any) => fileData.fileName === selectedFileName);
             if (chatCode) {
