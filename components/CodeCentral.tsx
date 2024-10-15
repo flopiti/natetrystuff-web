@@ -7,28 +7,25 @@ import TerminalDisplay from './TerminalDisplay';
 import { fetchHighlightedFilesContent, getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, handleFlightClick, replaceCode } from '../app/utils';
 import Chat from './Chat';
 import { askChatNoStream } from '@/services/chatService';
+import { AppDispatch, RootState } from '@/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setMessages, setLoading} from '@/slices/MessagesSlice';
 
 const CodeCentral = () => {
-    const PROMPT = `You are a software engineer bot that mostly produces coding answers. Each time you talked to, if the code might have a coding solution, you shall 
-    answer with the JSON object {"answer": your textual answer as a chat bot, "files": [{fileName: name, code:code},{fileName2: name, code:code2} ] THE ENTIRE RESPONSE MUST BE JSON.
-    the code snippet that you think is the answer}. You are allowed to create new files if necessary.
-    If you return a code file, you return the same file name as the original file name exactly and EXACTLY the same code as the original code (apart from the changes you made). 
-    If the code is not a coding solution, simply do not include the property in the JSON object.`;
-
-    const [conversation, setConversation] = useState<any[]>([
-        { content: PROMPT, role: 'system', type: 'text' }
-    ]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const dispatch: AppDispatch = useDispatch();
+    
     const [highlightedFiles, setHighlightedFiles] = useState<string[]>([]);
     const [highlightedFilesContent, setHighlightedFilesContent] = useState<any[]>([]);
     const [chatCodes, setChatCodes] = useState<any[]>([]);
     const [isChatStreamOngoing, setIsChatStreamOngoing] = useState<boolean>(false); // New state for tracking stream
-    
+    const conversation = useSelector((state: RootState) => state.Messages.messages);
+    const loading = useSelector((state: RootState) => state.Messages.loading);
+
     useEffect(() => {
         const lastMessage = conversation[conversation.length - 1];
         if (lastMessage.role === 'user') {
             setSelectedChatCode('');
-            setLoading(true);
+            dispatch(setLoading(true));
             setIsChatStreamOngoing(true); // Set to true when starting the chat stream
             askChat(conversation, highlightedFiles, highlightedFilesContent).finally(() => {
                 setIsChatStreamOngoing(false); // Set to false when the chat stream ends
@@ -36,9 +33,6 @@ const CodeCentral = () => {
         }
     }, [conversation, highlightedFiles, highlightedFilesContent]);
 
-    const addToConversation = (message: string) => {
-        setConversation([...conversation, { content: message, role: 'user', type: 'text' }]);
-    };
 
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
@@ -192,7 +186,7 @@ const CodeCentral = () => {
                     if (valueMatches) {
                         valueMatches.forEach((value, index) => {
                             if(index + 1 === 1){
-                                setConversation([...conversation, { content: value, role: 'assistant', type: 'text' }]);
+                                dispatch(setMessages([...conversation, { content: value, role: 'assistant', type: 'text' }]));
                             }
                             if(index + 1 === 2){
                                 const files = getTopLevelArrayElements(value);
@@ -212,8 +206,7 @@ const CodeCentral = () => {
                 console.error('Error processing JSON chunk:', error);
             }
         }
-        setLoading(false);
-
+        dispatch(setLoading(false));
         setChatCodes(JSON.parse(chatCompletion).files);
     
         return  
@@ -363,10 +356,7 @@ const CodeCentral = () => {
                     <Chat 
                         handleNewSelectedFile={handleNewSelectedFile}
                         handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
-                        addToConversation={addToConversation} 
                         conversation={conversation} 
-                        loading={loading} 
-                        setMessages={setConversation} 
                         runCommand={runCommandInCurrentProject}  
                         getBranch={getBranch} 
                         branch={branch} 
