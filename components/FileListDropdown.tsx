@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 interface FileListDropdownProps {
-    selectedProject: Project | null,
     projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
     selectedFileName: string | null,
@@ -17,9 +16,9 @@ interface FileListDropdownProps {
     setSelectedFileName: (code: string) => void, 
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, selectedProject, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
     const dispatch: AppDispatch = useDispatch();
-    const {projects} = useSelector((state: RootState) => state.Projects);
+    const {projects, currentProject} = useSelector((state: RootState) => state.Projects);
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -121,7 +120,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                         ))}
                     </ul>
                 )}
-                <select value={selectedProject ? selectedProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
+                <select value={currentProject ? currentProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
                     {projects?.map((project) => (
                         <option key={project.name} value={project.name}>
