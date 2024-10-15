@@ -1,7 +1,7 @@
 import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
-import { ProjectFile } from './CodeCentral';
+import { ProjectFile } from '@/types/project';
 
 interface Project {
     name: string;

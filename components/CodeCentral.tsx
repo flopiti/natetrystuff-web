@@ -10,11 +10,7 @@ import { askChatNoStream } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
-
-export interface ProjectFile {
-    name: string;
-    content: string;
-}
+import { ProjectFile } from '@/types/project';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
