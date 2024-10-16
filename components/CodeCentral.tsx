@@ -233,8 +233,6 @@ const CodeCentral = () => {
         });
     };
 
-
-
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
         if (!currentProject) {
             console.error('No project selected.');
@@ -260,30 +258,23 @@ const CodeCentral = () => {
             console.error('No project selected.');
             return;
         }
+        const isHighlighted = highlightedFiles.some((highlightedStuff) => highlightedStuff.name === fileName);
+        const fileContent = await getFile(fileName, currentProject.name);
+
         if (event.shiftKey) {
-            const isItAlreadyHighlighted = highlightedFiles.find((highlightedStuff) => highlightedStuff.name === fileName);
-            if (!isItAlreadyHighlighted) {
-                
-                const hightlightedFileContent = await getFile(fileName, currentProject.name);
-                setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
-            }
-            setHighlightedFiles(highlightedFiles.filter((highlightedStuff) => highlightedStuff.name !== fileName));
-            
+            setHighlightedFiles(isHighlighted 
+                ? highlightedFiles.filter((highlightedStuff) => highlightedStuff.name !== fileName)
+                : [...highlightedFiles, { name: fileName, content: fileContent }]);
         } else {
-        setSelectedFileName(fileName);
-        const content = await getFile(fileName, currentProject.name);
-        setSelectedFileContent(content);
-        const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === fileName) ?? null;
-        if (chatCode) {
-            setSelectedFileName(chatCode.name);
+            setSelectedFileName(fileName);
+            setSelectedFileContent(fileContent);
+            const chatCode = editedFiles.find((fileData) => fileData.name === fileName) ?? null;
+            setSelectedFileName(chatCode ? chatCode.name : null);
+
+            if (!isHighlighted) {
+                setHighlightedFiles([...highlightedFiles, { name: fileName, content: fileContent }]);
+            }
         }
-        else{
-            setSelectedFileName(null);
-        }
-        if (!highlightedFiles.map((highlightedStuff) => highlightedStuff.name).includes(fileName)) {
-            const hightlightedFileContent = await getFile(fileName, currentProject.name);
-            setHighlightedFiles([...highlightedFiles, { name: fileName, content: hightlightedFileContent }]);
-        }}
     }
 
     return (
