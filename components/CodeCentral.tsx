@@ -11,7 +11,7 @@ import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
-import { setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
+import { setBranchName, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 import { getFileDescriptions, gitBranch } from '@/services/gitService';
 
 const CodeCentral = () => {
@@ -21,7 +21,7 @@ const CodeCentral = () => {
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
-    const {projectDir, currentProjectFileNames, currentProject} = useSelector((state: RootState) => state.Projects);
+    const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
 
     // when there is a new message, check if it is a user message and if so, ask the chat
     useEffect(() => {
@@ -42,7 +42,6 @@ const CodeCentral = () => {
 
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
-    const [branch, setBranch] = useState<string | null>(null);
 
     const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
@@ -62,7 +61,7 @@ const CodeCentral = () => {
     useEffect(() => {
         if (currentProject) {
             gitBranch(currentProject.name, projectDir).then((branchName) => {
-                setBranch(branchName);
+                setBranchName(branchName);
             }).catch((error) => {
                 console.error('Error:', error);
             }   
@@ -280,7 +279,7 @@ const CodeCentral = () => {
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div>
-                {branch && <p>Current Branch: {branch}</p>}
+                {branchName && <p>Current Branch: {branchName}</p>}
             </div>
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
@@ -306,7 +305,6 @@ const CodeCentral = () => {
                         conversation={chatMessages} 
                         runCommand={runCommandInCurrentProject}  
                         getBranch={gitBranch} 
-                        branch={branch} 
                         commitMessage={commitMessage} 
                         prTitle={prTitle} 
                         prBody={prBody} 

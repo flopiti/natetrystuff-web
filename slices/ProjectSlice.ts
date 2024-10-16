@@ -6,6 +6,7 @@ interface ProjectState {
     projects: Project[];
     currentProjectFileNames: string[];
     currentProject: Project | null;
+    branchName: string | null;
 }
 
 export const initialState: ProjectState = {
@@ -13,6 +14,7 @@ export const initialState: ProjectState = {
     projects: [],
     currentProjectFileNames: [],
     currentProject: null,
+    branchName: null,
 };
 
 const ProjectSlice = createSlice({
@@ -30,9 +32,12 @@ const ProjectSlice = createSlice({
     },
     setCurrentProject(state, action: PayloadAction<Project|null>) {
         state.currentProject = action.payload;
+    },
+    setBranchName(state, action: PayloadAction<string>) {   
+        state.branchName = action.payload
     }
-  },
+    },
 });
 
-export const {setProjectDir , setProjects, setCurrentProjectFileNames, setCurrentProject} = ProjectSlice.actions;
+export const {setProjectDir , setProjects, setCurrentProjectFileNames, setCurrentProject, setBranchName} = ProjectSlice.actions;
 export default ProjectSlice.reducer;

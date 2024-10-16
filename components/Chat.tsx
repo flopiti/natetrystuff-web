@@ -9,7 +9,6 @@ const Chat = ({
   loading,
   runCommand,
   getBranch,
-  branch,
   commitMessage,
   prTitle,
   prBody,
@@ -23,9 +22,10 @@ const Chat = ({
   ]);
   const dispatch: AppDispatch = useDispatch();
   const conversation = useSelector((state: RootState) => state.Messages.messages);
+  const branch= useSelector((state: RootState) => state.Projects.branchName);
 
   const [selectedOption, setSelectedOption] = useState<string>("no selected option");
-  const [branchName, setBranchName] = useState<string>(branch);
+  const [branchName, setBranchName] = useState<string | null>(branch);
   
   const [commitMessageEdit, setCommitMessage] = useState<string>( commitMessage || ""  );
   const [prTitleEdit, setPrTitle] = useState<string>(prTitle || "");
@@ -61,7 +61,7 @@ const Chat = ({
   const handleRunCommand = () => {
     if (selectedOption === "gh pr create --title ") {
       createPullRequest();
-    } else if (selectedOption === "git-send-it") {
+    } else if (selectedOption === "git-send-it" && branchName) {
       gitSendIt(commitMessageEdit, branchName, selectedProject.name);
     } else {
       alert("Command not found");
