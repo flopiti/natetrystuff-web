@@ -302,7 +302,7 @@ const CodeCentral = () => {
                         setSelectedFileName={setSelectedFileName}
                     />
                     <FileViewer
-                        setSelectedChatCode={updateChatCode}  // Changed this prop
+                        setSelectedChatCode={updateChatCode}
                         activeTab={activeTab} 
                         setActiveTab={setActiveTab} 
                         selectedFileContent={selectedFileContent} 
