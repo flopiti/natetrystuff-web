@@ -79,7 +79,7 @@ export const replaceCode = async (projectName: any, chatCodes: ProjectFile[]) =>
         },
         body: JSON.stringify({ project: projectName, files: chatCodes })
     });
-    console.log('I think it's okay no?')
+    console.log('I think iz okay no?')
     console.log(response)
     if (!response.ok) {
         throw new Error('Failed to replace code');
