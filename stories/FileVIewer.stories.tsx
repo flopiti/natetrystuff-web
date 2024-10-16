@@ -2,8 +2,6 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import { RootState } from '@/store';
 import FileViewer from '@/components/FileViewer';
 import { configureStore } from '@reduxjs/toolkit';
 
