@@ -326,7 +326,6 @@ const CodeCentral = () => {
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
             </div>
-            <button onClick={()=>getFileDescriptions(currentProject?.name ?? '')}>Fetch DESC Comments</button>
         </div>
     );
 }
