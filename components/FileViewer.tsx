@@ -27,7 +27,9 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const diff = diffLines(selectedFileContent, selectedChatCode ? selectedChatCode : '');
+  const diff = diffLines(selectedFileContent, selectedChatCode ? selectedChatCode : '')
+  console.log(selectedFileContent.split('\n').length)
+  console.log(selectedChatCode?.split('\n').length)
   let lineNumber = 0;
 
   const handleReplaceCode = async () => {
@@ -153,6 +155,7 @@ const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:
 
 const removeLine = (lineToRemove: number,length:number, file:string, updateFile:any) => {
   const newCode = file.split('\n');
+  console.log(lineToRemove)
   newCode.splice(lineToRemove, length);
   updateFile(newCode.join('\n'));
 };
