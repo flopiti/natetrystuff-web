@@ -226,7 +226,7 @@ const CodeCentral = () => {
     const updateChatCode = (code: string) => {
         setEditedFiles(prevChatCodes => {
             const updatedChatCodes = prevChatCodes.map(fileData =>
-                fileData.name === selectedFileName ? { ...fileData, code } : fileData
+                fileData.name === selectedFileName ? { ...fileData, content:code } : fileData
             );
             return updatedChatCodes;
         });
@@ -275,6 +275,7 @@ const CodeCentral = () => {
             }
         }
     }
+    console.log(editedFiles)
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
