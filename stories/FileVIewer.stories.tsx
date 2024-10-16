@@ -1,11 +1,9 @@
-// FileViewer.stories.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Provider } from 'react-redux';
 import FileViewer from '@/components/FileViewer';
 import { configureStore } from '@reduxjs/toolkit';
 
-// Dummy reducer for the store
 const reducer = (state = { Messages: { loading: false } }, action: any) => state;
 const store = configureStore({ reducer: { Messages: (state = { loading: false }) => state } });
 
@@ -15,8 +13,17 @@ export default {
   decorators: [(Story) => <Provider store={store}><Story /></Provider>],
 } as Meta<typeof FileViewer>;
 
-const Template: StoryFn<typeof FileViewer> = (args:any) => <FileViewer {...args} />;
-
+const Template: StoryFn<typeof FileViewer> = (args: any) => {
+    const [selectedChatCode, setSelectedChatCode] = useState(args.selectedChatCode);
+  
+    return (
+      <FileViewer
+        {...args}
+        selectedChatCode={selectedChatCode}
+        setSelectedChatCode={setSelectedChatCode}
+      />
+    );
+  };
 export const Default = Template.bind({});
 Default.args = {
   activeTab: 'file',
@@ -28,24 +35,9 @@ Default.args = {
   setSelectedChatCode: (code: string) => console.log('Selected Chat Code:', code),
 };
 
-export const LoadingState = Template.bind({});
-LoadingState.args = {
+export const replaceText = Template.bind({});
+replaceText.args = {
   ...Default.args,
   activeTab: 'chat',
   selectedChatCode: 'Chat code\nLine 1\nLine 2',
-};
-
-export const WithErrorMessage = Template.bind({});
-WithErrorMessage.args = {
-  ...Default.args,
-  selectedChatCode: 'Chat code\nLine 1\nLine 2',
-  replaceCode: () => Promise.reject(new Error('Failed to replace code.')),
-};
-
-export const WithSuccessMessage = Template.bind({});
-WithSuccessMessage.args = {
-  ...Default.args,
-  activeTab: 'chat',
-  selectedChatCode: 'Chat code\nLine 1\nLine 2',
-  replaceCode: () => Promise.resolve(),
 };
