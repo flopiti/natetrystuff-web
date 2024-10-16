@@ -285,7 +285,6 @@ const CodeCentral = () => {
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
-                        projectFiles={currentProjectFileNames}
                         handleFlightClick={handleHighlight}
                         selectedFileName={selectedFileName}
                         highlightedFiles={highlightedFiles}

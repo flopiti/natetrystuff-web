@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 interface FileListDropdownProps {
-    projectFiles: string[],
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
     selectedFileName: string | null,
     highlightedFiles: ProjectFile[],
@@ -16,9 +15,9 @@ interface FileListDropdownProps {
     setSelectedFileName: (code: string) => void, 
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, projectFiles, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
     const dispatch: AppDispatch = useDispatch();
-    const {projects, currentProject} = useSelector((state: RootState) => state.Projects);
+    const {projects, currentProject, currentProjectFileNames} = useSelector((state: RootState) => state.Projects);
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
@@ -75,7 +74,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, p
         });
     }, []); 
 
-    const filteredFiles = projectFiles
+    const filteredFiles = currentProjectFileNames
         .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
         .sort((a, b) => {
             const aIsHighlighted = highlightedFiles.map((highlightedFile) => highlightedFile.name).includes(a);
@@ -157,9 +156,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, p
                         </div>
                     );
                 })}
-                {chatCodes?.filter(({ name }) => name !== '' && !projectFiles.includes(name)).map(({ name, content }, index) => (
+                {chatCodes?.filter(({ name }) => name !== '' && !currentProjectFileNames.includes(name)).map(({ name, content }, index) => (
                     <div
-                        key={projectFiles.length + index}
+                        key={currentProjectFileNames.length + index}
                         onClick={() => setSelectedFileName(name)}
                         className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
