@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
 import { setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
-import { gitBranch } from '@/services/gitService';
+import { getFileDescriptions, gitBranch } from '@/services/gitService';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -233,19 +233,7 @@ const CodeCentral = () => {
         });
     };
 
-    const fetchDescComments = async () => {
-        if (currentProject) {
-            try {
-                const response = await fetch(`/api/get-desc-comments?project=${currentProject.name}`);
-                const result = await response.json();
-                console.log('DESC Comments:', result.data);
-            } catch (error) {
-                console.error('Error fetching DESC comments:', error);
-            }
-        } else {
-            console.error('No project selected.');
-        }
-    };
+
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
         if (!currentProject) {
@@ -351,7 +339,7 @@ const CodeCentral = () => {
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
             </div>
-            <button onClick={fetchDescComments}>Fetch DESC Comments</button>
+            <button onClick={()=>getFileDescriptions(currentProject?.name ?? '')}>Fetch DESC Comments</button>
         </div>
     );
 }

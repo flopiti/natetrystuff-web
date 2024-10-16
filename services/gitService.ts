@@ -47,3 +47,13 @@ export const gitBranch = async (projectName:string, projectDir:string) => {
   const { data } = await response.json();
   return data.branchName
 }
+
+export const getFileDescriptions = async (projectName:string) => {
+      try {
+          const response = await fetch(`/api/get-desc-comments?project=${projectName}`);
+          const result = await response.json();
+          console.log('DESC Comments:', result.data);
+      } catch (error) {
+          console.error('Error fetching DESC comments:', error);
+      }
+};
