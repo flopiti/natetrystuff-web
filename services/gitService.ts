@@ -23,6 +23,10 @@ export const gitSendIt = (
     branchName: string,
     projectName: string
 ) => {
+    console.log('send-it')
+    console.log(commitMessage);
+    console.log(branchName);
+    console.log(projectName)
     if (commitMessage.trim() && branchName) {
       fetch(
         `/api/send-it?project=${projectName}&branchName=${branchName}&commitMessage=${commitMessage}`
