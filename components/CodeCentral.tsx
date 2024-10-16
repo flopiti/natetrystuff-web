@@ -49,8 +49,7 @@ const CodeCentral = () => {
     const [prTitle, setPrTitle] = useState<string>('');
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
-
-
+    console.log(branchName);
     useEffect(() => {
         if (currentProject && doesCurrentProjectHaveTerminal) {
             const runCommandWithLogging = `cd /dev-projects/${currentProject.name}`;
@@ -61,7 +60,9 @@ const CodeCentral = () => {
     useEffect(() => {
         if (currentProject) {
             gitBranch(currentProject.name, projectDir).then((branchName) => {
-                setBranchName(branchName);
+                dispatch(
+                setBranchName(branchName)
+                );
             }).catch((error) => {
                 console.error('Error:', error);
             }   
