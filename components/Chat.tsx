@@ -1,6 +1,7 @@
 import { askChatNoStream, fetchAndAskChatGPT, generateBranchName } from "@/services/chatService";
-import { gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
+import { gitBranch, gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import { addMessage } from "@/slices/MessagesSlice";
+import { setBranchName } from "@/slices/ProjectSlice";
 import { AppDispatch, RootState } from "@/store";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,11 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 const Chat = ({
   loading,
   runCommand,
-  getBranch,
   commitMessage,
   prTitle,
   prBody,
-  selectedProject,
   handleNewHighlitghtedFiles,
   handleNewSelectedFile,
 }: any) => {
@@ -22,10 +21,9 @@ const Chat = ({
   ]);
   const dispatch: AppDispatch = useDispatch();
   const conversation = useSelector((state: RootState) => state.Messages.messages);
-  const branch= useSelector((state: RootState) => state.Projects.branchName);
+  const { currentProject, projectDir, branchName } = useSelector((state: RootState) => state.Projects);
 
   const [selectedOption, setSelectedOption] = useState<string>("no selected option");
-  const [branchName, setBranchName] = useState<string | null>(branch);
   
   const [commitMessageEdit, setCommitMessage] = useState<string>( commitMessage || ""  );
   const [prTitleEdit, setPrTitle] = useState<string>(prTitle || "");
@@ -35,52 +33,32 @@ const Chat = ({
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
   const [featbugDescription, setFeatbugDescription] = useState<string>("");
   
+  console.log(branchName)
+
   useEffect(() => {
     console.log('featbugDescription:', featbugDescription);
-    if (featbugDescription) {
+    if (featbugDescription && currentProject) {
       console.log('fetching and asking ChatGPT');
-      fetchAndAskChatGPT(featbugDescription, selectedProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
+      fetchAndAskChatGPT(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
     }
   }, [featbugDescription]);
 
 
   useEffect(() => {
-    setBranchName(branch);
+    if (branchName)
+    {
     setCommandsReadyToGo([
       "gh pr create --title ",
       "git-send-it",
     ]);
-  }, [branch]);
+    }
+  }, [branchName]);
 
   useEffect(() => {
     setCommitMessage(commitMessage);
     setPrTitle(prTitle);
     setPrBody(prBody);
   }, [commitMessage, prTitle, prBody]);
-
-  const handleRunCommand = () => {
-    if (selectedOption === "gh pr create --title ") {
-      createPullRequest();
-    } else if (selectedOption === "git-send-it" && branchName) {
-      gitSendIt(commitMessageEdit, branchName, selectedProject.name);
-    } else {
-      alert("Command not found");
-    }
-    if (branchName) {
-      getBranch();
-    }
-  };
-
-  const handleStartButton = async () => {
-    setFeatbugDescription(currentTextInput); // Save the current text input
-    const newBranchName = await generateBranchName(currentTextInput);
-    setCurrentTextInput("");
-    await goMain(selectedProject.name);
-    await gitCheckoutBranch(newBranchName,selectedProject.name);
-    getBranch();
-    setSelectedOption("git-send-it");
-  };
-
 
   const createPullRequest = () => {
     if (prTitleEdit.trim() && prBodyEdit.trim()) {
@@ -89,6 +67,46 @@ const Chat = ({
       alert("Please enter both PR title and body");
     }
   };
+  const handleRunCommand = () => {
+    if (!currentProject){
+      alert("Please select a project first");
+      return;
+    }
+    if (selectedOption === "gh pr create --title ") {
+      createPullRequest();
+    } else if (selectedOption === "git-send-it" && branchName) {
+      gitSendIt(commitMessageEdit, branchName, currentProject.name);
+    } else {
+      alert("Command not found");
+    }
+    if (branchName) {
+      gitBranch(currentProject.name, projectDir).then((branchName) => {
+        dispatch(setBranchName(branchName));
+      }
+      );
+    }
+  }
+
+  const handleStartButton = async () => {
+    
+    if(!currentProject){
+      alert("Please select a project first");
+      return;
+    }
+    setFeatbugDescription(currentTextInput); // Save the current text input
+    const newBranchName = await generateBranchName(currentTextInput);
+    setCurrentTextInput("");
+    await goMain(currentProject.name);
+    await gitCheckoutBranch(newBranchName,currentProject.name);
+    gitBranch(currentProject.name, projectDir).then((branchName) => {
+      dispatch(setBranchName(branchName));
+    }
+    );
+
+    setSelectedOption("git-send-it");
+  };
+
+
 
   return (
     <div className="w-2/5 bg-gray-100 h-full flex flex-col shadow-lg">

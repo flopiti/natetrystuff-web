@@ -305,7 +305,6 @@ const CodeCentral = () => {
                         handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
                         conversation={chatMessages} 
                         runCommand={runCommandInCurrentProject}  
-                        getBranch={gitBranch} 
                         commitMessage={commitMessage} 
                         prTitle={prTitle} 
                         prBody={prBody} 

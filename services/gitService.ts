@@ -45,6 +45,7 @@ export const gitDiff = async (projectName:string) => {
 export const gitBranch = async (projectName:string, projectDir:string) => {
   const response = await fetch(`api/current-branch?dirPath=${projectDir}/${projectName}`);
   const { data } = await response.json();
+  console.log('data', data);
   return data.branchName
 }
 
