@@ -33,8 +33,6 @@ const Chat = ({
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
   const [featbugDescription, setFeatbugDescription] = useState<string>("");
   
-  console.log(branchName)
-
   useEffect(() => {
     console.log('featbugDescription:', featbugDescription);
     if (featbugDescription && currentProject) {

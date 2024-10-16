@@ -49,7 +49,6 @@ const CodeCentral = () => {
     const [prTitle, setPrTitle] = useState<string>('');
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
-    console.log(branchName);
     useEffect(() => {
         if (currentProject && doesCurrentProjectHaveTerminal) {
             const runCommandWithLogging = `cd /dev-projects/${currentProject.name}`;
@@ -227,7 +226,7 @@ const CodeCentral = () => {
     const updateChatCode = (code: string) => {
         setEditedFiles(prevChatCodes => {
             const updatedChatCodes = prevChatCodes.map(fileData =>
-                fileData.name === selectedFileName ? { ...fileData, code } : fileData
+                fileData.name === selectedFileName ? { ...fileData, content:code } : fileData
             );
             return updatedChatCodes;
         });
@@ -327,7 +326,6 @@ const CodeCentral = () => {
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
             </div>
-            <button onClick={()=>getFileDescriptions(currentProject?.name ?? '')}>Fetch DESC Comments</button>
         </div>
     );
 }
