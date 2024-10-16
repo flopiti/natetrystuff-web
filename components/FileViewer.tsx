@@ -37,6 +37,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
       await replaceCode();
       setSuccessMessage('Code replacement was successful.');
     } catch (error) {
+      console.log('error in fileviewer.tsx: ', error);
       setErrorMessage('Failed to replace code.');
     }
   };
