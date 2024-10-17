@@ -83,7 +83,18 @@ const FileViewer: React.FC<FileViewerProps> = ({
           </pre>
         </div>
         }
-        {!loading && activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
+        {!loading && activeTab === 'file' && selectedFileContent && (
+          <div>
+            <pre>
+              {selectedFileContent.split('\n').map((line, index) => (
+                <div key={index}>
+                  <span className="text-gray-500">{index + 1}: </span>
+                  {line}
+                </div>
+              ))}
+            </pre>
+          </div>
+        )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className='h-full inline-block'>
             <pre>
@@ -107,6 +118,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
                       </span>
                     return (
                       <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span className="text-gray-500">{lineNumber + lineIndex + 1}: </span>
                         {lineContent}
                       </div>
                     );
@@ -164,11 +176,8 @@ const RemoveButton: React.FC<any> = ({ lineNumber, number, file, updateFile}) =>
 }
 
 const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:any) => {
-  console.log('we are now addding ' + lineToAdd)
-  const newCode = file.split('\n');
-  
-  newCode.splice(lineNumber, 0, lineToAdd);
-  console.log(newCode.join('\n'))
+  const newCode = file.split('\n').filter((line, index, arr) => index < arr.length - 1);
+  newCode.splice(lineNumber +1, 0, lineToAdd);
   updateFile(newCode.join('\n'));
 };
 

@@ -39,5 +39,12 @@ export const replaceText = Template.bind({});
 replaceText.args = {
   ...Default.args,
   activeTab: 'chat',
-  selectedChatCode: 'Chat code\nLine 1\nLine 2',
+  selectedChatCode: 'Chat code\nLine 1\nLine 2\n',
+};
+
+export const replaceText2 = Template.bind({});
+replaceText2.args = {
+  ...Default.args,
+  activeTab: 'chat',
+  selectedChatCode: 'Chat code\nLine 1\nLine 2\nLine 4\n',
 };
