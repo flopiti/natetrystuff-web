@@ -1,5 +1,5 @@
 import { askChatNoStream, fetchAndAskChatGPT, generateBranchName } from "@/services/chatService";
-import { gitBranch, gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
+import { getGitBranch, gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import { addMessage } from "@/slices/MessagesSlice";
 import { setBranchName } from "@/slices/ProjectSlice";
 import { AppDispatch, RootState } from "@/store";
@@ -78,7 +78,7 @@ const Chat = ({
       alert("Command not found");
     }
     if (branchName) {
-      gitBranch(currentProject.name, projectDir).then((branchName) => {
+      getGitBranch(currentProject.name, projectDir).then((branchName) => {
         dispatch(setBranchName(branchName));
       }
       );
@@ -96,7 +96,7 @@ const Chat = ({
     setCurrentTextInput("");
     await goMain(currentProject.name);
     await gitCheckoutBranch(newBranchName,currentProject.name);
-    gitBranch(currentProject.name, projectDir).then((branchName) => {
+    getGitBranch(currentProject.name, projectDir).then((branchName) => {
       dispatch(setBranchName(branchName));
     }
     );

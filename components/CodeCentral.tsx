@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
 import { setBranchName, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
-import { getFileDescriptions, gitBranch } from '@/services/gitService';
+import {  getGitBranch, getGitDiff } from '@/services/gitService';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -58,7 +58,7 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (currentProject) {
-            gitBranch(currentProject.name, projectDir).then((branchName) => {
+            getGitBranch(currentProject.name, projectDir).then((branchName) => {
                 dispatch(
                 setBranchName(branchName)
                 );
@@ -220,7 +220,7 @@ const CodeCentral = () => {
             return;
         }
         await replaceCode(currentProject.name, editedFiles);
-        setGitDiff(await gitDiff(currentProject.name));
+        setGitDiff(await getGitDiff(currentProject.name));
     };
 
     const updateChatCode = (code: string) => {
@@ -326,7 +326,6 @@ const CodeCentral = () => {
                     <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
             </div>
-            <button onClick={()=>getFileDescriptions(currentProject?.name ?? '')}>Fetch DESC Comments</button>
         </div>
     );
 }

@@ -23,6 +23,10 @@ export const gitSendIt = (
     branchName: string,
     projectName: string
 ) => {
+    console.log('send-it')
+    console.log(commitMessage);
+    console.log(branchName);
+    console.log(projectName)
     if (commitMessage.trim() && branchName) {
       fetch(
         `/api/send-it?project=${projectName}&branchName=${branchName}&commitMessage=${commitMessage}`
@@ -32,7 +36,7 @@ export const gitSendIt = (
     }
   };
 
-export const gitDiff = async (projectName:string) => {
+export const getGitDiff = async (projectName:string) => {
         try {
             const response = await fetch(`/api/git-diff?projectName=${projectName}`);
             const result = await response.json();
@@ -42,7 +46,7 @@ export const gitDiff = async (projectName:string) => {
         }
 };
 
-export const gitBranch = async (projectName:string, projectDir:string) => {
+export const getGitBranch = async (projectName:string, projectDir:string) => {
   const response = await fetch(`api/current-branch?dirPath=${projectDir}/${projectName}`);
   const { data } = await response.json();
   console.log('data', data);
