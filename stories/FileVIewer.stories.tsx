@@ -45,6 +45,8 @@ replaceText.args = {
 export const replaceText2 = Template.bind({});
 replaceText2.args = {
   ...Default.args,
+  selectedFileContent: 'LineChicken\nLine 1\nLine 2\nLine 3\nLine 4',
+
   activeTab: 'chat',
-  selectedChatCode: 'Chat code\nLine 1\nLine 2\nLine 4\n',
+  selectedChatCode: 'Chat code\nandChat\nLine 1\nLine 2\nLine 4\nLine 5',
 };
