@@ -29,10 +29,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
   const [successMessage, setSuccessMessage] = useState('');
   const diff = diffLines(selectedFileContent, selectedChatCode ? selectedChatCode : '')
 
-
-  console.log(selectedChatCode)
-  console.log(selectedFileContent)
-  console.log(diff)
   let lineNumber = 0;
 
   const handleReplaceCode = async () => {
@@ -42,11 +38,13 @@ const FileViewer: React.FC<FileViewerProps> = ({
       await replaceCode();
       setSuccessMessage('Code replacement was successful.');
     } catch (error) {
-      console.log('error in fileviewer.tsx: ', error);
       setErrorMessage('Failed to replace code.');
     }
   };
 
+  console.log(JSON.stringify(selectedChatCode))
+  console.log(JSON.stringify(selectedFileContent))
+  console.log(diff)
   return (
     <div className="w-1/2 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
@@ -100,53 +98,133 @@ const FileViewer: React.FC<FileViewerProps> = ({
           <div className='h-full inline-block'>
             <pre>
               {diff.map((part, index) => {
-                console.log(part.value)
-                let lines = part.value.split('\n')
-                if(!part.removed) {
-                  lines = part.value.split('\n').filter(line => line.trim() !== '')
-                }
+                const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
 
-                let isNewPart = true;
-              
-                console.log(lines)
-                const x = <div key={index}>
-                {
-                  lines.map((line, lineIndex) => {
-                    const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-                    const lineContent = <span className="h-[16px] w-full" style={style}>{
-                      line.split('\n').filter(line => line.trim() !== '')
-                      }
-                      </span>
-                    return (
-                      <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span className="text-gray-500">{lineNumber + lineIndex + 1}: </span>
-                        {lineContent}
-                      </div>
-                    );
-                  }
-                )}
-                {
-                   part.removed ? (
-                    <AddButton
-                      lineNumber={lineNumber}
-                      value={part.value}
-                      file={selectedChatCode}
-                      updateFile={setSelectedChatCode}
-                    />
-                  ) : part.added ? (
-                    <RemoveButton
-                      lineNumber={lineNumber}
-                      number={part.count ? part.count : 0}
-                      file={selectedChatCode}
-                      updateFile={setSelectedChatCode}
-                    />
-                  ) : null
+                if(!part.removed && !part.added){
+                  let lines = part.value.trim().split('\n')
+                  const tsx =  (
+                    <div key={index}>
+                      {
+                        lines.map((line, lineIndex) => {
+                          const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>
+                          return (
+                            <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span className="text-gray-500">{lineNumber + lineIndex + 1}: </span>
+                              {lineContent}
+                            </div>
+                          );
+                        }
+                      )}
+                    </div>
+                  );
+                  lineNumber += lines.length;
+                  return tsx;
                 }
-                </div>  
-                if(!part.removed) { 
-                lineNumber += part.count ? part.count : 0;
+                if(part.added){
+                  let lines = part.value.trim().split('\n')                  
+                  const tsx = (
+                    <div key={index}> 
+                        {
+                          lines.map((line, x) => {
+                            const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>
+                            return (
+                              <div key={x}  style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span className="text-gray-500">{lineNumber + x + 1}: </span>
+                                {lineContent}
+                              </div>
+                            );
+                          }
+                        )}
+                      <RemoveButton
+                        lineNumber={lineNumber}
+                        number={part.count ? part.count : 0}
+                        file={selectedChatCode}
+                        updateFile={setSelectedChatCode}
+                      />
+                    </div>
+                  );
+                  lineNumber += lines.length;
+
+                  return tsx;
                 }
-                return x;
+                
+                // if(!part.removed && !part.added) {
+                //   console.log(part)
+                  // let lines = part.value.trim().split('\n')
+                  // const partContent = <div key={index}>
+                //   {
+                //     lines.map((line, lineIndex) => {
+                //       if(!part.removed && !part.added) {
+                //         console.log(part)
+                //         const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>
+                //         return (
+                //           <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
+                //             <span className="text-gray-500">{lineNumber + lineIndex + 1}: </span>
+                //             {lineContent}
+                //           </div>
+                //         );
+                //       }
+                //     //   else if(part.added) {
+                //     //       console.log(part)
+                //     //       console.log(line)
+                //     //       const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>
+                //     //       return (
+                //     //         <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
+                //     //           <span className="text-gray-500">{lineNumber + lineIndex + 1}: </span>
+                //     //           {lineContent}
+                //     //         </div>
+                //     //       );
+                //     // }
+                //     }
+                //   )}
+                //   {
+                //     //  part.removed ? (
+                //     //   <AddButton
+                //     //     lineNumber={lineNumber}
+                //     //     value={part.value}
+                //     //     file={selectedChatCode}
+                //     //     updateFile={setSelectedChatCode}
+                //     //   />
+                //     // ) :
+                //     //  part.added ? (
+                //     //   <RemoveButton
+                //     //     lineNumber={lineNumber}
+                //     //     number={part.count ? part.count : 0}
+                //     //     file={selectedChatCode}
+                //     //     updateFile={setSelectedChatCode}
+                //     //   />
+                //     // ) : null
+                //   }
+                //   </div>  
+                // return partContent;
+                // }
+                // else if(part.added) {
+                //   console.log(part)
+                //   let lines = part.value.trim().split('\n')
+                //   const partContent = <div key={index}>
+                //     {
+                //     lines.map((line, x) => {
+                //       const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>
+                //       return (<>
+                //       <div key={x}  style={{ display: 'flex', justifyContent: 'space-between' }}>
+                //           <span className="text-gray-500">{lineNumber + x + 1}: </span>
+                //           {lineContent}
+                //         </div>
+                //         <RemoveButton
+                //           lineNumber={lineNumber}
+                //           number={part.count ? part.count : 0}
+                //           file={selectedChatCode}
+                //           updateFile={setSelectedChatCode}
+                //         />
+                //       </>
+                        
+                //       );
+                //     }
+                //   )}
+                //     </div>
+                //   return partContent;
+                // }
+               
             })}
             </pre>
           </div>
@@ -157,8 +235,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
 };
 
 const AddButton: React.FC<any> = ({ lineNumber, value, file, updateFile }) => {
-
-  console.log(value)
   return <button
     key={lineNumber}
     className="bg-blue-500 text-white p-2"
@@ -177,15 +253,19 @@ const RemoveButton: React.FC<any> = ({ lineNumber, number, file, updateFile}) =>
 }
 
 const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:any) => {
+
   const newCode = file.split('\n').filter((line, index, arr) => index < arr.length - 1);
-  newCode.splice(lineNumber +1, 0, lineToAdd);
+  newCode.splice(lineNumber, 0, lineToAdd);
   updateFile(newCode.join('\n'));
 };
 
 const removeLine = (lineToRemove: number,length:number, file:string, updateFile:any) => {
-  const newCode = file.split('\n');
+  console.log(JSON.stringify(file))
   console.log(lineToRemove)
+  const newCode = file.split('\n');
   newCode.splice(lineToRemove, length);
+  console.log(JSON.stringify(newCode))
+
   updateFile(newCode.join('\n'));
 };
 
