@@ -27,7 +27,12 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const diff = diffLines(selectedFileContent, selectedChatCode ? selectedChatCode : '');
+  const diff = diffLines(selectedFileContent, selectedChatCode ? selectedChatCode : '')
+
+
+  console.log(selectedChatCode)
+  console.log(selectedFileContent)
+  console.log(diff)
   let lineNumber = 0;
 
   const handleReplaceCode = async () => {
@@ -79,19 +84,42 @@ const FileViewer: React.FC<FileViewerProps> = ({
           </pre>
         </div>
         }
-        {!loading && activeTab === 'file' && selectedFileContent && (<div><pre>{selectedFileContent}</pre></div>)}
+        {!loading && activeTab === 'file' && selectedFileContent && (
+          <div>
+            <pre>
+              {selectedFileContent.split('\n').map((line, index) => (
+                <div key={index}>
+                  <span className="text-gray-500">{index + 1}: </span>
+                  {line}
+                </div>
+              ))}
+            </pre>
+          </div>
+        )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className='h-full inline-block'>
             <pre>
               {diff.map((part, index) => {
-                const lines = part.value.split('\n');
+                console.log(part.value)
+                let lines = part.value.split('\n')
+                if(!part.removed) {
+                  lines = part.value.split('\n').filter(line => line.trim() !== '')
+                }
+
+                let isNewPart = true;
+              
+                console.log(lines)
                 const x = <div key={index}>
                 {
                   lines.map((line, lineIndex) => {
                     const style = part.added ? { backgroundColor: 'lightgreen' } : part.removed ? { backgroundColor: 'lightcoral' } : {};
-                    const lineContent = <span className="h-[16px] w-full" style={style}>{line}</span>;
+                    const lineContent = <span className="h-[16px] w-full" style={style}>{
+                      line.split('\n').filter(line => line.trim() !== '')
+                      }
+                      </span>
                     return (
                       <div key={lineIndex}  style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span className="text-gray-500">{lineNumber + lineIndex + 1}: </span>
                         {lineContent}
                       </div>
                     );
@@ -101,7 +129,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
                    part.removed ? (
                     <AddButton
                       lineNumber={lineNumber}
-                      value={part.value.split('\n').slice(0, -1).join('\n')}
+                      value={part.value}
                       file={selectedChatCode}
                       updateFile={setSelectedChatCode}
                     />
@@ -129,6 +157,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
 };
 
 const AddButton: React.FC<any> = ({ lineNumber, value, file, updateFile }) => {
+
+  console.log(value)
   return <button
     key={lineNumber}
     className="bg-blue-500 text-white p-2"
@@ -147,13 +177,14 @@ const RemoveButton: React.FC<any> = ({ lineNumber, number, file, updateFile}) =>
 }
 
 const addLine = (lineToAdd: string, lineNumber: number, file:string, updateFile:any) => {
-  const newCode = file.split('\n');
-  newCode.splice(lineNumber, 0, lineToAdd);
+  const newCode = file.split('\n').filter((line, index, arr) => index < arr.length - 1);
+  newCode.splice(lineNumber +1, 0, lineToAdd);
   updateFile(newCode.join('\n'));
 };
 
 const removeLine = (lineToRemove: number,length:number, file:string, updateFile:any) => {
   const newCode = file.split('\n');
+  console.log(lineToRemove)
   newCode.splice(lineToRemove, length);
   updateFile(newCode.join('\n'));
 };
