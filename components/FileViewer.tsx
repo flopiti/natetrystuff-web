@@ -23,9 +23,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
   replaceCode,
   setSelectedChatCode
 }) => {
-  console.log(selectedFileContent);
 
-  console.log(selectedChatCode);
   const loading = useSelector((state: RootState) => state.Messages.loading);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -33,6 +31,18 @@ const FileViewer: React.FC<FileViewerProps> = ({
   let linesOfSelectedChatCode: any[] = [];
   const linesOfSelectedFileContent = selectedFileContent.split('\n');
   let displayLines: any = [];  
+  let trailingRemovedLines: any[] = [];
+
+  const removeLine = (lineNumber: number, line: string) => {
+    const newCode = linesOfSelectedChatCode.filter((_, index) => index !== lineNumber - 1);
+    setSelectedChatCode(newCode.join('\n'));      
+  }
+
+  const addLine = (line: string, lineNumber: number) => {
+    const newCode = [...linesOfSelectedChatCode.slice(0, lineNumber - 1), line, ...linesOfSelectedChatCode.slice(lineNumber - 1)];
+    setSelectedChatCode(newCode.join('\n'));  
+  }
+
   if (selectedChatCode) {
     linesOfSelectedChatCode = selectedChatCode.split('\n');
     let addedLines = [];
@@ -53,32 +63,36 @@ const FileViewer: React.FC<FileViewerProps> = ({
         removedLines.push({ lineNumber: i + 1, line: linesOfSelectedFileContent[i] });
       }
     }
-    const removeLine = (lineNumber: number, line: string) => {
-      const newCode = linesOfSelectedChatCode.filter((_, index) => index !== lineNumber - 1);
-      setSelectedChatCode(newCode.join('\n'));      
-    }
 
     const combinedLines = [...untouchedLines, ...addedLines].sort((a, b) => a.lineNumber - b.lineNumber);
-
-    displayLines = combinedLines.map(({ lineNumber, line }) => (
-      <Fragment key={lineNumber}>
-        <div style={{ backgroundColor: addedLines.some(added => added.lineNumber === lineNumber) ? 'lightgreen' : 'transparent' }}>
-          <span className="text-gray-500">{lineNumber}: </span>
-          {line}
-        </div>
-        {addedLines.some(added => added.lineNumber === lineNumber) && (
-          <RemoveButton removeLine={removeLine} line={line} lineNumber={lineNumber} />
-        )}
-      </Fragment>
-    ));
-    
-    console.log('Removed Lines: ', removedLines);
-    console.log('Untouched Lines: ', untouchedLines);
-    console.log('Added Lines: ', addedLines);
+    const maxLineNumber = Math.max(...combinedLines.map(line => line.lineNumber), 0);
+    trailingRemovedLines = removedLines.filter(removed => removed.lineNumber > maxLineNumber);
+    displayLines = [...combinedLines].map(({ lineNumber, line }) => {
+      const removedLine = removedLines.find(removed => removed.lineNumber === lineNumber);
+      return (
+        <Fragment key={lineNumber}>
+          {
+            removedLine && (<>
+              <div style={{ backgroundColor: 'lightcoral' }}>
+                <span className="text-gray-500">{lineNumber}: </span>
+                {removedLine.line}
+              </div>
+              <AddButton lineNumber={lineNumber} line={removedLine.line}  addLine={addLine}/>
+              </>
+            )
+          }
+          <div style={{ backgroundColor: addedLines.some(added => added.lineNumber === lineNumber) ? 'lightgreen' : 'transparent' }}>
+            <span className="text-gray-500">{lineNumber}: </span>
+            {line}
+          </div>
+          {addedLines.some(added => added.lineNumber === lineNumber) && (
+            <RemoveButton removeLine={removeLine} line={line} lineNumber={lineNumber} />
+          )}
+        </Fragment>
+      )
+    });
   }
-
-  const diff = diffLines(selectedFileContent, selectedChatCode ? selectedChatCode : '');
-
+  
   const handleReplaceCode = async () => {
     try {
       setErrorMessage('');
@@ -140,6 +154,18 @@ const FileViewer: React.FC<FileViewerProps> = ({
           <div className='h-full inline-block'>
             <pre key={selectedChatCode}>
               {displayLines}
+              {
+                trailingRemovedLines.map(({ lineNumber, line }) => (
+                  <Fragment key={lineNumber}>
+                  <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
+                    <span className="text-gray-500">{lineNumber}: </span>
+                    {line}
+                  </div>
+                  <AddButton lineNumber={lineNumber} line={line}  addLine={addLine}/>
+                  </Fragment>
+                ))  
+
+              }
             </pre>
           </div>
         )}
@@ -148,12 +174,12 @@ const FileViewer: React.FC<FileViewerProps> = ({
   );
 };
 
-const AddButton: React.FC<any> = ({ lineNumber, value, file, updateFile }) => {
+const AddButton: React.FC<any> = ({ line, lineNumber, addLine}) => {
   return <button
-    key={lineNumber}
     className="bg-blue-500 text-white p-2"
-    onClick={() => addLine(value, lineNumber, file, updateFile)}>
-    Add code {lineNumber}
+    onClick={() => addLine(line, lineNumber)}
+    >
+    Add code
   </button>
 }
 
@@ -166,9 +192,5 @@ const RemoveButton: React.FC<any> = ({line, lineNumber, removeLine}) => {
   </button>
 }
 
-const addLine = (lineToAdd: string, lineNumber: number, file: string, updateFile: any) => {
-  const newCode = file.split('\n').filter((line, index, arr) => index < arr.length - 1);
-  newCode.splice(lineNumber, 0, lineToAdd);
-  updateFile(newCode.join('\n'));
-}
+
 export default FileViewer;
