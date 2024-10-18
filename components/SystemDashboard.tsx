@@ -5,7 +5,7 @@ export interface SystemDashboardProps {
     project: Project;
 }
 
-const SystemDashboard = ({project}:SystemDashboardProps) => {
+const SystemDashboard = ({project}: SystemDashboardProps) => {
     const [files, setFiles] = useState([
         { id: 1, name: 'File 1', DESC: 1, FEAT: 3 },
         { id: 2, name: 'File 2', DESC: 0, FEAT: 5 },
@@ -31,9 +31,9 @@ const SystemDashboard = ({project}:SystemDashboardProps) => {
             {files.map((file,index) => (
                 <div key={index} className="file-item p-2 border rounded bg-gray-200 text-black">
                     <div className="grid grid-cols-3 gap-4 items-center">
-                        <div className="file-name font-bold col-span-1">{file.name}</div>
-                        <div className="desc col-span-1">DESC: {file.DESC}</div>
-                        <div className="feat col-span-1">FEAT: {file.FEAT}</div>
+                        <div className="file-name font-bold overflow-hidden overflow-ellipsis whitespace-nowrap" style={{ width: '120px' }}>{file.name}</div>
+                        <div className="desc" style={{ width: '60px' }}>DESC: {file.DESC}</div>
+                        <div className="feat" style={{ width: '60px' }}>FEAT: {file.FEAT}</div>
                     </div>
                 </div>
             ))}
