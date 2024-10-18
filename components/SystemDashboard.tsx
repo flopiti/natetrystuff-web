@@ -21,14 +21,12 @@ const SystemDashboard = () => {
     }, []);
 
     return (
-        <div className="flex flex-col p-4">
+        <div className="grid grid-cols-3 gap-4 p-4">
             {files.map(file => (
-                <div key={file.id} className="file-item p-2 border rounded bg-gray-200 text-black">
-                    <div className="flex flex-row items-center space-x-4">
-                        <div className="file-name font-bold">{file.name}</div>
-                        <div className="desc">DESC: {file.DESC}</div>
-                        <div className="feat">FEAT: {file.FEAT}</div>
-                    </div>
+                <div key={file.id} className="file-item border rounded bg-gray-200 text-black p-4">
+                    <div className="file-name font-bold">{file.name}</div>
+                    <div className="desc">DESC: {file.DESC}</div>
+                    <div className="feat">FEAT: {file.FEAT}</div>
                 </div>
             ))}
         </div>
