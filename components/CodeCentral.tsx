@@ -13,6 +13,7 @@ import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
 import { setBranchName, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 import {  getGitBranch, getGitDiff } from '@/services/gitService';
+import SystemDashboard from './SystemDashboard';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -276,11 +277,17 @@ const CodeCentral = () => {
         }
     }
 
+    const[isSystemOpen, setIsSystemOpen] = useState(false); 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
+            <button
+                onClick={() => setIsSystemOpen(!isSystemOpen)}
+                className="bg-blue-500 text-white p-2"
+            >System  ?</button>
             <div>
                 {branchName && <p>Current Branch: {branchName}</p>}
             </div>
+            
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
@@ -290,15 +297,20 @@ const CodeCentral = () => {
                         chatCodes={editedFiles}
                         setSelectedFileName={setSelectedFileName}
                     />
-                    <FileViewer
-                        setSelectedChatCode={updateChatCode}
-                        activeTab={activeTab} 
-                        setActiveTab={setActiveTab} 
-                        selectedFileContent={selectedFileContent} 
-                        selectedChatCode={editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null}
-                        selectedFileName={selectedFileName} 
-                        replaceCode={handleReplaceCode} 
-                    />
+                    {
+                        isSystemOpen && currentProject ? 
+                        <SystemDashboard project={currentProject} /> :
+                        <FileViewer
+                            setSelectedChatCode={updateChatCode}
+                            activeTab={activeTab} 
+                            setActiveTab={setActiveTab} 
+                            selectedFileContent={selectedFileContent} 
+                            selectedChatCode={editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null}
+                            selectedFileName={selectedFileName} 
+                            replaceCode={handleReplaceCode} 
+                        />
+                    }
+                    
                     <Chat 
                         handleNewSelectedFile={handleNewSelectedFile}
                         handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
