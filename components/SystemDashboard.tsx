@@ -29,12 +29,10 @@ const SystemDashboard = ({project}:SystemDashboardProps) => {
     return (
         <div className="w-1/2 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
             {files.map((file,index) => (
-                <div key={index} className="file-item p-2 border rounded bg-gray-200 text-black">
-                    <div className="flex flex-row items-center space-x-4">
-                        <div className="file-name font-bold">{file.name}</div>
-                        <div className="desc">DESC: {file.DESC}</div>
-                        <div className="feat">FEAT: {file.FEAT}</div>
-                    </div>
+                <div key={index} className="file-item p-2 border rounded bg-gray-200 text-black grid" style={{ gridTemplateColumns: '3fr 1fr 1fr', gap: '10px' }}>
+                    <div className="file-name font-bold truncate overflow-hidden whitespace-nowrap" style={{ maxWidth: '200px' }}>{file.name}</div>
+                    <div className="desc">DESC: {file.DESC}</div>
+                    <div className="feat">FEAT: {file.FEAT}</div>
                 </div>
             ))}
         </div>
