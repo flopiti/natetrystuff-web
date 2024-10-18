@@ -1,18 +1,24 @@
+import { Project } from '@/types/project';
 import React, { useState, useEffect } from 'react';
 
-const SystemDashboard = () => {
+export interface SystemDashboardProps {
+    project: Project;
+}
+
+const SystemDashboard = ({project}:SystemDashboardProps) => {
     const [files, setFiles] = useState([
         { id: 1, name: 'File 1', DESC: 1, FEAT: 3 },
         { id: 2, name: 'File 2', DESC: 0, FEAT: 5 },
         { id: 3, name: 'File 3', DESC: 1, FEAT: 2 },
     ]);
 
+    console.log(files)
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('/api/file-descriptions');
-                const data = await response.json();
-                setFiles(data);
+                const response = await fetch(`/api/file-descriptions?project=${project.name}`);
+                const response_ = await response.json();
+                setFiles(response_.data);
             } catch (error) {
                 console.error('Error fetching file descriptions:', error);
             }
@@ -21,12 +27,14 @@ const SystemDashboard = () => {
     }, []);
 
     return (
-        <div className="grid grid-cols-3 gap-4 p-4">
-            {files.map(file => (
-                <div key={file.id} className="file-item border rounded bg-gray-200 text-black p-4">
-                    <div className="file-name font-bold">{file.name}</div>
-                    <div className="desc">DESC: {file.DESC}</div>
-                    <div className="feat">FEAT: {file.FEAT}</div>
+        <div className="w-1/2 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
+            {files.map((file,index) => (
+                <div key={index} className="file-item p-2 border rounded bg-gray-200 text-black">
+                    <div className="flex flex-row items-center space-x-4">
+                        <div className="file-name font-bold">{file.name}</div>
+                        <div className="desc">DESC: {file.DESC}</div>
+                        <div className="feat">FEAT: {file.FEAT}</div>
+                    </div>
                 </div>
             ))}
         </div>

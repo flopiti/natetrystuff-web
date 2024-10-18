@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('fetching all file descriptions');
-    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-all-file-descriptions`, {
+    const { searchParams } = new URL(request.url);
+    const project = searchParams.get("project");
+        const res = await fetch(`${process.env.CODE_HELPER_URL}/get-all-file-descriptions?project=${project}`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -16,7 +17,6 @@ export async function GET(request: NextRequest) {
 
     const data = await res.json();
 
-    console.log('file descriptions data', data);
     return new NextResponse(JSON.stringify({ data }), {
       status: 200,
       headers: {
