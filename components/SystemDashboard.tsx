@@ -5,7 +5,7 @@ export interface SystemDashboardProps {
     project: Project;
 }
 
-const SystemDashboard = ({project}: SystemDashboardProps) => {
+const SystemDashboard = ({project}:SystemDashboardProps) => {
     const [files, setFiles] = useState([
         { id: 1, name: 'File 1', DESC: 1, FEAT: 3 },
         { id: 2, name: 'File 2', DESC: 0, FEAT: 5 },
@@ -29,12 +29,10 @@ const SystemDashboard = ({project}: SystemDashboardProps) => {
     return (
         <div className="w-1/2 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
             {files.map((file,index) => (
-                <div key={index} className="file-item p-2 border rounded bg-gray-200 text-black">
-                    <div className="grid grid-cols-3 gap-4 items-center">
-                        <div className="file-name font-bold overflow-hidden overflow-ellipsis whitespace-nowrap" style={{ width: '120px' }}>{file.name}</div>
-                        <div className="desc" style={{ width: '60px' }}>DESC: {file.DESC}</div>
-                        <div className="feat" style={{ width: '60px' }}>FEAT: {file.FEAT}</div>
-                    </div>
+                <div key={index} className="file-item p-2 border rounded bg-gray-200 text-black grid" style={{ gridTemplateColumns: '3fr 1fr 1fr', gap: '10px' }}>
+                    <div className="file-name font-bold truncate overflow-hidden whitespace-nowrap" style={{ maxWidth: '200px' }}>{file.name}</div>
+                    <div className="desc">DESC: {file.DESC}</div>
+                    <div className="feat">FEAT: {file.FEAT}</div>
                 </div>
             ))}
         </div>
