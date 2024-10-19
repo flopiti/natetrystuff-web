@@ -48,7 +48,7 @@ const DaySchedule = ({
     });
 
     return (
-        <div className="md:w-1/4 w-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
+        <div className="md:w-1/4 w-full h-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative">
             {day_?.inOffice ? (
                 <div className="flex flex-row items-center justify-between bg-orange-500 text-white text-xs rounded-lg p-1 m-5 w-4/5">
                     <span className="flex items-center">
