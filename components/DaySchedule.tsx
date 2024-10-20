@@ -130,7 +130,7 @@ const DaySchedule = ({
             </h1>
             {day_?.inOffice && (
                 <motion.div
-                    className="bg-green-500 text-white text-sm rounded-lg p-2 mb-2 w-4/5 text-center"
+                    className="bg-green-500 overflow-hidden text-white text-sm rounded-lg p-2 mb-2 w-4/5 text-center"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
