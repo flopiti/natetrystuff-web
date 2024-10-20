@@ -3,8 +3,8 @@ import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from "framer-motion";
-import LunchMeals from './LunchMeals';
-
+import LunchMeals from '../LunchMeals';
+import "./DaySchedule.css";
 const DaySchedule = ({
     day,
     meals,
@@ -145,7 +145,7 @@ const DaySchedule = ({
                     itemVariants={itemVariants}
                 />
             )}
-            <div className="flex flex-col items-center flex-grow rounded-lg w-full">
+            <div className="flex flex-col items-center flex-1 rounded-lg w-full overflow-hidden p-4">
                 <AnimatePresence>
                     {nonLunchMeals.length > 0 ? (
                         <motion.ul
@@ -167,6 +167,7 @@ const DaySchedule = ({
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <span className="font-medium text-lg text-center">{mealSched.meal.mealName}</span>
+                                    <img src={mealSched.meal.imageUrl} alt={mealSched.meal.mealName} className="w-16 h-16 mt-2 rounded-full" />
                                     <AnimatePresence mode="wait">
                                         <motion.span
                                             key={mealSched.prepared ? "prepared" : "not-prepared"}
@@ -199,7 +200,7 @@ const DaySchedule = ({
                         </motion.ul>
                     ) : (
                         <motion.p
-                            className="text-gray-500 m-2"
+                            className="text-gray-500 m-2 text-center"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -219,6 +220,8 @@ const DaySchedule = ({
                 </motion.button>
                 <AnimatePresence>
                     {showAddMeal && (
+                        <div className="flex-1 overflow-auto w-full scrollbar-none">
+
                         <motion.ul
                             className="mt-2"
                             variants={listVariants}
@@ -242,6 +245,7 @@ const DaySchedule = ({
                                 </motion.li>
                             ))}
                         </motion.ul>
+                        </div>
                     )}
                 </AnimatePresence>
             </div>

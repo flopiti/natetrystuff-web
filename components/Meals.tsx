@@ -11,10 +11,15 @@ const Meals = () => {
   const {
     formMealName, setFormMealName, formMealIngredients, setFormMealIngredients, handleInputChange, handleAddIngredient, handleRemoveIngredient
   } = useFormState();
-
+  
   useEffect(() => {
     getMeals().then((data:any) => setMeals(data));
   }, []);
+
+  const handleAddMeal = async (name: string, ingredients: MealIngredient[], imageUrl:any) => {
+    await addMeal(name, ingredients, imageUrl, setMeals);
+    setIsAddMealFormVisible(false);
+  }
 
   return (
     <div className='h-[70vh] border-2 border-white w-full p-4 overflow-auto'>
@@ -35,7 +40,7 @@ const Meals = () => {
           handleInputChange={handleInputChange}
           handleAddIngredient={handleAddIngredient}
           handleRemoveIngredient={handleRemoveIngredient}
-          addMeal={(name, ingredients) => addMeal(name, ingredients, setMeals)}
+          addMeal={handleAddMeal}
         />
       )}
     </div>

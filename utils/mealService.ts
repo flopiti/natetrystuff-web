@@ -6,11 +6,11 @@ export const getMeals = async () => {
   return data;
 };
 
-
 // Updated setMeals type to use (meals: any[] | ((prevMeals: any[]) => any[])) => void
-export const addMeal = async (name: string, mealIngredients: MealIngredient[], setMeals: (meals: any[] | ((prevMeals: any[]) => any[])) => void) => {
+export const addMeal = async (name: any, mealIngredients: any[], imageUrl: string, setMeals: any)=> {
   const meal = {
     mealName: name,
+    imageUrl: imageUrl, // Including image URL
     mealIngredients: mealIngredients
       .filter(mi => mi.ingredientName !== '' && mi.quantity !== 0 && mi.unit !== '')
       .map((ingredient, index) => ({...ingredient, mealIngredientId: index + 1}))

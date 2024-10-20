@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 //DESC: Component for adding a meal, including its ingredients, quantity, and units.
 interface MealIngredient {
   ingredientName: string;
@@ -14,7 +16,7 @@ interface AddMealFormProps {
   handleInputChange: (index: number, field: string, value: any, type: 'form' | 'edit') => void;
   handleAddIngredient: (type: 'form' | 'edit') => void;
   handleRemoveIngredient: (index: number, type: 'form' | 'edit') => void;
-  addMeal: (name: string, mealIngredients: MealIngredient[]) => Promise<void>;
+  addMeal:any;
 }
 
 const AddMealForm: React.FC<AddMealFormProps> = ({
@@ -27,6 +29,18 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
   handleRemoveIngredient,
   addMeal
 }) => {
+  const [imageUrl, setImageUrl] = useState('');
+
+  const handleAddMeal = async () => {
+    const name = formMealName;
+    const ingredients = formMealIngredients
+      .filter(mi => mi.ingredientName !== '' && mi.quantity !== 0 && mi.unit !==
+      '')
+      .map((ingredient, index) => ({...ingredient, mealIngredientId: index + 1}));
+    await addMeal(name, ingredients, imageUrl);
+  }
+
+
   return (
     <div className='mt-4 bg-gray-200 p-4 rounded'>
       <input
@@ -35,6 +49,13 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
         placeholder='Meal Name'
         value={formMealName}
         onChange={(e) => setFormMealName(e.target.value)}
+      />
+      <input
+        className='text-black p-2 rounded w-full mb-2'
+        type='text'
+        placeholder='Image URL'
+        value={imageUrl}
+        onChange={(e) => setImageUrl(e.target.value)}
       />
       <div>
         {formMealIngredients.map((mealIngredient, index) => {
@@ -67,7 +88,7 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
         })}
         <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={() => handleAddIngredient('form')}>Add Ingredient</button>
       </div>
-      <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => addMeal(formMealName, formMealIngredients)}>Add Meal</button>
+      <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => handleAddMeal()}>Add Meal</button>
     </div>
   );
 };
