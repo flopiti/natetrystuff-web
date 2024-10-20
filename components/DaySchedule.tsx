@@ -70,6 +70,13 @@ const DaySchedule = ({
         tap: { scale: 0.95 }
     };
 
+    const preparedVariants = {
+        initial: { opacity: 0, scale: 0.8 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.8 },
+        transition: { duration: 0.3 }
+    };
+
     return (
         <motion.div
             className="md:w-1/4 w-full h-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative"
@@ -133,17 +140,23 @@ const DaySchedule = ({
                                     <span className="text-white text-lg font-semibold text-center">
                                         {lunchMeals[0].meal.mealName}
                                     </span>
-                                    <span
-                                        className="text-white text-sm flex items-center cursor-pointer mt-1"
-                                        onClick={() => togglePreparedStatus(lunchMeals[0])}
-                                    >
-                                        {lunchMeals[0].prepared ? (
-                                            <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
-                                        ) : (
-                                            <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
-                                        )}
-                                        {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
-                                    </span>
+                                    <AnimatePresence mode="wait"><motion.span
+                                            key={lunchMeals[0].prepared ? "prepared" : "not-prepared"}
+                                            className="text-white text-sm flex items-center cursor-pointer mt-1"
+                                            onClick={() => togglePreparedStatus(lunchMeals[0])}
+                                            variants={preparedVariants}
+                                            initial="initial"
+                                            animate="animate"
+                                            exit="exit"
+                                        >
+                                            {lunchMeals[0].prepared ? (
+                                                <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
+                                            ) : (
+                                                <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
+                                            )}
+                                            {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
+                                        </motion.span>
+                                    </AnimatePresence>
                                     <motion.button
                                         className="bg-red-800 text-white rounded px-2 py-1 mt-2"
                                         onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
@@ -221,17 +234,24 @@ const DaySchedule = ({
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <span className="font-medium text-lg text-center">{mealSched.meal.mealName}</span>
-                                    <span
-                                        className="font-medium flex items-center cursor-pointer mt-1"
-                                        onClick={() => togglePreparedStatus(mealSched)}
-                                    >
-                                        {mealSched.prepared ? (
-                                            <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
-                                        ) : (
-                                            <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
-                                        )}
-                                        {mealSched.prepared ? "Prepared" : "Not Prepared"}
-                                    </span>
+                                    <AnimatePresence mode="wait">
+                                        <motion.span
+                                            key={mealSched.prepared ? "prepared" : "not-prepared"}
+                                            className="font-medium flex items-center cursor-pointer mt-1"
+                                            onClick={() => togglePreparedStatus(mealSched)}
+                                            variants={preparedVariants}
+                                            initial="initial"
+                                            animate="animate"
+                                            exit="exit"
+                                        >
+                                            {mealSched.prepared ? (
+                                                <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
+                                            ) : (
+                                                <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
+                                            )}
+                                            {mealSched.prepared ? "Prepared" : "Not Prepared"}
+                                        </motion.span>
+                                    </AnimatePresence>
                                     <motion.button
                                         className="bg-red-800 opacity-50 text-white rounded px-2 py-1 mt-2"
                                         onClick={() => deleteScheduledMeal(mealSched.scheduleId)}
@@ -301,41 +321,51 @@ const DaySchedule = ({
                         transition={{ duration: 0.3 }}
                     >
                         <div className="font-bold mb-2">LUNCH</div>
-                        <motion.div
-                            className="flex flex-col items-center"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                        >
-                            <span className="text-white text-lg font-semibold text-center">
-                                {lunchMeals[0].meal.mealName}
-                            </span>
-                            <span
-                                className="text-white text-sm flex items-center cursor-pointer mt-1"
-                                onClick={() => togglePreparedStatus(lunchMeals[0])}
+                        <AnimatePresence>
+                            <motion.div
+                                className="flex flex-col items-center"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
                             >
-                                {lunchMeals[0].prepared ? (
-                                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
-                                ) : (
-                                    <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
-                                )}
-                                {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
-                            </span>
-                            <motion.button
-                                className="bg-red-800 text-white rounded px-2 py-1 mt-2"
-                                onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
-                                variants={buttonVariants}
-                                whileHover="hover"
-                                whileTap="tap"
-                            >
-                                X
-                            </motion.button>
-                        </motion.div>
+                                <span className="text-white text-lg font-semibold text-center">
+                                    {lunchMeals[0].meal.mealName}
+                                </span>
+                                <AnimatePresence exitBeforeEnter>
+                                    <motion.span
+                                        key={lunchMeals[0].prepared ? "prepared" : "not-prepared"}
+                                        className="text-white text-sm flex items-center cursor-pointer mt-1"
+                                        onClick={() => togglePreparedStatus(lunchMeals[0])}
+                                        variants={preparedVariants}
+                                        initial="initial"
+                                        animate="animate"
+                                        exit="exit"
+                                    >
+                                        {lunchMeals[0].prepared ? (
+                                            <FontAwesomeIcon icon={faCheckCircle} className="text-green-300 mr-1" />
+                                        ) : (
+                                            <FontAwesomeIcon icon={faTimesCircle} className="text-red-300 mr-1" />
+                                        )}
+                                        {lunchMeals[0].prepared ? "Prepared" : "Not Prepared"}
+                                    </motion.span>
+                                </AnimatePresence>
+                                <motion.button
+                                    className="bg-red-800 text-white rounded px-2 py-1 mt-2"
+                                    onClick={() => deleteScheduledMeal(lunchMeals[0].scheduleId)}
+                                    variants={buttonVariants}
+                                    whileHover="hover"
+                                    whileTap="tap"
+                                >
+                                    X
+                                </motion.button>
+                            </motion.div>
+                        </AnimatePresence>
                     </motion.div>
                 </>
             )}
         </motion.div>
     );
+
 };
 
 export default DaySchedule;
