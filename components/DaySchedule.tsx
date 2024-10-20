@@ -200,7 +200,7 @@ const DaySchedule = ({
                         </motion.ul>
                     ) : (
                         <motion.p
-                            className="text-gray-500 m-2"
+                            className="text-gray-500 m-2 text-center"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
