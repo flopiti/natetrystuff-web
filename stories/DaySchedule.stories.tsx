@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import DaySchedule from '@/components/DaySchedule';
+import DaySchedule from '@/components/DaySchedule/DaySchedule';
 
 export default {
   title: 'Components/DaySchedule',
