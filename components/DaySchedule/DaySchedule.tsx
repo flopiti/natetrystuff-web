@@ -3,8 +3,8 @@ import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBriefcase, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from "framer-motion";
-import LunchMeals from './LunchMeals';
-
+import LunchMeals from '../LunchMeals';
+import "./DaySchedule.css";
 const DaySchedule = ({
     day,
     meals,
@@ -220,7 +220,7 @@ const DaySchedule = ({
                 </motion.button>
                 <AnimatePresence>
                     {showAddMeal && (
-                        <div className="flex-1 overflow-auto w-full">
+                        <div className="flex-1 overflow-auto w-full scrollbar-none">
 
                         <motion.ul
                             className="mt-2"

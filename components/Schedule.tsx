@@ -6,7 +6,7 @@ import {
   useScheduleState,
 } from "@/hooks/useScheduleHooks";
 import GroceryList from "./GroceryList";
-import DaySchedule from "./DaySchedule";
+import DaySchedule from "./DaySchedule/DaySchedule";
 
 const Schedule = () => {
   const {
