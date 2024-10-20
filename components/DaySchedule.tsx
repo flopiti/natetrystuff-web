@@ -1,7 +1,7 @@
 import { fetchAPI, formatDate } from "@/app/utils";
 import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBriefcase } from '@fortawesome/free-solid-svg-icons';
+import { faBriefcase, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { motion, AnimatePresence } from "framer-motion";
 import LunchMeals from './LunchMeals';
 

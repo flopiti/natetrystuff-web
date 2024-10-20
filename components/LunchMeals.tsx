@@ -65,6 +65,7 @@ const LunchMeals = ({
                         </motion.button>
                     </motion.div>
                 ) : (
+                    <>
                     <motion.button
                         className="text-blue-500 text-sm"
                         onClick={() => setShowAddLunch(!showAddLunch)}
@@ -102,6 +103,7 @@ const LunchMeals = ({
                             </motion.ul>
                         )}
                     </AnimatePresence>
+                    </>
                 )}
             </AnimatePresence>
         </motion.div>
