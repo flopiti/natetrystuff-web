@@ -7,7 +7,7 @@ export const getMeals = async () => {
 };
 
 // Updated setMeals type to use (meals: any[] | ((prevMeals: any[]) => any[])) => void
-export const addMeal = async (name: string, mealIngredients: MealIngredient[], imageUrl: string, setMeals: (meals: any[] | ((prevMeals: any[]) => any[])) => void) => {
+export const addMeal = async (name: any, mealIngredients: any[], imageUrl: string, setMeals: any)=> {
   const meal = {
     mealName: name,
     imageUrl: imageUrl, // Including image URL

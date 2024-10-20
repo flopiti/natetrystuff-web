@@ -16,7 +16,7 @@ interface AddMealFormProps {
   handleInputChange: (index: number, field: string, value: any, type: 'form' | 'edit') => void;
   handleAddIngredient: (type: 'form' | 'edit') => void;
   handleRemoveIngredient: (index: number, type: 'form' | 'edit') => void;
-  addMeal: (name: string, imageUrl: string, mealIngredients: MealIngredient[]) => Promise<void>;
+  addMeal:any;
 }
 
 const AddMealForm: React.FC<AddMealFormProps> = ({
@@ -30,6 +30,16 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
   addMeal
 }) => {
   const [imageUrl, setImageUrl] = useState('');
+
+  const handleAddMeal = async () => {
+    const name = formMealName;
+    const ingredients = formMealIngredients
+      .filter(mi => mi.ingredientName !== '' && mi.quantity !== 0 && mi.unit !==
+      '')
+      .map((ingredient, index) => ({...ingredient, mealIngredientId: index + 1}));
+    await addMeal(name, ingredients, imageUrl);
+  }
+
 
   return (
     <div className='mt-4 bg-gray-200 p-4 rounded'>
@@ -78,7 +88,7 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
         })}
         <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={() => handleAddIngredient('form')}>Add Ingredient</button>
       </div>
-      <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => addMeal(formMealName, imageUrl, formMealIngredients)}>Add Meal</button>
+      <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => handleAddMeal()}>Add Meal</button>
     </div>
   );
 };

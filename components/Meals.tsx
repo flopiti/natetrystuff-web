@@ -16,6 +16,11 @@ const Meals = () => {
     getMeals().then((data:any) => setMeals(data));
   }, []);
 
+  const handleAddMeal = async (name: string, ingredients: MealIngredient[], imageUrl:any) => {
+    await addMeal(name, ingredients, imageUrl, setMeals);
+    setIsAddMealFormVisible(false);
+  }
+
   return (
     <div className='h-[70vh] border-2 border-white w-full p-4 overflow-auto'>
       <button className='mx-2 bg-blue-500 p-2 rounded text-white' onClick={() => setIsAddMealFormVisible(!isAddMealFormVisible)}>
@@ -35,7 +40,7 @@ const Meals = () => {
           handleInputChange={handleInputChange}
           handleAddIngredient={handleAddIngredient}
           handleRemoveIngredient={handleRemoveIngredient}
-          addMeal={(name, ingredients, imageUrl) => addMeal(name, ingredients, imageUrl, setMeals)}
+          addMeal={handleAddMeal}
         />
       )}
     </div>
