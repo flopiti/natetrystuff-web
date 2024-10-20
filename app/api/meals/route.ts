@@ -29,7 +29,11 @@ export async function POST(request: NextRequest) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(body.meal),
+        body: JSON.stringify({
+            mealName: body.name,
+            imageUrl: body.imageUrl, // include imageUrl in POST request
+            mealIngredients: body.mealIngredients
+        }),
     });
     const data = await res.json();
     return new NextResponse(JSON.stringify({ data }), {

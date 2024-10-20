@@ -14,7 +14,7 @@ interface AddMealFormProps {
   handleInputChange: (index: number, field: string, value: any, type: 'form' | 'edit') => void;
   handleAddIngredient: (type: 'form' | 'edit') => void;
   handleRemoveIngredient: (index: number, type: 'form' | 'edit') => void;
-  addMeal: (name: string, mealIngredients: MealIngredient[]) => Promise<void>;
+  addMeal: (name: string, imageUrl: string, mealIngredients: MealIngredient[]) => Promise<void>;
 }
 
 const AddMealForm: React.FC<AddMealFormProps> = ({
@@ -27,6 +27,8 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
   handleRemoveIngredient,
   addMeal
 }) => {
+  const [imageUrl, setImageUrl] = useState('');
+
   return (
     <div className='mt-4 bg-gray-200 p-4 rounded'>
       <input
@@ -35,6 +37,13 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
         placeholder='Meal Name'
         value={formMealName}
         onChange={(e) => setFormMealName(e.target.value)}
+      />
+      <input
+        className='text-black p-2 rounded w-full mb-2'
+        type='text'
+        placeholder='Image URL'
+        value={imageUrl}
+        onChange={(e) => setImageUrl(e.target.value)}
       />
       <div>
         {formMealIngredients.map((mealIngredient, index) => {
@@ -67,7 +76,7 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
         })}
         <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={() => handleAddIngredient('form')}>Add Ingredient</button>
       </div>
-      <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => addMeal(formMealName, formMealIngredients)}>Add Meal</button>
+      <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => addMeal(formMealName, imageUrl, formMealIngredients)}>Add Meal</button>
     </div>
   );
 };
