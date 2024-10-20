@@ -79,7 +79,7 @@ const DaySchedule = ({
 
     return (
         <motion.div
-            className="md:w-1/4 w-full h-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative"
+            className="md:w-1/4 w-full h-full flex flex-col bg-[#3B465C] shadow-lg rounded-lg p-3 md:p-0 items-center relative overflow-hidden"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -339,7 +339,7 @@ const DaySchedule = ({
                                 <span className="text-white text-lg font-semibold text-center">
                                     {lunchMeals[0].meal.mealName}
                                 </span>
-                                <AnimatePresence exitBeforeEnter>
+                                <AnimatePresence mode='wait'>
                                     <motion.span
                                         key={lunchMeals[0].prepared ? "prepared" : "not-prepared"}
                                         className="text-white text-sm flex items-center cursor-pointer mt-1"
