@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import getNextFourDays from "../utils/nextFourDays";
-import { fetchAPI, formatDate, formatISODate } from "@/app/utils";
+import { fetchAPI, formatISODate } from "@/app/utils";
 import {
   setFourDaysScheduleDisplay,
   useScheduleState,
@@ -195,7 +195,7 @@ const Schedule = () => {
           );
         })}
       </div>
-      <GroceryList groceries={groceries} />
+      {/* <GroceryList groceries={groceries} /> */}
     </div>
   );
 };
