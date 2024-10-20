@@ -11,7 +11,7 @@ const Meals = () => {
   const {
     formMealName, setFormMealName, formMealIngredients, setFormMealIngredients, handleInputChange, handleAddIngredient, handleRemoveIngredient
   } = useFormState();
-
+  
   useEffect(() => {
     getMeals().then((data:any) => setMeals(data));
   }, []);
@@ -35,7 +35,7 @@ const Meals = () => {
           handleInputChange={handleInputChange}
           handleAddIngredient={handleAddIngredient}
           handleRemoveIngredient={handleRemoveIngredient}
-          addMeal={(name, ingredients) => addMeal(name, ingredients, setMeals)}
+          addMeal={(name, ingredients, imageUrl) => addMeal(name, ingredients, imageUrl, setMeals)}
         />
       )}
     </div>
