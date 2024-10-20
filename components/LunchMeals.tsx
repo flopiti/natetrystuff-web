@@ -79,7 +79,7 @@ const LunchMeals = ({
                     <AnimatePresence>
                         {showAddLunch && (
                             <motion.ul
-                                className="mt-2"
+                                className="mt-2 max-h-40 overflow-y-auto"
                                 variants={listVariants}
                                 initial="hidden"
                                 animate="visible"
