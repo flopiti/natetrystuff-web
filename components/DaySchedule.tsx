@@ -85,38 +85,46 @@ const DaySchedule = ({
             animate="visible"
             exit="exit"
         >
-            {day_?.inOffice ? (
-                <motion.div
-                    className="flex flex-row items-center justify-between bg-orange-500 text-white text-xs rounded-lg p-1 m-5 w-4/5"
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                >
-                    <span className="flex items-center">
-                        <FontAwesomeIcon icon={faBriefcase} className="mr-2" /> {/* Work icon */}
-                        In Office
-                    </span>
-                    <motion.button
-                        onClick={setDayRemote}
-                        className="py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                        variants={buttonVariants}
-                        whileHover="hover"
-                        whileTap="tap"
-                    >
-                        Remote
-                    </motion.button>
-                </motion.div>
-            ) : (
-                <motion.button
-                    className="self-end m-4 py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                    onClick={() => setDayInOffice()}
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                >
-                    Make it an Office Day
-                </motion.button>
-            )}
+{day_?.inOffice ? (
+    <motion.div
+        key="inOffice"
+        className="flex flex-row items-center justify-between bg-orange-500 text-white text-xs rounded-lg p-1 m-5 w-4/5"
+        initial={{ opacity: 0, x: -100 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 100 }}
+        transition={{ duration: 0.2 }}
+    >
+        <span className="flex items-center">
+            <FontAwesomeIcon icon={faBriefcase} className="mr-2" /> {/* Work icon */}
+            In Office
+        </span>
+        <motion.button
+            onClick={setDayRemote}
+            className="py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+        >
+            Remote
+        </motion.button>
+    </motion.div>
+) : (
+    <motion.button
+        key="remote"
+        className="self-end m-4 py-1 px-3 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+        onClick={() => setDayInOffice()}
+        variants={buttonVariants}
+        whileHover="hover"
+        whileTap="tap"
+        initial={{ opacity: 0, x: 100 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -100 }}
+        transition={{ duration: 0.2 }}
+    >
+        Make it an Office Day
+    </motion.button>
+)}
+
             <h1 className="text-xl font-extrabold mb-2 text-gray-800 m-4">
                 {formatDate(day)}
             </h1>
