@@ -145,7 +145,7 @@ const DaySchedule = ({
                     itemVariants={itemVariants}
                 />
             )}
-            <div className="flex flex-col items-center flex-grow rounded-lg w-full">
+            <div className="flex flex-col items-center flex-1 rounded-lg w-full overflow-hidden p-4">
                 <AnimatePresence>
                     {nonLunchMeals.length > 0 ? (
                         <motion.ul
@@ -220,6 +220,8 @@ const DaySchedule = ({
                 </motion.button>
                 <AnimatePresence>
                     {showAddMeal && (
+                        <div className="flex-1 overflow-auto w-full">
+
                         <motion.ul
                             className="mt-2"
                             variants={listVariants}
@@ -243,6 +245,7 @@ const DaySchedule = ({
                                 </motion.li>
                             ))}
                         </motion.ul>
+                        </div>
                     )}
                 </AnimatePresence>
             </div>
