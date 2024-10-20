@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 //DESC: Component for adding a meal, including its ingredients, quantity, and units.
 interface MealIngredient {
   ingredientName: string;
