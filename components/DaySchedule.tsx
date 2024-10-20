@@ -167,6 +167,7 @@ const DaySchedule = ({
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     <span className="font-medium text-lg text-center">{mealSched.meal.mealName}</span>
+                                    <img src={mealSched.meal.imageUrl} alt={mealSched.meal.mealName} className="w-16 h-16 mt-2 rounded-full" />
                                     <AnimatePresence mode="wait">
                                         <motion.span
                                             key={mealSched.prepared ? "prepared" : "not-prepared"}
