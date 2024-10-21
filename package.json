@@ -1,4 +1,3 @@
-//DESC: This file contains the package configuration and dependency information for a Next.js web application with Storybook integration.
 {
   "name": "natetrystuff-web",
   "version": "0.1.0",

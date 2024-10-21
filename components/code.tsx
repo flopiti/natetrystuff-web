@@ -1,3 +1,4 @@
+//DESC: This file contains the implementation of a component for creating new resources and establishing class relationships.
 import { use, useState } from "react";
 
 const Code = () => {
