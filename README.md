@@ -1,3 +1,5 @@
+//DESC: This file contains instructions and resources for setting up and deploying a Next.js project.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

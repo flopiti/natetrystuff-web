@@ -1,4 +1,4 @@
-name: Build and Deploy to DigitalOcean
+//DESC: This file automates the build and deployment of a Next.js app to a DigitalOcean server using GitHub Actions.
 
 on:
   push:
