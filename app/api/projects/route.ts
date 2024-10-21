@@ -1,3 +1,4 @@
+//DESC: This file handles the retrieval of project names from a Neo4j database and returns them as a JSON response.
 import { NextRequest, NextResponse } from "next/server";
 import neo4j from 'neo4j-driver';
 

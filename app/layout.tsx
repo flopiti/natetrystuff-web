@@ -1,3 +1,4 @@
+//DESC: This file defines the root layout component for a Next.js application including global styles and metadata.
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";

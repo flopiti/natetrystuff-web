@@ -1,3 +1,4 @@
+//DESC: This file contains server-side logic for handling GET and POST requests to the spring-boot-classes endpoint.
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

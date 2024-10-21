@@ -1,3 +1,4 @@
+//DESC: This file defines a React component that renders a list of grocery items.
 const GroceryList = ({groceries} :any) => {
     return (
         <div className='mt-4 p-4 bg-yellow-100 rounded-lg shadow-lg'>

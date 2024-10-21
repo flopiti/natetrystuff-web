@@ -1,3 +1,4 @@
+//DESC: This file contains a React functional component for a file list dropdown integrated with a Redux store.
 import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';

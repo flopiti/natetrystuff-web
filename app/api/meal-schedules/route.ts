@@ -1,3 +1,4 @@
+//DESC: This file contains API handlers for GET and POST requests related to meal schedules.
 import { getAccessToken } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 

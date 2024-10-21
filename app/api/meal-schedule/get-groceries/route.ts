@@ -1,3 +1,4 @@
+//DESC: This file handles GET and POST requests for meal scheduling and retrieving grocery details.
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 
