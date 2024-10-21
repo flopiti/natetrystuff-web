@@ -6,7 +6,7 @@ export interface SystemDashboardProps {
 }
 
 const SystemDashboard = ({project}:SystemDashboardProps) => {
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState<any>([]);
 
     console.log(files)
     useEffect(() => {
@@ -24,7 +24,7 @@ const SystemDashboard = ({project}:SystemDashboardProps) => {
 
     return (
         <div className="w-full bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
-            {files.map((file, index) => (
+            {files.map((file:any, index:number) => (
                 <div 
                     key={index} 
                     className="file-item p-2 border rounded bg-gray-200 text-black flex items-center justify-between space-x-4"
