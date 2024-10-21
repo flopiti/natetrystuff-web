@@ -1,3 +1,4 @@
+//DESC: This file contains a React component for viewing and managing file and chat code differences.
 import { unescapeString } from '@/app/utils';
 import { RootState } from '@/store';
 import { diffLines } from 'diff';

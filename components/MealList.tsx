@@ -1,3 +1,4 @@
+//DESC: This file defines a React component for displaying and editing a list of meals with their ingredients.
 import { useState } from 'react';
 
 interface MealIngredient {

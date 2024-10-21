@@ -1,3 +1,5 @@
+//DESC: This file defines a Meals component that manages and displays meals with functionality to add, update, and delete meals.
+
 import { useEffect, useState } from 'react';
 import AddMealForm from './AddMealForm';
 import MealList from './MealList';

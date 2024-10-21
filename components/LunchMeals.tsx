@@ -1,3 +1,4 @@
+//DESC: This file contains the component logic for displaying and managing lunch meals in a schedule.
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
