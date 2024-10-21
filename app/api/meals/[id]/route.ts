@@ -1,3 +1,4 @@
+//DESC: This file handles PUT and DELETE HTTP requests for meal updates and deletions.
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest } from 'next/dist/server/web/spec-extension/request';
 import { NextResponse } from 'next/server';
