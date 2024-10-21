@@ -1,3 +1,4 @@
+//DESC: This file defines a GET API route handler that fetches file descriptions for a specified project by sending a request to an external service.
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
