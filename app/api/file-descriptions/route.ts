@@ -1,11 +1,11 @@
-//DESC: This file defines a GET API route handler that fetches file descriptions for a specified project by sending a request to an external service.
+//DESC: This file is a Next.js API route that handles GET requests to fetch file descriptions of a specified project by making a request to an external API.
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const project = searchParams.get("project");
-        const res = await fetch(`${process.env.CODE_HELPER_URL}/get-all-file-descriptions?project=${project}`, {
+    const res = await fetch(`${process.env.CODE_HELPER_URL}/get-all-file-descriptions?project=${project}`, {
       headers: {
         'Content-Type': 'application/json',
       },
