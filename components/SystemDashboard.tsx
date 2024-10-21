@@ -1,6 +1,6 @@
-import { getFile } from "@/app/utils";
+import { getFile, replaceCode } from "@/app/utils";
 import { askChatNoStream } from "@/services/chatService";
-import { Project } from "@/types/project";
+import { Project, ProjectFile } from "@/types/project";
 import React, { useState, useEffect } from "react";
 
 export interface SystemDashboardProps {
@@ -37,10 +37,19 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
         };
         const response = await askChatNoStream([initialMessage]);
 
-        const newFile = response.fileContent;
+        const newFile :ProjectFile = {name: fileName, content: response.fileContent};
+        replaceCode( project.name, [newFile]).then(() => {
+            setFiles((prevFiles: any) => {
+                const newFiles = prevFiles.map((file: any) => {
+                if (file.name === fileName) {
+                    return { ...file, DESC: 1 };
+                }
+                return file;
+                });
+                return newFiles;
+            });
+            });
 
-
-        
 
       });
     } catch (error) {
