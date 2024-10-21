@@ -67,12 +67,15 @@ const Chat = ({
   };
   const handleRunCommand = () => {
     console.log('run')
+    console.log('branch name is ' + branchName);
     if (!currentProject){
       alert("Please select a project first");
       return;
     }
     if (selectedOption === "gh pr create --title ") {
       createPullRequest();
+
+      
     } else if (selectedOption === "git-send-it" && branchName) {
           console.log('lets use the service')
 
