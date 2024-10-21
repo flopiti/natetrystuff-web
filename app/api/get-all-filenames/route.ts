@@ -1,3 +1,4 @@
+//DESC: This file contains API routes for handling GET and POST requests to retrieve all filenames from the specified external service using the specified project and type parameters from the request URL.
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 

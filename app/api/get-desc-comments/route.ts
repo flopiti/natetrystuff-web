@@ -1,3 +1,4 @@
+//DESC: This file defines an API route that handles GET requests to retrieve description comments from a specified project, catching and handling errors during the fetch process.
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
