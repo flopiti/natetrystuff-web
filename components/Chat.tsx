@@ -66,6 +66,7 @@ const Chat = ({
     }
   };
   const handleRunCommand = () => {
+    console.log('run')
     if (!currentProject){
       alert("Please select a project first");
       return;
@@ -73,6 +74,8 @@ const Chat = ({
     if (selectedOption === "gh pr create --title ") {
       createPullRequest();
     } else if (selectedOption === "git-send-it" && branchName) {
+          console.log('lets use the service')
+
       gitSendIt(commitMessageEdit, branchName, currentProject.name);
     } else {
       alert("Command not found");
