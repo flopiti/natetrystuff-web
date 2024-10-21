@@ -26,7 +26,7 @@ export const gitSendIt = (
     
     let mess=commitMessage
     if(commitMessage===''){
-        messs="Adding a comment"
+        mess="Adding a comment"
     }
 
     
