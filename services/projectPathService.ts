@@ -1,4 +1,4 @@
-
+//DESC: This file contains functions to fetch, add, and remove project paths through API calls.
 
 export async function fetchProjectPaths(): Promise<any[]> {
     const response = await fetch('/api/project-paths');

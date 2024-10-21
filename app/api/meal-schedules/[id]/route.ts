@@ -1,3 +1,4 @@
+//DESC: This file defines the DELETE and PUT HTTP methods to manage meal schedules via a Next.js API route.
 import { getAccessToken } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 

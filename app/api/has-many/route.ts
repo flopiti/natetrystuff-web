@@ -1,3 +1,4 @@
+//DESC: This file handles a POST request by forwarding it to another service using Axios and returning the response or an error.
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 

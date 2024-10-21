@@ -1,3 +1,4 @@
+//DESC: This file handles GET requests to retrieve file names associated with a project from a Neo4j database.
 import { NextRequest, NextResponse } from "next/server";
 import neo4j from 'neo4j-driver';
 

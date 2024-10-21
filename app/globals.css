@@ -1,3 +1,4 @@
+//DESC: This file contains the Tailwind CSS configuration and custom styles for theming.
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

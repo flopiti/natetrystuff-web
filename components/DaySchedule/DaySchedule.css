@@ -1,3 +1,4 @@
+//DESC: This file contains CSS styles for hiding scrollbars in Firefox and Chrome/Safari browsers.
 .scrollbar-none {
     scrollbar-width: none; /* Firefox */
 }

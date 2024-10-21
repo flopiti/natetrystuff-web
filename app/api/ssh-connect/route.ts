@@ -1,3 +1,4 @@
+//DESC: This file handles SSH command execution over HTTP requests, managing SSH sessions and responses.
 import { NextRequest } from 'next/dist/server/web/spec-extension/request';
 import { NextResponse } from 'next/server';
 import NodeSSH from 'node-ssh';

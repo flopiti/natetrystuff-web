@@ -1,3 +1,4 @@
+//DESC: This file provides utility functions for handling projects, JSON data, and date formatting.
 import { ProjectFile } from "@/types/project";
 
 export const getProjects = async (dirPath:string) => {
@@ -61,7 +62,7 @@ export const getFile = async (fileName: any, project: any) => {
     return data.data;
 }
 export const unescapeString = (str: string) => {
-    return str.replace(/\\n/g, '\n').replace(/\\"/g, '"');
+    return str.replace(/\n/g, '\n').replace(/\"/g, '"');
   }
   
   

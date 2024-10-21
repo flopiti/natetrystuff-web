@@ -1,3 +1,4 @@
+//DESC: This file handles HTTP GET, POST, and DELETE requests to interact with project paths using a Spring Boot API.
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 

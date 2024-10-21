@@ -1,3 +1,4 @@
+//DESC: This file sets up authentication and renders the main Hub component for the homepage.
 import Hub from "../components/Hub";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';

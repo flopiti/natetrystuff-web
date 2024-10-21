@@ -1,3 +1,4 @@
+//DESC: This file contains the component logic for managing and displaying a schedule with office days and meals.
 import { useEffect, useState } from "react";
 import getNextFourDays from "../utils/nextFourDays";
 import { fetchAPI, formatISODate } from "@/app/utils";

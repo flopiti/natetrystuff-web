@@ -1,3 +1,4 @@
+//DESC: This file handles the GET request by fetching data from a specified URL and returning the response as JSON.
 import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 

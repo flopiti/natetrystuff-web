@@ -1,3 +1,4 @@
+//DESC: This file manages the scheduling and display logic for daily meals in the DaySchedule component.
 import { fetchAPI, formatDate } from "@/app/utils";
 import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
