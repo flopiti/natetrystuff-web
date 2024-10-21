@@ -6,11 +6,7 @@ export interface SystemDashboardProps {
 }
 
 const SystemDashboard = ({project}:SystemDashboardProps) => {
-    const [files, setFiles] = useState([
-        { id: 1, name: 'File 1', DESC: 1, FEAT: 3 },
-        { id: 2, name: 'File 2', DESC: 0, FEAT: 5 },
-        { id: 3, name: 'File 3', DESC: 1, FEAT: 2 },
-    ]);
+    const [files, setFiles] = useState([]);
 
     console.log(files)
     useEffect(() => {
