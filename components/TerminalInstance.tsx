@@ -1,4 +1,4 @@
-// TerminalInstance.tsx
+//DESC: This component represents a single terminal instance, providing UI for terminal operation, closure, and command execution.
 import React from "react";
 
 interface TerminalInstanceProps {

@@ -1,3 +1,4 @@
+//DESC: This component manages the display and lifecycle of multiple terminal instances, handling creation, reconnection, and closure of terminal sessions.
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "xterm/css/xterm.css";
