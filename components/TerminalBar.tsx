@@ -1,3 +1,4 @@
+//DESC: This file defines a React functional component for displaying a terminal bar, allowing selection and opening of terminals.
 import React from "react";
 
 const TerminalBar = ({

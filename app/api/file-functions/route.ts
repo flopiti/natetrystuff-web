@@ -1,3 +1,4 @@
+//DESC: This file defines a Next.js API route that retrieves function names defined in a specified file using a Neo4j database.
 import { NextRequest, NextResponse } from "next/server";
 import neo4j from 'neo4j-driver';
 
@@ -11,10 +12,10 @@ export async function GET(request: NextRequest) {
 
     const driver = neo4j.driver('bolt://localhost:7687', neo4j.auth.basic('neo4j', 'password'));
     const session = driver.session();
-
     console.log(`MATCH (f:File {name: $fileName})-[:DEFINED_IN]-(func:Function) RETURN func.name AS functionName`)
-    try {
+
         
+    try {
         const result = await session.run(
             'MATCH (f:File {name: $fileName})-[:DEFINED_IN]-(func:Function) RETURN func.name AS functionName',
             { fileName }
