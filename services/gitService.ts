@@ -1,3 +1,4 @@
+//DESC: This file defines several asynchronous functions for managing git operations and fetching project data through API calls.
 export const goMain = async (projectName:string) => {
     await fetch(`/api/go-main?projectName=${projectName}`)
       .then((response) => response.json())

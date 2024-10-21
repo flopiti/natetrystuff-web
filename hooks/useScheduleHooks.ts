@@ -1,3 +1,4 @@
+//DESC: This file contains hooks and API fetching logic for managing and displaying meal schedules and groceries.
 import { useEffect, useState } from 'react';
 import { MealSchedule, Grocery, Meal } from '@/types/types';
 import { fetchAPI, formatISODate } from '@/app/utils';

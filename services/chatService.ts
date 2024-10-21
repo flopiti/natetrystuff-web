@@ -1,3 +1,4 @@
+//DESC: This file contains functions to generate branch names, interact with a chat API, and process feature descriptions.
 export const generateBranchName = async (
     changeDescription: string
   ): Promise<string> => {

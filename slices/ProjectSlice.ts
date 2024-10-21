@@ -1,3 +1,4 @@
+//DESC: This file defines a Redux slice for managing project state in a React application.
 import { Project } from '@/types/project';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 

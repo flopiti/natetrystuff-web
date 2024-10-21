@@ -1,3 +1,4 @@
+//DESC: This file contains a Redux slice for managing message states and actions.
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Message {
