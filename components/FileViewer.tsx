@@ -171,18 +171,22 @@ const FileViewer: React.FC<FileViewerProps> = ({
           </SyntaxHighlighter>
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
-          <div className="w-full h-full inline-block">
-
+          <div className='h-full inline-block'>
+          <pre key={selectedChatCode}>
             {displayLines}
-            {trailingRemovedLines.map(({ lineNumber, line }) => (
-              <Fragment key={lineNumber}>
+            {
+              trailingRemovedLines.map(({ lineNumber, line }) => (
+                <Fragment key={lineNumber}>
                 <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
                   <span className="text-gray-500">{lineNumber}: </span>
                   {line}
                 </div>
-                <AddButton lineNumber={lineNumber} line={line} addLine={addLine} />
-              </Fragment>
-            ))}
+                <AddButton lineNumber={lineNumber} line={line}  addLine={addLine}/>
+                </Fragment>
+              )) 
+
+            }
+          </pre>
           </div>
         )}
       </div>
