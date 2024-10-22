@@ -150,6 +150,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                     return (
                         <motion.div
                             key={index}
+                            layout
+                            layoutId={`file-${projectFile}`}
                             onClick={event => handleFlightClick(projectFile, event)}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -169,6 +171,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                 {chatCodes?.filter(({ name }) => name !== '' && !currentProjectFileNames.includes(name)).map(({ name, content }, index) => (
                     <motion.div
                         key={currentProjectFileNames.length + index}
+                        layout
+                        layoutId={`chat-${name}`}
                         onClick={() => setSelectedFileName(name)}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
