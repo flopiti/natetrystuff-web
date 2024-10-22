@@ -130,7 +130,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
       <div className="flex bg-gray-100 p-2">
         <button
           className={`flex-1 text-center p-2 ${
-            activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+            activeTab === 'file' ? 'bg-[#2f2f2f] text-white' : 'bg-gray-200 text-black'
           }`}
           onClick={() => setActiveTab('file')}
           disabled={loading}
@@ -139,7 +139,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         </button>
         <button
           className={`flex-1 text-center p-2 ${
-            activeTab === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+            activeTab === 'chat' ? 'bg-[#2f2f2f] text-white' : 'bg-gray-200 text-black'
           }`}
           onClick={() => setActiveTab('chat')}
           disabled={loading}
@@ -148,7 +148,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         </button>
       </div>
       {activeTab === 'chat' && !loading && (
-        <button className="bg-blue-500 text-white p-2" onClick={handleReplaceCode}>
+        <button className="bg-[#2f2f2f] text-white p-2" onClick={handleReplaceCode}>
           Replace code in {selectedFileName}
         </button>
       )}
@@ -196,7 +196,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
 const AddButton: React.FC<any> = ({ line, lineNumber, addLine }) => {
   return (
-    <button className="bg-blue-500 text-white p-2" onClick={() => addLine(line, lineNumber)}>
+    <button className="bg-[#2f2f2f] text-white p-2" onClick={() => addLine(line, lineNumber)}>
       Add code
     </button>
   );
@@ -206,7 +206,7 @@ const RemoveButton: React.FC<any> = ({ line, lineNumber, removeLine }) => {
   return (
     <button
       key={lineNumber}
-      className="bg-blue-500 text-white p-2"
+      className="bg-[#2f2f2f] text-white p-2"
       onClick={() => removeLine(lineNumber, line)}
     >
       Remove code {lineNumber}
