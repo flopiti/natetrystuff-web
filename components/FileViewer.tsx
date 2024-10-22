@@ -4,6 +4,8 @@ import { RootState } from '@/store';
 import { diffLines } from 'diff';
 import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface FileViewerProps {
   activeTab: string;
@@ -146,34 +148,26 @@ const FileViewer: React.FC<FileViewerProps> = ({
           </pre>
         </div>}
         {!loading && activeTab === 'file' && selectedFileContent && (
-          <div>
-            <pre>
-              {selectedFileContent.split('\n').map((line, index) => (
-                <div key={index}>
-                  <span className="text-gray-500">{index + 1}: </span>
-                  {line}
-                </div>
-              ))}
-            </pre>
-          </div>
+          <SyntaxHighlighter language="javascript" style={coy}>
+            {selectedFileContent}
+          </SyntaxHighlighter>
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className='h-full inline-block'>
-            <pre key={selectedChatCode}>
-              {displayLines}
-              {
-                trailingRemovedLines.map(({ lineNumber, line }) => (
-                  <Fragment key={lineNumber}>
+            <SyntaxHighlighter language="javascript" style={coy} key={selectedChatCode}>
+              {displayLines.map(lineObj => lineObj.line).join('\n')}
+            </SyntaxHighlighter>
+            {
+              trailingRemovedLines.map(({ lineNumber, line }) => (
+                <Fragment key={lineNumber}>
                   <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
                     <span className="text-gray-500">{lineNumber}: </span>
                     {line}
                   </div>
                   <AddButton lineNumber={lineNumber} line={line}  addLine={addLine}/>
-                  </Fragment>
-                ))  
-
-              }
-            </pre>
+                </Fragment>
+              ))  
+            }
           </div>
         )}
       </div>
