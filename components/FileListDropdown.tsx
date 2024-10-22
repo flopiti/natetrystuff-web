@@ -97,7 +97,6 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
     );
 
     const truncatePath = (path?: string) => {
-        console.log(path);
         if (!path) return '';
         if (path.length < 30) return path;
         const pathSegments = path.split('/');
@@ -178,7 +177,15 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                                         {truncatePath(projectFile)}
                                     </p>
                                 </div>
-                                {chatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
+                                {chatCode && (
+                                    <motion.div
+                                        animate={{ rotate: 1080 }}
+                                        transition={{ duration: 1.1, ease: "easeOut", loop: Infinity }}
+                                        className="m-2"
+                                    >
+                                        <Image className='bg-transparent' width={30} height={30} src="/openai.svg" alt="OpenAI Logo" />
+                                    </motion.div>
+                                )}
                             </motion.div>
                         );
                     })}
