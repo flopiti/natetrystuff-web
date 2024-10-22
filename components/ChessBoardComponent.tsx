@@ -5,7 +5,10 @@ const ChessBoardComponent = () => {
     return (
         <div className="h-[70vh] w-[600px] mx-15 my-4">
             <h1>Chess Board</h1>
-            <Chessboard id="BasicBoard" className="w-full h-full" />
+            <div className="w-full h-full">
+            <Chessboard id="BasicBoard"  />
+
+            </div>
         </div>
     );
 }
