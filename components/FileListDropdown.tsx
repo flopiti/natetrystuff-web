@@ -1,11 +1,12 @@
-import React, { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
 import { addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+import { Project, ProjectFile } from '@/types/project';
 import { setCurrentProject, setProjectDir } from '@/slices/ProjectSlice';
 import { AppDispatch, RootState } from '@/store';
-import { ProjectFile } from '@/types/project';
-import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch, useSelector } from 'react-redux';
+
 
 interface FileListDropdownProps {
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
@@ -17,12 +18,11 @@ interface FileListDropdownProps {
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
     const dispatch: AppDispatch = useDispatch();
-    const { projects, currentProject, currentProjectFileNames } = useSelector((state: RootState) => state.Projects);
+    const {projects, currentProject, currentProjectFileNames} = useSelector((state: RootState) => state.Projects);
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
-
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setShowOptions(true);
@@ -75,12 +75,6 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
         });
     }, []); 
 
-    // Animation variants for the dropdown
-    const dropdownVariants = {
-        closed: { opacity: 0, scale: 0.9 },
-        open: { opacity: 1, scale: 1 },
-    };
-
     const filteredFiles = currentProjectFileNames
         .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
         .sort((a, b) => {
@@ -106,34 +100,26 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                     onClick={() => setShowOptions(!showOptions)}
                     className="w-full p-2 mb-2 border"
                 />
-                <AnimatePresence initial={false}>
-                    {showOptions && (
-                        <motion.ul
-                            className="bg-white border rounded shadow-md max-h-60 overflow-auto"
-                            initial="closed"
-                            animate="open"
-                            exit="closed"
-                            variants={dropdownVariants}
-                        >
-                            {filteredOptions.map((option, index) => (
-                                <li key={index} className="flex justify-between items-center p-2">
-                                    <span
-                                        onClick={() => handleOptionClick(option)}
-                                        className="truncate max-w-xs cursor-pointer"
-                                    >
-                                        {option.path}
-                                    </span>
-                                    <button
-                                        onClick={() => handleRemoveOption(option)}
-                                        className="ml-2 text-red-500"
-                                    >
-                                        x
-                                    </button>
-                                </li>
-                            ))}
-                        </motion.ul>
-                    )}
-                </AnimatePresence>
+                {showOptions && (
+                    <ul className="bg-white border rounded shadow-md max-h-60 overflow-auto">
+                        {filteredOptions.map((option, index) => (
+                            <li key={index} className="flex justify-between items-center p-2">
+                                <span
+                                    onClick={() => handleOptionClick(option)}
+                                    className="truncate max-w-xs cursor-pointer"
+                                >
+                                    {option.path}
+                                </span>
+                                <button
+                                    onClick={() => handleRemoveOption(option)}
+                                    className="ml-2 text-red-500"
+                                >
+                                    x
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
                 <select value={currentProject ? currentProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
                     {projects?.map((project) => (
@@ -156,9 +142,11 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                         (highlightedFile) => highlightedFile.name
                     ).includes(projectFile);
                     const chatCode = chatCodes?.find((fileData) => fileData.name === projectFile);
+
                     return (
-                        <div
+                        <motion.div
                             key={index}
+                            layout
                             onClick={event => handleFlightClick(projectFile, event)}
                             className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
                         >
@@ -168,12 +156,13 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                                 </p>
                             </div>
                             {chatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
-                        </div>
+                        </motion.div>
                     );
                 })}
                 {chatCodes?.filter(({ name }) => name !== '' && !currentProjectFileNames.includes(name)).map(({ name, content }, index) => (
-                    <div
+                    <motion.div
                         key={currentProjectFileNames.length + index}
+                        layout
                         onClick={() => setSelectedFileName(name)}
                         className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
@@ -182,7 +171,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                                 {name}
                             </p>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
         </div>
