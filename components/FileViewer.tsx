@@ -172,7 +172,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className='h-full inline-block'>
-          <pre key={selectedChatCode}>
+          <pre key={selectedChatCode} style={{ color: 'white' }}>
             {displayLines}
             {
               trailingRemovedLines.map(({ lineNumber, line }) => (
