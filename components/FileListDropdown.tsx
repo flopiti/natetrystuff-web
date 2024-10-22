@@ -90,6 +90,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
     );
 
     const truncatePath = (path: string) => {
+        if (path.length < 30) return path;
         const pathSegments = path.split('/');
         return pathSegments.length > 2 ? `.../${pathSegments.slice(-2).join('/')}` : path;
     };
