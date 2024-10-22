@@ -160,7 +160,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                                 className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
                             >
                                 <div className="overflow-x-auto">
-                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`} style={{ fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
+                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`} >
                                         {truncatePath(projectFile)}
                                     </p>
                                 </div>
