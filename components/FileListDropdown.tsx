@@ -1,5 +1,5 @@
 //DESC: This file contains a React functional component for a file list dropdown integrated with a Redux store.
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
@@ -142,37 +142,37 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                 />
             </div>
             <div className="overflow-auto block">
-                {filteredFiles.map((projectFile, index) => {
-                    const isHighlighted = highlightedFiles.map(
-                        (highlightedFile) => highlightedFile.name
-                    ).includes(projectFile);
-                    const chatCode = chatCodes?.find((fileData) => fileData.name === projectFile);
-                    return (
-                        <motion.div
-                            key={index}
-                            layout
-                            layoutId={`file-${projectFile}`}
-                            onClick={event => handleFlightClick(projectFile, event)}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
-                            className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
-                        >
-                            <div className="overflow-x-auto">
-                                <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`} style={{ fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
-                                    {truncatePath(projectFile)}
-                                </p>
-                            </div>
-                            {chatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
-                        </motion.div>
-                    );
-                })}
+                <AnimatePresence>
+                    {filteredFiles.map((projectFile, index) => {
+                        const isHighlighted = highlightedFiles.map(
+                            (highlightedFile) => highlightedFile.name
+                        ).includes(projectFile);
+                        const chatCode = chatCodes?.find((fileData) => fileData.name === projectFile);
+                        return (
+                            <motion.div
+                                key={projectFile}
+                                layoutId={projectFile} // Add layoutId to enable smooth transitions
+                                onClick={event => handleFlightClick(projectFile, event)}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
+                            >
+                                <div className="overflow-x-auto">
+                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`} style={{ fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
+                                        {truncatePath(projectFile)}
+                                    </p>
+                                </div>
+                                {chatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
                 {chatCodes?.filter(({ name }) => name !== '' && !currentProjectFileNames.includes(name)).map(({ name, content }, index) => (
                     <motion.div
-                        key={currentProjectFileNames.length + index}
-                        layout
-                        layoutId={`chat-${name}`}
+                        key={name}
+                        layoutId={name} // Add layoutId to enable smooth transitions
                         onClick={() => setSelectedFileName(name)}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
