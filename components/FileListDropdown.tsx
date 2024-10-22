@@ -16,13 +16,20 @@ interface FileListDropdownProps {
     setSelectedFileName: (code: string) => void, 
 }
 
-const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
+const FileListDropdown: React.FC<FileListDropdownProps> = ({
+    handleFlightClick,
+    selectedFileName,
+    highlightedFiles,
+    chatCodes,
+    setSelectedFileName 
+}) => {
     const dispatch: AppDispatch = useDispatch();
-    const {projects, currentProject, currentProjectFileNames} = useSelector((state: RootState) => state.Projects);
+    const { projects, currentProject, currentProjectFileNames } = useSelector((state: RootState) => state.Projects);
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
+
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setShowOptions(true);
@@ -73,23 +80,25 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                 setInputValue(data[0].path);
             }
         });
-    }, []); 
+    }, [dispatch]); 
 
     const filteredFiles = currentProjectFileNames
         .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
         .sort((a, b) => {
-            const aIsHighlighted = highlightedFiles.map((highlightedFile) => highlightedFile.name).includes(a);
-            const bIsHighlighted = highlightedFiles.map((highlightedFile) => highlightedFile.name).includes(b);
+            const aIsHighlighted = highlightedFiles.some((highlightedFile) => highlightedFile.name === a);
+            const bIsHighlighted = highlightedFiles.some((highlightedFile) => highlightedFile.name === b);
             if (aIsHighlighted && !bIsHighlighted) return -1;
             if (!aIsHighlighted && bIsHighlighted) return 1;
             return 0;
         });
 
     const filteredOptions = projectPaths.filter((option) =>
-        option.path.toLowerCase().includes(inputValue.toLowerCase())
+        option.path?.toLowerCase().includes(inputValue.toLowerCase())
     );
 
-    const truncatePath = (path: string) => {
+    const truncatePath = (path?: string) => {
+        if (!path) return '';
+        if (path.length < 30) return path;
         const pathSegments = path.split('/');
         return pathSegments.length > 2 ? `.../${pathSegments.slice(-2).join('/')}` : path;
     };
@@ -113,7 +122,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                                     onClick={() => handleOptionClick(option)}
                                     className="truncate max-w-xs cursor-pointer"
                                 >
-                                    {truncatePath(option.path)}
+                                    {truncatePath(option?.path)}
                                 </span>
                                 <button
                                     onClick={() => handleRemoveOption(option)}
@@ -125,7 +134,11 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                         ))}
                     </ul>
                 )}
-                <select value={currentProject ? currentProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
+                <select
+                    value={currentProject ? currentProject.name : ''}
+                    onChange={handleSelectedProjectChange}
+                    className="w-full p-2 mb-2"
+                >
                     <option value="" disabled>Select a project</option>
                     {projects?.map((project) => (
                         <option key={project.name} value={project.name}>
@@ -144,9 +157,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
             <div className="overflow-auto block">
                 <AnimatePresence>
                     {filteredFiles.map((projectFile, index) => {
-                        const isHighlighted = highlightedFiles.map(
-                            (highlightedFile) => highlightedFile.name
-                        ).includes(projectFile);
+                        const isHighlighted = highlightedFiles.some(
+                            (highlightedFile) => highlightedFile.name === projectFile
+                        );
                         const chatCode = chatCodes?.find((fileData) => fileData.name === projectFile);
                         return (
                             <motion.div
@@ -157,21 +170,20 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
+                                className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-green-200' : ''} w-full flex justify-between`}
                             >
                                 <div className="overflow-x-auto">
-                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`} >
+                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`}> 
                                         {truncatePath(projectFile)}
                                     </p>
                                 </div>
                                 {chatCode && (
                                     <motion.div
-                                        style={{ margin: '10px' }}
-                                        initial={{ rotate: 0 }}
-                                        animate={{ rotate: 360 }}
-                                        transition={{ type: 'tween', duration: 1, ease: [0.5, 0.5, 0.5, 1] }}
+                                        animate={{ rotate: 1080 }}
+                                        transition={{ duration: 1.1, ease: "easeOut", loop: Infinity }}
+                                        className="m-2"
                                     >
-                                        <Image width={30} height={30} src="/openai.svg" alt="OpenAI Logo" />
+                                        <Image className='bg-transparent' width={30} height={30} src="/openai.svg" alt="OpenAI Logo" />
                                     </motion.div>
                                 )}
                             </motion.div>
