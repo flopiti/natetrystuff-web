@@ -28,7 +28,6 @@ const CodeCentral = () => {
     useEffect(() => {
         const lastMessage = chatMessages[chatMessages.length - 1];
         if (lastMessage.role === 'user') {
-            setSelectedFileName(null);
             dispatch(setLoading(true));
             askChat(chatMessages, highlightedFiles);
         }
@@ -43,6 +42,7 @@ const CodeCentral = () => {
 
     const [isTerminalOpen, setIsTerminalOpen] = useState<boolean>(false);
     const toggleTerminal = () => setIsTerminalOpen(!isTerminalOpen); 
+
 
     const [doesCurrentProjectHaveTerminal, setDoesCurrentProjectHaveTerminal] = useState<boolean>(false);
 
@@ -92,11 +92,8 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (editedFiles?.length > 0) {
-            setActiveTab('chat'); 
+            // setActiveTab('chat'); 
             const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === selectedFileName) ?? null;
-            if (chatCode) {
-                setSelectedFileName(chatCode.name);
-            }
         }
     }, [editedFiles]);
     
@@ -179,6 +176,8 @@ const CodeCentral = () => {
                                     content: element[1] ? element[1] : ''
                                 }));
                                 setEditedFiles(newChatCodes);
+
+                                
                             }
                         });
                     }
@@ -250,7 +249,6 @@ const CodeCentral = () => {
 
     const handleNewSelectedFile = (filename: string) => {
         setSelectedFileName(filename);
-        setSelectedFileName(null);
     }
 
     const handleHighlight = async (fileName: any, event: { shiftKey: any; }) => {
@@ -265,11 +263,10 @@ const CodeCentral = () => {
             setHighlightedFiles(isHighlighted 
                 ? highlightedFiles.filter((highlightedStuff) => highlightedStuff.name !== fileName)
                 : [...highlightedFiles, { name: fileName, content: fileContent }]);
+            setSelectedFileName(fileName);
         } else {
             setSelectedFileName(fileName);
             setSelectedFileContent(fileContent);
-            const chatCode = editedFiles.find((fileData) => fileData.name === fileName) ?? null;
-            setSelectedFileName(chatCode ? chatCode.name : null);
 
             if (!isHighlighted) {
                 setHighlightedFiles([...highlightedFiles, { name: fileName, content: fileContent }]);
