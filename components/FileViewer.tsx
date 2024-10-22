@@ -4,6 +4,8 @@ import { RootState } from '@/store';
 import { diffLines } from 'diff';
 import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { materialDark, hopscotch } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface FileViewerProps {
   activeTab: string;
@@ -22,9 +24,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
   selectedChatCode,
   selectedFileName,
   replaceCode,
-  setSelectedChatCode
+  setSelectedChatCode,
 }) => {
-
   const loading = useSelector((state: RootState) => state.Messages.loading);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -38,18 +39,22 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   let linesOfSelectedChatCode: any[] = [];
   const linesOfSelectedFileContent = selectedFileContent.split('\n');
-  let displayLines: any = [];  
+  let displayLines: any = [];
   let trailingRemovedLines: any[] = [];
 
   const removeLine = (lineNumber: number, line: string) => {
     const newCode = linesOfSelectedChatCode.filter((_, index) => index !== lineNumber - 1);
-    setSelectedChatCode(newCode.join('\n'));      
-  }
+    setSelectedChatCode(newCode.join('\n'));
+  };
 
   const addLine = (line: string, lineNumber: number) => {
-    const newCode = [...linesOfSelectedChatCode.slice(0, lineNumber - 1), line, ...linesOfSelectedChatCode.slice(lineNumber - 1)];
-    setSelectedChatCode(newCode.join('\n'));  
-  }
+    const newCode = [
+      ...linesOfSelectedChatCode.slice(0, lineNumber - 1),
+      line,
+      ...linesOfSelectedChatCode.slice(lineNumber - 1),
+    ];
+    setSelectedChatCode(newCode.join('\n'));
+  };
 
   if (selectedChatCode) {
     linesOfSelectedChatCode = selectedChatCode.split('\n');
@@ -72,35 +77,42 @@ const FileViewer: React.FC<FileViewerProps> = ({
       }
     }
 
-    const combinedLines = [...untouchedLines, ...addedLines].sort((a, b) => a.lineNumber - b.lineNumber);
-    const maxLineNumber = Math.max(...combinedLines.map(line => line.lineNumber), 0);
-    trailingRemovedLines = removedLines.filter(removed => removed.lineNumber > maxLineNumber);
+    const combinedLines = [...untouchedLines, ...addedLines].sort(
+      (a, b) => a.lineNumber - b.lineNumber
+    );
+    const maxLineNumber = Math.max(...combinedLines.map((line) => line.lineNumber), 0);
+    trailingRemovedLines = removedLines.filter((removed) => removed.lineNumber > maxLineNumber);
     displayLines = [...combinedLines].map(({ lineNumber, line }) => {
-      const removedLine = removedLines.find(removed => removed.lineNumber === lineNumber);
+      const removedLine = removedLines.find((removed) => removed.lineNumber === lineNumber);
       return (
         <Fragment key={lineNumber}>
-          {
-            removedLine && (<>
+          {removedLine && (
+            <>
               <div style={{ backgroundColor: 'lightcoral' }}>
                 <span className="text-gray-500">{lineNumber}: </span>
-                {removedLine.line}
+                {line}
               </div>
-              <AddButton lineNumber={lineNumber} line={removedLine.line}  addLine={addLine}/>
-              </>
-            )
-          }
-          <div style={{ backgroundColor: addedLines.some(added => added.lineNumber === lineNumber) ? 'lightgreen' : 'transparent' }}>
+              <AddButton lineNumber={lineNumber} line={removedLine.line} addLine={addLine} />
+            </>
+          )}
+          <div
+            style={{
+              backgroundColor: addedLines.some((added) => added.lineNumber === lineNumber)
+                ? 'lightgreen'
+                : 'transparent',
+            }}
+          >
             <span className="text-gray-500">{lineNumber}: </span>
             {line}
           </div>
-          {addedLines.some(added => added.lineNumber === lineNumber) && (
+          {addedLines.some((added) => added.lineNumber === lineNumber) && (
             <RemoveButton removeLine={removeLine} line={line} lineNumber={lineNumber} />
           )}
         </Fragment>
-      )
+      );
     });
   }
-  
+
   const handleReplaceCode = async () => {
     try {
       setErrorMessage('');
@@ -111,18 +123,24 @@ const FileViewer: React.FC<FileViewerProps> = ({
       setErrorMessage('Failed to replace code.');
     }
   };
+
+  console.log(displayLines);
   return (
     <div className="flex-grow flex-shrink flex-basis-0 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
         <button
-          className={`flex-1 text-center p-2 ${activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+          className={`flex-1 text-center p-2 ${
+            activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+          }`}
           onClick={() => setActiveTab('file')}
           disabled={loading}
         >
           File
         </button>
         <button
-          className={`flex-1 text-center p-2 ${activeTab === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+          className={`flex-1 text-center p-2 ${
+            activeTab === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+          }`}
           onClick={() => setActiveTab('chat')}
           disabled={loading}
         >
@@ -130,50 +148,45 @@ const FileViewer: React.FC<FileViewerProps> = ({
         </button>
       </div>
       {activeTab === 'chat' && !loading && (
-        <button
-          className="bg-blue-500 text-white p-2"
-          onClick={handleReplaceCode}
-        >
+        <button className="bg-blue-500 text-white p-2" onClick={handleReplaceCode}>
           Replace code in {selectedFileName}
         </button>
       )}
       {errorMessage && <div className="text-red-500">{errorMessage}</div>}
       {successMessage && <div className="text-green-500">{successMessage}</div>}
-      <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2" ref={chatCodeRef}>
-        {loading && <div>
-          <pre>
-            {selectedChatCode ? unescapeString(selectedChatCode) : ''}
-          </pre>
-        </div>}
-        {!loading && activeTab === 'file' && selectedFileContent && (
+      <div
+        className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2"
+        ref={chatCodeRef}
+      >
+        {loading && (
           <div>
-            <pre>
-              {selectedFileContent.split('\n').map((line, index) => (
-                <div key={index}>
-                  <span className="text-gray-500">{index + 1}: </span>
-                  {line}
-                </div>
-              ))}
-            </pre>
+            <SyntaxHighlighter language="javascript" style={materialDark}>
+              {selectedChatCode ? unescapeString(selectedChatCode) : ''}
+            </SyntaxHighlighter>
           </div>
+        )}
+        {!loading && activeTab === 'file' && selectedFileContent && (
+          <SyntaxHighlighter language="javascript" style={materialDark}>
+            {selectedFileContent}
+          </SyntaxHighlighter>
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className='h-full inline-block'>
-            <pre key={selectedChatCode}>
-              {displayLines}
-              {
-                trailingRemovedLines.map(({ lineNumber, line }) => (
-                  <Fragment key={lineNumber}>
-                  <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
-                    <span className="text-gray-500">{lineNumber}: </span>
-                    {line}
-                  </div>
-                  <AddButton lineNumber={lineNumber} line={line}  addLine={addLine}/>
-                  </Fragment>
-                ))  
+          <pre key={selectedChatCode}>
+            {displayLines}
+            {
+              trailingRemovedLines.map(({ lineNumber, line }) => (
+                <Fragment key={lineNumber}>
+                <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
+                  <span className="text-gray-500">{lineNumber}: </span>
+                  {line}
+                </div>
+                <AddButton lineNumber={lineNumber} line={line}  addLine={addLine}/>
+                </Fragment>
+              )) 
 
-              }
-            </pre>
+            }
+          </pre>
           </div>
         )}
       </div>
@@ -181,23 +194,24 @@ const FileViewer: React.FC<FileViewerProps> = ({
   );
 };
 
-const AddButton: React.FC<any> = ({ line, lineNumber, addLine}) => {
-  return <button
-    className="bg-blue-500 text-white p-2"
-    onClick={() => addLine(line, lineNumber)}
+const AddButton: React.FC<any> = ({ line, lineNumber, addLine }) => {
+  return (
+    <button className="bg-blue-500 text-white p-2" onClick={() => addLine(line, lineNumber)}>
+      Add code
+    </button>
+  );
+};
+
+const RemoveButton: React.FC<any> = ({ line, lineNumber, removeLine }) => {
+  return (
+    <button
+      key={lineNumber}
+      className="bg-blue-500 text-white p-2"
+      onClick={() => removeLine(lineNumber, line)}
     >
-    Add code
-  </button>
-}
-
-const RemoveButton: React.FC<any> = ({line, lineNumber, removeLine}) => {
-  return <button
-    key={lineNumber}
-    className="bg-blue-500 text-white p-2"
-    onClick={() => removeLine(lineNumber, line)}>
-    Remove code {lineNumber}
-  </button>
-}
-
+      Remove code {lineNumber}
+    </button>
+  );
+};
 
 export default FileViewer;
