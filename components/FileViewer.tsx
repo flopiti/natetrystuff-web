@@ -1,11 +1,11 @@
-//DESC: This file contains a React component for viewing and managing file and chat code differences.
+// This file contains a React component for viewing and managing file and chat code differences.
 import { unescapeString } from '@/app/utils';
 import { RootState } from '@/store';
 import { diffLines } from 'diff';
 import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { materialDark, hopscotch } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface FileViewerProps {
   activeTab: string;
@@ -37,79 +37,63 @@ const FileViewer: React.FC<FileViewerProps> = ({
     }
   }, [selectedChatCode]);
 
-  let linesOfSelectedChatCode: any[] = [];
-  const linesOfSelectedFileContent = selectedFileContent.split('\n');
-  let displayLines: any = [];
-  let trailingRemovedLines: any[] = [];
-
-  const removeLine = (lineNumber: number, line: string) => {
-    const newCode = linesOfSelectedChatCode.filter((_, index) => index !== lineNumber - 1);
+  const removeLine = (lineNumber: number) => {
+    const lines = selectedChatCode?.split('\n') || [];
+    const newCode = lines.filter((_, index) => index !== lineNumber - 1);
     setSelectedChatCode(newCode.join('\n'));
   };
 
   const addLine = (line: string, lineNumber: number) => {
+    const lines = selectedChatCode?.split('\n') || [];
     const newCode = [
-      ...linesOfSelectedChatCode.slice(0, lineNumber - 1),
+      ...lines.slice(0, lineNumber - 1),
       line,
-      ...linesOfSelectedChatCode.slice(lineNumber - 1),
+      ...lines.slice(lineNumber - 1),
     ];
     setSelectedChatCode(newCode.join('\n'));
   };
 
+  let displayLines: any[] = [];
+
   if (selectedChatCode) {
-    linesOfSelectedChatCode = selectedChatCode.split('\n');
-    let addedLines = [];
-    let removedLines = [];
-    let untouchedLines = [];
+    const diff = diffLines(selectedFileContent, selectedChatCode);
     let lineNumber = 1;
 
-    for (let i = 0; i < linesOfSelectedChatCode.length; i++) {
-      if (!linesOfSelectedFileContent.includes(linesOfSelectedChatCode[i])) {
-        addedLines.push({ lineNumber: lineNumber, line: linesOfSelectedChatCode[i] });
-      } else {
-        untouchedLines.push({ lineNumber: lineNumber, line: linesOfSelectedChatCode[i] });
-      }
-      lineNumber++;
-    }
-    for (let i = 0; i < linesOfSelectedFileContent.length; i++) {
-      if (!linesOfSelectedChatCode.includes(linesOfSelectedFileContent[i])) {
-        removedLines.push({ lineNumber: i + 1, line: linesOfSelectedFileContent[i] });
-      }
-    }
-
-    const combinedLines = [...untouchedLines, ...addedLines].sort(
-      (a, b) => a.lineNumber - b.lineNumber
-    );
-    const maxLineNumber = Math.max(...combinedLines.map((line) => line.lineNumber), 0);
-    trailingRemovedLines = removedLines.filter((removed) => removed.lineNumber > maxLineNumber);
-    displayLines = [...combinedLines].map(({ lineNumber, line }) => {
-      const removedLine = removedLines.find((removed) => removed.lineNumber === lineNumber);
-      return (
-        <Fragment key={lineNumber}>
-          {removedLine && (
-            <>
+    diff.forEach((part) => {
+      const lines = part.value.split('\n');
+      lines.forEach((line, i) => {
+        if (line === '' && i === lines.length - 1) return; // Skip the last empty line
+        if (part.added) {
+          displayLines.push(
+            <Fragment key={`added-${lineNumber}`}>
+              <div style={{ backgroundColor: 'lightgreen' }}>
+                <span className="text-gray-500">{lineNumber}: </span>
+                {line}
+              </div>
+              <RemoveButton removeLine={removeLine} line={line} lineNumber={lineNumber} />
+            </Fragment>
+          );
+          lineNumber++;
+        } else if (part.removed) {
+          displayLines.push(
+            <Fragment key={`removed-${lineNumber}`}>
               <div style={{ backgroundColor: 'lightcoral' }}>
                 <span className="text-gray-500">{lineNumber}: </span>
                 {line}
               </div>
-              <AddButton lineNumber={lineNumber} line={removedLine.line} addLine={addLine} />
-            </>
-          )}
-          <div
-            style={{
-              backgroundColor: addedLines.some((added) => added.lineNumber === lineNumber)
-                ? 'lightgreen'
-                : 'transparent',
-            }}
-          >
-            <span className="text-gray-500">{lineNumber}: </span>
-            {line}
-          </div>
-          {addedLines.some((added) => added.lineNumber === lineNumber) && (
-            <RemoveButton removeLine={removeLine} line={line} lineNumber={lineNumber} />
-          )}
-        </Fragment>
-      );
+              <AddButton lineNumber={lineNumber} line={line} addLine={addLine} />
+            </Fragment>
+          );
+        } else {
+          displayLines.push(
+            <div key={`unchanged-${lineNumber}`}>
+              <span className="text-gray-500">{lineNumber}: </span>
+              {line}
+            </div>
+          );
+          lineNumber++;
+        }
+      });
     });
   }
 
@@ -124,9 +108,11 @@ const FileViewer: React.FC<FileViewerProps> = ({
     }
   };
 
-  console.log(displayLines);
   return (
-    <div className="flex-grow flex-shrink flex-basis-0 bg-[#2f2f2f] flex flex-col h-full overflow-y-scroll text-black text-xs p-2 scrollbar-none" style={{ maxWidth: '750px' }}>
+    <div
+      className="flex-grow flex-shrink flex-basis-0 bg-[#2f2f2f] flex flex-col h-full overflow-y-scroll text-black text-xs p-2 scrollbar-none"
+      style={{ maxWidth: '750px' }}
+    >
       <div className="flex bg-gray-100 p-2 scrollbar-none">
         <button
           className={`flex-1 text-center p-2 ${
@@ -159,30 +145,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
         ref={chatCodeRef}
       >
         {loading && (
-          <div>
-            <SyntaxHighlighter language="javascript" style={materialDark}>
+            <SyntaxHighlighter language="javascript" style={materialDark} className='scrollbar-none'>
               {selectedChatCode ? unescapeString(selectedChatCode) : ''}
             </SyntaxHighlighter>
-          </div>
         )}
         {!loading && activeTab === 'file' && selectedFileContent && (
-          <SyntaxHighlighter language="javascript" style={materialDark}>
-            {selectedFileContent}
-          </SyntaxHighlighter>
+            <SyntaxHighlighter language="javascript" style={materialDark} className='scrollbar-none'>
+              {selectedFileContent}
+            </SyntaxHighlighter>            
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className="h-full inline-block">
             <pre key={selectedChatCode} style={{ color: 'white' }}>
               {displayLines}
-              {trailingRemovedLines.map(({ lineNumber, line }) => (
-                <Fragment key={lineNumber}>
-                  <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
-                    <span className="text-gray-500">{lineNumber}: </span>
-                    {line}
-                  </div>
-                  <AddButton lineNumber={lineNumber} line={line} addLine={addLine} />
-                </Fragment>
-              ))}
             </pre>
           </div>
         )}
@@ -193,7 +168,10 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
 const AddButton: React.FC<any> = ({ line, lineNumber, addLine }) => {
   return (
-    <button className="bg-[#2f2f2f] text-white p-2" onClick={() => addLine(line, lineNumber)}>
+    <button
+      className="bg-[#2f2f2f] text-white p-2"
+      onClick={() => addLine(line, lineNumber)}
+    >
       Add code
     </button>
   );
@@ -204,7 +182,7 @@ const RemoveButton: React.FC<any> = ({ line, lineNumber, removeLine }) => {
     <button
       key={lineNumber}
       className="bg-[#2f2f2f] text-white p-2"
-      onClick={() => removeLine(lineNumber, line)}
+      onClick={() => removeLine(lineNumber)}
     >
       Remove code {lineNumber}
     </button>
