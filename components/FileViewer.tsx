@@ -2,7 +2,7 @@
 import { unescapeString } from '@/app/utils';
 import { RootState } from '@/store';
 import { diffLines } from 'diff';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 interface FileViewerProps {
@@ -25,10 +25,16 @@ const FileViewer: React.FC<FileViewerProps> = ({
   setSelectedChatCode
 }) => {
 
-
   const loading = useSelector((state: RootState) => state.Messages.loading);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const chatCodeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatCodeRef.current) {
+      chatCodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [selectedChatCode]);
 
   let linesOfSelectedChatCode: any[] = [];
   const linesOfSelectedFileContent = selectedFileContent.split('\n');
@@ -105,9 +111,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
       setErrorMessage('Failed to replace code.');
     }
   };
-
   return (
-    <div className="w-1/2 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
+    <div className="flex-grow flex-shrink flex-basis-0 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
         <button
           className={`flex-1 text-center p-2 ${activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
@@ -134,7 +139,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
       )}
       {errorMessage && <div className="text-red-500">{errorMessage}</div>}
       {successMessage && <div className="text-green-500">{successMessage}</div>}
-      <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2">
+      <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2" ref={chatCodeRef}>
         {loading && <div>
           <pre>
             {selectedChatCode ? unescapeString(selectedChatCode) : ''}
