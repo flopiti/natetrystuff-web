@@ -5,7 +5,7 @@ import { diffLines } from 'diff';
 import React, { Fragment, useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { materialDark, hopscotch } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface FileViewerProps {
   activeTab: string;
@@ -160,13 +160,13 @@ const FileViewer: React.FC<FileViewerProps> = ({
       >
         {loading && (
           <div>
-            <SyntaxHighlighter language="javascript" style={coy}>
+            <SyntaxHighlighter language="javascript" style={materialDark}>
               {selectedChatCode ? unescapeString(selectedChatCode) : ''}
             </SyntaxHighlighter>
           </div>
         )}
         {!loading && activeTab === 'file' && selectedFileContent && (
-          <SyntaxHighlighter language="javascript" style={coy}>
+          <SyntaxHighlighter language="javascript" style={materialDark}>
             {selectedFileContent}
           </SyntaxHighlighter>
         )}
