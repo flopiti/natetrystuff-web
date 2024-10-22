@@ -95,8 +95,8 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
     };
 
     return (
-        <div className="w-1/5 overflow-auto bg-gray-100 text-black">
-            <div className="sticky top-0 bg-gray-100 p-2">
+        <div className="w-1/5 overflow-auto bg-gray-100 text-black flex flex-col">
+            <div className="sticky bg-gray-100 p-2 block">
                 <input
                     type="text"
                     value={inputValue}
@@ -141,7 +141,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="overflow-auto">
+            <div className="overflow-auto block">
                 {filteredFiles.map((projectFile, index) => {
                     const isHighlighted = highlightedFiles.map(
                         (highlightedFile) => highlightedFile.name
