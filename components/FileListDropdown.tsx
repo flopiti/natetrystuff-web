@@ -1,4 +1,4 @@
-//DESC: This file contains a React functional component for a file list dropdown integrated with a Redux store.
+// DESC: This file contains a React functional component for a file list dropdown integrated with a Redux store.
 import { motion, AnimatePresence } from 'framer-motion';
 import { addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
@@ -9,11 +9,11 @@ import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 
 interface FileListDropdownProps {
-    handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
-    selectedFileName: string | null,
-    highlightedFiles: ProjectFile[],
-    chatCodes: ProjectFile[],
-    setSelectedFileName: (code: string) => void, 
+    handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void;
+    selectedFileName: string | null;
+    highlightedFiles: ProjectFile[];
+    chatCodes: ProjectFile[];
+    setSelectedFileName: (code: string) => void;
 }
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({
@@ -21,7 +21,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
     selectedFileName,
     highlightedFiles,
     chatCodes,
-    setSelectedFileName 
+    setSelectedFileName,
 }) => {
     const dispatch: AppDispatch = useDispatch();
     const { projects, currentProject, currentProjectFileNames } = useSelector((state: RootState) => state.Projects);
@@ -43,7 +43,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
 
     const handleKeyDown = async (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter' && inputValue.trim() !== '') {
-            if (!projectPaths.some(p => p.path === inputValue)) {
+            if (!projectPaths.some((p) => p.path === inputValue)) {
                 try {
                     await addProjectPath(inputValue);
                     const updatedPaths = await fetchProjectPaths();
@@ -80,10 +80,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                 setInputValue(data[0].path);
             }
         });
-    }, [dispatch]); 
+    }, [dispatch]);
 
     const filteredFiles = currentProjectFileNames
-        .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
+        .filter((file) => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
         .sort((a, b) => {
             const aIsHighlighted = highlightedFiles.some((highlightedFile) => highlightedFile.name === a);
             const bIsHighlighted = highlightedFiles.some((highlightedFile) => highlightedFile.name === b);
@@ -117,7 +117,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                 {showOptions && (
                     <ul className="bg-white border rounded shadow-md max-h-60 overflow-auto">
                         {filteredOptions.map((option, index) => (
-                            <li key={index} className="flex justify-between items-center p-2">
+                            <li key={option.path || index} className="flex justify-between items-center p-2">
                                 <span
                                     onClick={() => handleOptionClick(option)}
                                     className="truncate max-w-xs cursor-pointer"
@@ -139,7 +139,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                     onChange={handleSelectedProjectChange}
                     className="w-full p-2 mb-2"
                 >
-                    <option value="" disabled>Select a project</option>
+                    <option value="" disabled>
+                        Select a project
+                    </option>
                     {projects?.map((project) => (
                         <option key={project.name} value={project.name}>
                             {project.name}
@@ -156,7 +158,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
             </div>
             <div className="overflow-auto block">
                 <AnimatePresence>
-                    {filteredFiles.map((projectFile, index) => {
+                    {filteredFiles.map((projectFile) => {
                         const isHighlighted = highlightedFiles.some(
                             (highlightedFile) => highlightedFile.name === projectFile
                         );
@@ -164,50 +166,69 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                         return (
                             <motion.div
                                 key={projectFile}
-                                layoutId={projectFile} // Add layoutId to enable smooth transitions
-                                onClick={event => handleFlightClick(projectFile, event)}
+                                layoutId={projectFile}
+                                onClick={(event) => handleFlightClick(projectFile, event)}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-green-200' : ''} w-full flex justify-between`}
+                                className={`p-2 cursor-pointer hover:bg-gray-200 ${
+                                    isHighlighted ? 'bg-green-200' : ''
+                                } w-full flex justify-between`}
                             >
                                 <div className="overflow-x-auto">
-                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`}> 
+                                    <p
+                                        className={`whitespace-nowrap ${
+                                            selectedFileName === projectFile ? 'font-bold' : 'font-normal'
+                                        }`}
+                                    >
                                         {truncatePath(projectFile)}
                                     </p>
                                 </div>
                                 {chatCode && (
                                     <motion.div
                                         animate={{ rotate: 1080 }}
-                                        transition={{ duration: 1.1, ease: "easeOut", loop: Infinity }}
+                                        transition={{ duration: 1.1, ease: 'easeOut', loop: Infinity }}
                                         className="m-2"
                                     >
-                                        <Image className='bg-transparent' width={30} height={30} src="/openai.svg" alt="OpenAI Logo" />
+                                        <Image
+                                            className="bg-transparent"
+                                            width={30}
+                                            height={30}
+                                            src="/openai.svg"
+                                            alt="OpenAI Logo"
+                                        />
                                     </motion.div>
                                 )}
                             </motion.div>
                         );
                     })}
                 </AnimatePresence>
-                {chatCodes?.filter(({ name }) => name !== '' && !currentProjectFileNames.includes(name)).map(({ name, content }, index) => (
-                    <motion.div
-                        key={name}
-                        layoutId={name} // Add layoutId to enable smooth transitions
-                        onClick={() => setSelectedFileName(name)}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
-                    >
-                        <div className="overflow-x-auto">
-                            <p className={`whitespace-nowrap ${selectedFileName === name ? 'font-bold' : 'font-normal'}`} style={{ fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
-                                {truncatePath(name)}
-                            </p>
-                        </div>
-                    </motion.div>
-                ))}
+                {chatCodes
+                    ?.filter(({ name }) => name !== '' && !currentProjectFileNames.includes(name))
+                    .map(({ name, content }, index) => (
+                        <motion.div
+                            key={`${name}-${index}`}
+                            layoutId={name}
+                            onClick={() => setSelectedFileName(name)}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
+                        >
+                            <div className="overflow-x-auto">
+                                <p
+                                    className={`whitespace-nowrap ${
+                                        selectedFileName === name ? 'font-bold' : 'font-normal'
+                                    }`}
+                                    style={{ fontFamily: '"Comic Sans MS", cursive, sans-serif' }}
+                                >
+                                    {truncatePath(name)}
+                                </p>
+                            </div>
+                        </motion.div>
+                    ))}
             </div>
         </div>
     );
