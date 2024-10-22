@@ -104,7 +104,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
     };
 
     return (
-        <div className="w-1/3 overflow-auto bg-gray-100 text-black flex flex-col">
+        <div className="w-1/3 max-w-[275px] overflow-auto bg-gray-100 text-black flex flex-col">
             <div className="sticky bg-gray-100 p-2 block">
                 <input
                     type="text"
