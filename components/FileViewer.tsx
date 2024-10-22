@@ -33,7 +33,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   useEffect(() => {
     if (chatCodeRef.current) {
-      chatCodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      chatCodeRef.current.scrollTop = chatCodeRef.current.scrollHeight;
     }
   }, [selectedChatCode]);
 
@@ -171,22 +171,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
           </SyntaxHighlighter>
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
-          <div className='h-full inline-block'>
-          <pre key={selectedChatCode} style={{ color: 'white' }}>
-            {displayLines}
-            {
-              trailingRemovedLines.map(({ lineNumber, line }) => (
+          <div className="h-full inline-block">
+            <pre key={selectedChatCode} style={{ color: 'white' }}>
+              {displayLines}
+              {trailingRemovedLines.map(({ lineNumber, line }) => (
                 <Fragment key={lineNumber}>
-                <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
-                  <span className="text-gray-500">{lineNumber}: </span>
-                  {line}
-                </div>
-                <AddButton lineNumber={lineNumber} line={line}  addLine={addLine}/>
+                  <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
+                    <span className="text-gray-500">{lineNumber}: </span>
+                    {line}
+                  </div>
+                  <AddButton lineNumber={lineNumber} line={line} addLine={addLine} />
                 </Fragment>
-              )) 
-
-            }
-          </pre>
+              ))}
+            </pre>
           </div>
         )}
       </div>
