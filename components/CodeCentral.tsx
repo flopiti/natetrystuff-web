@@ -131,6 +131,7 @@ const CodeCentral = () => {
     
 
     const askChat = async (conversation: any[] , highlightedFiles: ProjectFile[]) => {
+        setActiveTab('chat');
         const messages = conversation.map((message: { role: any; content: any; }) => {
             return { role: message.role, content: message.content, type: 'text' };
         });

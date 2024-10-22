@@ -111,12 +111,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
       setErrorMessage('Failed to replace code.');
     }
   };
-
-  const handleSetSelectedChatCode = (code: string) => {
-    setSelectedChatCode(code);
-    setActiveTab('chat');
-  };
-
   return (
     <div className="flex-grow flex-shrink flex-basis-0 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
