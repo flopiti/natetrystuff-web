@@ -97,6 +97,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
     );
 
     const truncatePath = (path?: string) => {
+        console.log(path);
         if (!path) return '';
         if (path.length < 30) return path;
         const pathSegments = path.split('/');
@@ -170,10 +171,10 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
-                                className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
+                                className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-green-200' : ''} w-full flex justify-between`}
                             >
                                 <div className="overflow-x-auto">
-                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`} >
+                                    <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`}> 
                                         {truncatePath(projectFile)}
                                     </p>
                                 </div>
