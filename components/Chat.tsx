@@ -114,7 +114,7 @@ const Chat = ({
 
 
   return (
-    <div className="w-2/5 bg-gray-100 h-full flex flex-col shadow-lg">
+    <div className="w-1/3 bg-gray-100 h-full flex flex-col shadow-lg">
       <div className="w-full flex-grow bg-white overflow-scroll p-4 border-b border-gray-300">
         {loading && <p className="text-center text-gray-500">Loading...</p>}
         {conversation?.slice(1).map((message: any, index: number) => (
