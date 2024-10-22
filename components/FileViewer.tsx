@@ -113,6 +113,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
       setErrorMessage('Failed to replace code.');
     }
   };
+
+  console.log(displayLines)
   return (
     <div className="flex-grow flex-shrink flex-basis-0 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       <div className="flex bg-gray-100 p-2">
@@ -143,9 +145,11 @@ const FileViewer: React.FC<FileViewerProps> = ({
       {successMessage && <div className="text-green-500">{successMessage}</div>}
       <div className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2" ref={chatCodeRef}>
         {loading && <div>
-          <pre>
+          {/* <pre> */}
+          <SyntaxHighlighter language="javascript" style={coy}>
             {selectedChatCode ? unescapeString(selectedChatCode) : ''}
-          </pre>
+          </SyntaxHighlighter>
+          {/* </pre> */}
         </div>}
         {!loading && activeTab === 'file' && selectedFileContent && (
           <SyntaxHighlighter language="javascript" style={coy}>
@@ -153,11 +157,10 @@ const FileViewer: React.FC<FileViewerProps> = ({
           </SyntaxHighlighter>
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
-          <div className='h-full inline-block'>
+          <div className='w-full h-full inline-block'>
             <SyntaxHighlighter language="javascript" style={coy} key={selectedChatCode}>
-              {displayLines.map(lineObj => lineObj.line).join('\n')}
-            </SyntaxHighlighter>
-            {
+              {displayLines}
+              {
               trailingRemovedLines.map(({ lineNumber, line }) => (
                 <Fragment key={lineNumber}>
                   <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
@@ -168,6 +171,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
                 </Fragment>
               ))  
             }
+            </SyntaxHighlighter>
+
           </div>
         )}
       </div>
