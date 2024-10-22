@@ -1,12 +1,12 @@
+//DESC: This file contains a React functional component for a file list dropdown integrated with a Redux store.
+import { motion } from 'framer-motion';
 import { addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
 import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
-import { motion, useAnimation } from 'framer-motion';
 import { Project, ProjectFile } from '@/types/project';
 import { setCurrentProject, setProjectDir } from '@/slices/ProjectSlice';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
-
 
 interface FileListDropdownProps {
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
@@ -89,6 +89,11 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
         option.path.toLowerCase().includes(inputValue.toLowerCase())
     );
 
+    const truncatePath = (path: string) => {
+        const pathSegments = path.split('/');
+        return pathSegments.length > 2 ? `.../${pathSegments.slice(-2).join('/')}` : path;
+    };
+
     return (
         <div className="w-1/5 overflow-auto bg-gray-100 text-black">
             <div className="sticky top-0 bg-gray-100 p-2">
@@ -108,7 +113,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                                     onClick={() => handleOptionClick(option)}
                                     className="truncate max-w-xs cursor-pointer"
                                 >
-                                    {option.path}
+                                    {truncatePath(option.path)}
                                 </span>
                                 <button
                                     onClick={() => handleRemoveOption(option)}
@@ -142,17 +147,19 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                         (highlightedFile) => highlightedFile.name
                     ).includes(projectFile);
                     const chatCode = chatCodes?.find((fileData) => fileData.name === projectFile);
-
                     return (
                         <motion.div
                             key={index}
-                            layout
                             onClick={event => handleFlightClick(projectFile, event)}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
                             className={`p-2 cursor-pointer hover:bg-gray-200 ${isHighlighted ? 'bg-yellow-300' : ''} w-full`}
                         >
                             <div className="overflow-x-auto">
-                                <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`}>
-                                    {projectFile}
+                                <p className={`whitespace-nowrap ${selectedFileName === projectFile ? 'font-bold' : 'font-normal'}`} style={{ fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
+                                    {truncatePath(projectFile)}
                                 </p>
                             </div>
                             {chatCode && <Image width={30} height={30} src="/openai.svg" alt="Open" />}
@@ -162,13 +169,16 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                 {chatCodes?.filter(({ name }) => name !== '' && !currentProjectFileNames.includes(name)).map(({ name, content }, index) => (
                     <motion.div
                         key={currentProjectFileNames.length + index}
-                        layout
                         onClick={() => setSelectedFileName(name)}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
                         className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
                     >
                         <div className="overflow-x-auto">
-                            <p className={`whitespace-nowrap ${selectedFileName === name ? 'font-bold' : 'font-normal'}`}>
-                                {name}
+                            <p className={`whitespace-nowrap ${selectedFileName === name ? 'font-bold' : 'font-normal'}`} style={{ fontFamily: '"Comic Sans MS", cursive, sans-serif' }}>
+                                {truncatePath(name)}
                             </p>
                         </div>
                     </motion.div>
