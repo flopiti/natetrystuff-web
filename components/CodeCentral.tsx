@@ -279,10 +279,15 @@ const CodeCentral = () => {
     const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
-            <button
-                onClick={() => setIsSystemOpen(!isSystemOpen)}
-                className="bg-blue-500 text-white p-2"
-            >System  ?</button>
+            <div className="flex justify-between m-2">
+                <button onClick={toggleTerminal} className="bg-green-500 text-white p-2">
+                    {isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}
+                </button>
+                <button
+                    onClick={() => setIsSystemOpen(!isSystemOpen)}
+                    className="bg-blue-500 text-white p-2"
+                >System  ?</button>
+            </div>
             <div>
                 {branchName && <p>Current Branch: {branchName}</p>}
             </div>
@@ -334,7 +339,6 @@ const CodeCentral = () => {
                         setDevTerminalId={setDevTerminalId}
                         selectedProject={currentProject}
                     />            </div>
-                    <button onClick={toggleTerminal}>{isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}</button>
                 </div>
             </div>
         </div>
