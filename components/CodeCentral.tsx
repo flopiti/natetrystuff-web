@@ -173,7 +173,7 @@ const CodeCentral = () => {
                                 });
                                 const newChatCodes = arrayElementsValues.map((element) => ({
                                     name: element[0],
-                                    content: element[1] ? element[1] : ''
+                                    content: element[1] ? element[1].replace(/\\n/g, '\n') : ''
                                 }));
                                 setEditedFiles(newChatCodes);
 
@@ -187,6 +187,7 @@ const CodeCentral = () => {
             }
         }
         dispatch(setLoading(false));
+        console.log("Finished Chat Completion:", JSON.parse(chatCompletion).files);
         setEditedFiles(JSON.parse(chatCompletion).files);
         return  
     }
@@ -275,6 +276,7 @@ const CodeCentral = () => {
     }
 
     const[isSystemOpen, setIsSystemOpen] = useState(false); 
+    const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <button
@@ -302,7 +304,7 @@ const CodeCentral = () => {
                             activeTab={activeTab} 
                             setActiveTab={setActiveTab} 
                             selectedFileContent={selectedFileContent} 
-                            selectedChatCode={editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null}
+                            selectedChatCode={editedCodeToDisplay}
                             selectedFileName={selectedFileName} 
                             replaceCode={handleReplaceCode} 
                         />
