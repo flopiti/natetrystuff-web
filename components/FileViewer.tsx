@@ -145,16 +145,14 @@ const FileViewer: React.FC<FileViewerProps> = ({
         ref={chatCodeRef}
       >
         {loading && (
-          <div>
-            <SyntaxHighlighter language="javascript" style={materialDark}>
+            <SyntaxHighlighter language="javascript" style={materialDark} className='scrollbar-none'>
               {selectedChatCode ? unescapeString(selectedChatCode) : ''}
             </SyntaxHighlighter>
-          </div>
         )}
         {!loading && activeTab === 'file' && selectedFileContent && (
-          <SyntaxHighlighter language="javascript" style={materialDark}>
-            {selectedFileContent}
-          </SyntaxHighlighter>
+            <SyntaxHighlighter language="javascript" style={materialDark} className='scrollbar-none'>
+              {selectedFileContent}
+            </SyntaxHighlighter>            
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className="h-full inline-block">
