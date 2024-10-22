@@ -33,7 +33,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   useEffect(() => {
     if (chatCodeRef.current) {
-      chatCodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      chatCodeRef.current.scrollTop = chatCodeRef.current.scrollHeight;
     }
   }, [selectedChatCode]);
 
@@ -126,11 +126,11 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   console.log(displayLines);
   return (
-    <div className="flex-grow flex-shrink flex-basis-0 bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
-      <div className="flex bg-gray-100 p-2">
+    <div className="flex-grow flex-shrink flex-basis-0 bg-[#2f2f2f] flex flex-col h-full overflow-y-scroll text-black text-xs p-2 scrollbar-none">
+      <div className="flex bg-gray-100 p-2 scrollbar-none">
         <button
           className={`flex-1 text-center p-2 ${
-            activeTab === 'file' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+            activeTab === 'file' ? 'bg-[#2f2f2f] text-white' : 'bg-gray-200 text-black'
           }`}
           onClick={() => setActiveTab('file')}
           disabled={loading}
@@ -139,7 +139,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
         </button>
         <button
           className={`flex-1 text-center p-2 ${
-            activeTab === 'chat' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+            activeTab === 'chat' ? 'bg-[#2f2f2f] text-white' : 'bg-gray-200 text-black'
           }`}
           onClick={() => setActiveTab('chat')}
           disabled={loading}
@@ -148,14 +148,14 @@ const FileViewer: React.FC<FileViewerProps> = ({
         </button>
       </div>
       {activeTab === 'chat' && !loading && (
-        <button className="bg-blue-500 text-white p-2" onClick={handleReplaceCode}>
+        <button className="bg-[#2f2f2f] text-white p-2" onClick={handleReplaceCode}>
           Replace code in {selectedFileName}
         </button>
       )}
       {errorMessage && <div className="text-red-500">{errorMessage}</div>}
       {successMessage && <div className="text-green-500">{successMessage}</div>}
       <div
-        className="w-full bg-blue-200 h-full overflow-y-scroll text-black text-xs p-2"
+        className="w-full bg-[#2f2f2f] h-full overflow-y-scroll text-black text-xs p-2 scrollbar-none"
         ref={chatCodeRef}
       >
         {loading && (
@@ -171,22 +171,19 @@ const FileViewer: React.FC<FileViewerProps> = ({
           </SyntaxHighlighter>
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
-          <div className='h-full inline-block'>
-          <pre key={selectedChatCode}>
-            {displayLines}
-            {
-              trailingRemovedLines.map(({ lineNumber, line }) => (
+          <div className="h-full inline-block">
+            <pre key={selectedChatCode} style={{ color: 'white' }}>
+              {displayLines}
+              {trailingRemovedLines.map(({ lineNumber, line }) => (
                 <Fragment key={lineNumber}>
-                <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
-                  <span className="text-gray-500">{lineNumber}: </span>
-                  {line}
-                </div>
-                <AddButton lineNumber={lineNumber} line={line}  addLine={addLine}/>
+                  <div key={lineNumber} style={{ backgroundColor: 'lightcoral' }}>
+                    <span className="text-gray-500">{lineNumber}: </span>
+                    {line}
+                  </div>
+                  <AddButton lineNumber={lineNumber} line={line} addLine={addLine} />
                 </Fragment>
-              )) 
-
-            }
-          </pre>
+              ))}
+            </pre>
           </div>
         )}
       </div>
@@ -196,7 +193,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
 const AddButton: React.FC<any> = ({ line, lineNumber, addLine }) => {
   return (
-    <button className="bg-blue-500 text-white p-2" onClick={() => addLine(line, lineNumber)}>
+    <button className="bg-[#2f2f2f] text-white p-2" onClick={() => addLine(line, lineNumber)}>
       Add code
     </button>
   );
@@ -206,7 +203,7 @@ const RemoveButton: React.FC<any> = ({ line, lineNumber, removeLine }) => {
   return (
     <button
       key={lineNumber}
-      className="bg-blue-500 text-white p-2"
+      className="bg-[#2f2f2f] text-white p-2"
       onClick={() => removeLine(lineNumber, line)}
     >
       Remove code {lineNumber}

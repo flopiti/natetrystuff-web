@@ -104,7 +104,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
     };
 
     return (
-        <div className="w-1/3 max-w-[275px] overflow-auto bg-gray-100 text-black flex flex-col">
+        <div className="w-1/3 max-w-[275px] overflow-auto bg-gray-100 text-black flex flex-col ">
             <div className="sticky bg-gray-100 p-2 block">
                 <input
                     type="text"
@@ -115,12 +115,12 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                     className="w-full p-2 mb-2 border"
                 />
                 {showOptions && (
-                    <ul className="bg-white border rounded shadow-md max-h-60 overflow-auto">
+                    <ul className="bg-white border rounded shadow-md max-h-60 overflow-auto scrollbar-none">
                         {filteredOptions.map((option, index) => (
                             <li key={option.path || index} className="flex justify-between items-center p-2">
                                 <span
                                     onClick={() => handleOptionClick(option)}
-                                    className="truncate max-w-xs cursor-pointer"
+                                    className="truncate max-w-xs cursor-pointer scrollbar-none"
                                 >
                                     {truncatePath(option?.path)}
                                 </span>
@@ -156,7 +156,7 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <div className="overflow-auto block">
+            <div className="overflow-auto block scrollbar-none">
                 <AnimatePresence>
                     {filteredFiles.map((projectFile) => {
                         const isHighlighted = highlightedFiles.some(
@@ -176,9 +176,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                                     isHighlighted ? 'bg-green-200' : ''
                                 } w-full flex justify-between`}
                             >
-                                <div className="overflow-x-auto">
+                                <div className="overflow-x-auto scrollbar-none">
                                     <p
-                                        className={`whitespace-nowrap ${
+                                        className={`whitespace-nowrap scrollbar-none ${
                                             selectedFileName === projectFile ? 'font-bold' : 'font-normal'
                                         }`}
                                     >
@@ -215,9 +215,9 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.2 }}
-                            className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full"
+                            className="p-2 cursor-pointer hover:bg-gray-200 bg-purple-300 w-full scrollbar-none"
                         >
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto scrollbar-none">
                                 <p
                                     className={`whitespace-nowrap ${
                                         selectedFileName === name ? 'font-bold' : 'font-normal'
