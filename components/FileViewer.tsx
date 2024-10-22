@@ -126,8 +126,8 @@ const FileViewer: React.FC<FileViewerProps> = ({
 
   console.log(displayLines);
   return (
-    <div className="flex-grow flex-shrink flex-basis-0 bg-[#2f2f2f] flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
-      <div className="flex bg-gray-100 p-2">
+    <div className="flex-grow flex-shrink flex-basis-0 bg-[#2f2f2f] flex flex-col h-full overflow-y-scroll text-black text-xs p-2 scrollbar-none">
+      <div className="flex bg-gray-100 p-2 scrollbar-none">
         <button
           className={`flex-1 text-center p-2 ${
             activeTab === 'file' ? 'bg-[#2f2f2f] text-white' : 'bg-gray-200 text-black'
@@ -155,7 +155,7 @@ const FileViewer: React.FC<FileViewerProps> = ({
       {errorMessage && <div className="text-red-500">{errorMessage}</div>}
       {successMessage && <div className="text-green-500">{successMessage}</div>}
       <div
-        className="w-full bg-[#2f2f2f] h-full overflow-y-scroll text-black text-xs p-2"
+        className="w-full bg-[#2f2f2f] h-full overflow-y-scroll text-black text-xs p-2 scrollbar-none"
         ref={chatCodeRef}
       >
         {loading && (
