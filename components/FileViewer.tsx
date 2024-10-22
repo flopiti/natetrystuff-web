@@ -172,7 +172,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
           <div className="w-full h-full inline-block">
-            <SyntaxHighlighter language="javascript" style={coy}>
 
             {displayLines}
             {trailingRemovedLines.map(({ lineNumber, line }) => (
@@ -184,7 +183,6 @@ const FileViewer: React.FC<FileViewerProps> = ({
                 <AddButton lineNumber={lineNumber} line={line} addLine={addLine} />
               </Fragment>
             ))}
-            </SyntaxHighlighter>
           </div>
         )}
       </div>
