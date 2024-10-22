@@ -1,12 +1,11 @@
-//DESC: This file contains a React functional component for a file list dropdown integrated with a Redux store.
-import {  addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
+import React, { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
+import { addProjectPath, fetchProjectPaths, removeProjectPath } from '@/services/projectPathService';
 import Image from 'next/image';
-import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
-import { Project, ProjectFile } from '@/types/project';
+import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentProject, setProjectDir } from '@/slices/ProjectSlice';
 import { AppDispatch, RootState } from '@/store';
-import { useDispatch, useSelector } from 'react-redux';
-
+import { ProjectFile } from '@/types/project';
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FileListDropdownProps {
     handleFlightClick: (projectFile: string, event: React.MouseEvent<HTMLDivElement>) => void,
@@ -18,11 +17,12 @@ interface FileListDropdownProps {
 
 const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, selectedFileName, highlightedFiles, chatCodes, setSelectedFileName }) => {
     const dispatch: AppDispatch = useDispatch();
-    const {projects, currentProject, currentProjectFileNames} = useSelector((state: RootState) => state.Projects);
+    const { projects, currentProject, currentProjectFileNames } = useSelector((state: RootState) => state.Projects);
     const [searchTerm, setSearchTerm] = useState('');
     const [projectPaths, setProjectPaths] = useState<any[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [showOptions, setShowOptions] = useState(false);
+
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
         setShowOptions(true);
@@ -75,6 +75,12 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
         });
     }, []); 
 
+    // Animation variants for the dropdown
+    const dropdownVariants = {
+        closed: { opacity: 0, scale: 0.9 },
+        open: { opacity: 1, scale: 1 },
+    };
+
     const filteredFiles = currentProjectFileNames
         .filter(file => file.toLowerCase().includes(searchTerm.toLowerCase()) && file !== '')
         .sort((a, b) => {
@@ -100,26 +106,34 @@ const FileListDropdown: React.FC<FileListDropdownProps> = ({handleFlightClick, s
                     onClick={() => setShowOptions(!showOptions)}
                     className="w-full p-2 mb-2 border"
                 />
-                {showOptions && (
-                    <ul className="bg-white border rounded shadow-md max-h-60 overflow-auto">
-                        {filteredOptions.map((option, index) => (
-                            <li key={index} className="flex justify-between items-center p-2">
-                                <span
-                                    onClick={() => handleOptionClick(option)}
-                                    className="truncate max-w-xs cursor-pointer"
-                                >
-                                    {option.path}
-                                </span>
-                                <button
-                                    onClick={() => handleRemoveOption(option)}
-                                    className="ml-2 text-red-500"
-                                >
-                                    x
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
+                <AnimatePresence initial={false}>
+                    {showOptions && (
+                        <motion.ul
+                            className="bg-white border rounded shadow-md max-h-60 overflow-auto"
+                            initial="closed"
+                            animate="open"
+                            exit="closed"
+                            variants={dropdownVariants}
+                        >
+                            {filteredOptions.map((option, index) => (
+                                <li key={index} className="flex justify-between items-center p-2">
+                                    <span
+                                        onClick={() => handleOptionClick(option)}
+                                        className="truncate max-w-xs cursor-pointer"
+                                    >
+                                        {option.path}
+                                    </span>
+                                    <button
+                                        onClick={() => handleRemoveOption(option)}
+                                        className="ml-2 text-red-500"
+                                    >
+                                        x
+                                    </button>
+                                </li>
+                            ))}
+                        </motion.ul>
+                    )}
+                </AnimatePresence>
                 <select value={currentProject ? currentProject.name : ''} onChange={handleSelectedProjectChange} className="w-full p-2 mb-2">
                     <option value="" disabled>Select a project</option>
                     {projects?.map((project) => (
