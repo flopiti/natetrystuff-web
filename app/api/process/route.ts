@@ -24,8 +24,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
-    
-    const apiUrl = `${process.env.SPRING_BOOT_URL}/process`;
+    const apiUrl = `${process.env.SPRING_BOOT_URL}/processes`;
     const res = await fetch(apiUrl, {
         method: 'GET',
         headers: {

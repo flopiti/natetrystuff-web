@@ -7,10 +7,12 @@ const ProcessDashboard = () => {
     const fetchProcesses = async () => {
         console.log('Fetching processes...');
         try {
-            const response = await fetch('/api/process', {
+            const response = await fetch('api/process', {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-store'
+
                 }
             });
             console.log('Response status:', response.status);
@@ -46,14 +48,19 @@ const ProcessDashboard = () => {
     }, []);
 
     return (
-        <div>
-            <h2>Process Dashboard</h2>
-            <ul>
-                {processes.map((process) => (
-                    <li key={process.id}>{process.name}</li>
+        <div className='w-1/3 flex-1 p-4  bg-[#2f2f2f] rounded-lg shadow-md'>
+            <h2 className='text-xl font-bold mb-4'>Process Dashboard</h2>
+            <ul className='list-disc pl-5'>
+                {processes.map((process:any) => (
+                    <li key={process.id} className='mb-2 text-blue-300'>{process.process}</li>
                 ))}
             </ul>
-            <button onClick={() => addProcess({ name: 'New Process' })}>Add Process</button>
+            <button 
+                onClick={() => addProcess({ name: 'New Process' })}
+                className='mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300'
+            >
+                Add Process
+            </button>
         </div>
     );
 };
