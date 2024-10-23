@@ -35,12 +35,14 @@ const ProcessDashboard = () => {
 
     const addProcess = async (newProcess: any) => {
         console.log('Adding process:', newProcess);
+        // Adding status: 'active' to the new process
+        const processWithStatus = { ...newProcess, status: 'active' };
         await fetch('/api/process', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(newProcess)
+            body: JSON.stringify(processWithStatus)
         });
         console.log('Process added, fetching updated processes...');
         fetchProcesses();
