@@ -2,21 +2,34 @@
 import { useState, useEffect } from 'react';
 
 const ProcessDashboard = () => {
-    const [processes, setProcesses] = useState<any[]>([]);
+    const [processes, setProcesses] = useState([]);
 
     const fetchProcesses = async () => {
-        const response = await fetch('/api/process', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
+        console.log('Fetching processes...');
+        try {
+            const response = await fetch('/api/process', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log('Response status:', response.status);
+
+            const result = await response.json();
+            console.log('Fetched data:', result);
+            
+            if (Array.isArray(result.data)) {
+                setProcesses(result.data);
+            } else {
+                console.error('Data is not an array:', result.data);
             }
-        });
-        const result = await response.json();
-        // Ensure result.data is an array before setting it to processes
-        setProcesses(Array.isArray(result.data) ? result.data : []);
+        } catch (error) {
+            console.error('Error fetching processes:', error);
+        }
     };
 
     const addProcess = async (newProcess: any) => {
+        console.log('Adding process:', newProcess);
         await fetch('/api/process', {
             method: 'POST',
             headers: {
@@ -24,6 +37,7 @@ const ProcessDashboard = () => {
             },
             body: JSON.stringify(newProcess)
         });
+        console.log('Process added, fetching updated processes...');
         fetchProcesses();
     };
 
@@ -35,8 +49,7 @@ const ProcessDashboard = () => {
         <div>
             <h2>Process Dashboard</h2>
             <ul>
-                {// Check if processes is an array before mapping
-                Array.isArray(processes) && processes.map((process) => (
+                {processes.map((process) => (
                     <li key={process.id}>{process.name}</li>
                 ))}
             </ul>
