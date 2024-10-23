@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 const ProcessDashboard = () => {
-    const [processes, setProcesses] = useState([]);
+    const [processes, setProcesses] = useState<any[]>([]);
 
     const fetchProcesses = async () => {
         const response = await fetch('/api/process', {
@@ -12,7 +12,8 @@ const ProcessDashboard = () => {
             }
         });
         const result = await response.json();
-        setProcesses(result.data);
+        // Ensure result.data is an array before setting it to processes
+        setProcesses(Array.isArray(result.data) ? result.data : []);
     };
 
     const addProcess = async (newProcess: any) => {
@@ -34,7 +35,8 @@ const ProcessDashboard = () => {
         <div>
             <h2>Process Dashboard</h2>
             <ul>
-                {processes.map((process) => (
+                {// Check if processes is an array before mapping
+                Array.isArray(processes) && processes.map((process) => (
                     <li key={process.id}>{process.name}</li>
                 ))}
             </ul>
