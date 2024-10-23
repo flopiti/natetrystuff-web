@@ -34,9 +34,17 @@ const ProcessDashboard = () => {
     };
 
     const addProcess = async (newProcess: any) => {
+
+
         console.log('Adding process:', newProcess);
         // Adding status: 'active' to the new process
         const processWithStatus = { ...newProcess, status: 'active' };
+
+        console.log('Adding process with status:', processWithStatus);
+        console.log(JSON.stringify(processWithStatus));
+
+        // OK DUDE, the problem now is that conversation doesnt have enough room as a string in the DB. 
+        
         await fetch('/api/process', {
             method: 'POST',
             headers: {
@@ -51,7 +59,7 @@ const ProcessDashboard = () => {
     const processTheProcess = () => {
         console.log('Current conversation:', conversation);
         // Here you can transform the conversation into the desired process format
-        addProcess({ name: 'New Process from Conversation', conversation });
+        addProcess({ process: 'New Process from Conversation', conversation: JSON.stringify(conversation) });
     };
 
     const handleStart = () => {
@@ -80,7 +88,7 @@ const ProcessDashboard = () => {
                 ))}
             </ul>
             <button 
-                onClick={() => addProcess({ name: 'New Process' })}
+                onClick={() => addProcess({ process: 'New Process' })}
                 className='mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300'
             >
                 Add Process
