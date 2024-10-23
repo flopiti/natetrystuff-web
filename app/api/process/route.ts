@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
     const body = await request.json();
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/process`, {
+    const res = await fetch(`${process.env.SPRING_BOOT_URL}/processes`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
