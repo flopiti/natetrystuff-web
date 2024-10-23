@@ -1,4 +1,4 @@
-// DESC: This file handles POST and GET requests to interact with the '/process' endpoint in a Spring Boot application, leveraging Auth0 for authentication.
+//DESC: This file handles POST and GET requests to interact with the '/process' endpoint in a Spring Boot application.
 import { getAccessToken } from '@auth0/nextjs-auth0';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     const token = (await getAccessToken()).accessToken;
-
+    
     const apiUrl = `${process.env.SPRING_BOOT_URL}/process`;
     const res = await fetch(apiUrl, {
         method: 'GET',

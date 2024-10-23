@@ -1,5 +1,5 @@
 //DESC: This file is responsible for managing a central code viewing and editing interface that includes functionalities for file handling, project selection, and interactive chat operations with automated coding responses.
-import {useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Terminal } from 'xterm';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
@@ -12,8 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { ProjectFile } from '@/types/project';
 import { setBranchName, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
-import {  getGitBranch, getGitDiff } from '@/services/gitService';
+import { getGitBranch, getGitDiff } from '@/services/gitService';
 import SystemDashboard from './SystemDashboard';
+import ProcessDashboard from './ProcessDashboard'; // Import new ProcessDashboard
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -188,7 +189,7 @@ const CodeCentral = () => {
             }
         }
         dispatch(setLoading(false));
-        console.log("Finished Chat Completion:", JSON.parse(chatCompletion).files);
+        console.log('Finished Chat Completion:', JSON.parse(chatCompletion).files);
         setEditedFiles(JSON.parse(chatCompletion).files);
         return  
     }
@@ -277,6 +278,7 @@ const CodeCentral = () => {
     }
 
     const[isSystemOpen, setIsSystemOpen] = useState(false); 
+    const[isProcessOpen, setIsProcessOpen] = useState(false); // Add state for process dashboard
     const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
@@ -287,7 +289,11 @@ const CodeCentral = () => {
                 <button
                     onClick={() => setIsSystemOpen(!isSystemOpen)}
                     className="bg-blue-500 text-white p-2"
-                >System  ?</button>
+                >System Dashboard ?</button>
+                <button
+                    onClick={() => setIsProcessOpen(!isProcessOpen)}
+                    className="bg-purple-500 text-white p-2"
+                >Process Dashboard ?</button>
             </div>
             <div>
                 {branchName && <p>Current Branch: {branchName}</p>}
@@ -305,6 +311,8 @@ const CodeCentral = () => {
                     {
                         isSystemOpen && currentProject ? 
                         <SystemDashboard project={currentProject} /> :
+                        isProcessOpen ? // Add condition for ProcessDashboard
+                        <ProcessDashboard /> :
                         <FileViewer
                             setSelectedChatCode={updateChatCode}
                             activeTab={activeTab} 
