@@ -11,7 +11,7 @@ import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { Project, ProjectFile } from '@/types/project';
-import { setBranchName, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
+import { setBranchName, setCurrentProject, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 import { getGitBranch, getGitDiff } from '@/services/gitService';
 import SystemDashboard from './SystemDashboard';
 import ProcessDashboard from './ProcessDashboard'; // Import new ProcessDashboard
@@ -240,11 +240,16 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
+        console.log('New Highlighted FilesZZ:', filenames);
+        console.log(currentProject)
+        console.log(currentProjectFileNames)
         if (!currentProject) {
             console.error('No project selected.');
             return;
         }
         const newHighlightedFileNames = filenames.filter(filename => currentProjectFileNames.includes(filename));
+
+        console.log('New Highlighted Files:ZZss', newHighlightedFileNames);
         Promise.all(newHighlightedFileNames.map(async (filename) => {
             return { name: filename, content: await getFile(filename, currentProject.name) };
         })).then(newHighlightedFiles => {
@@ -284,19 +289,11 @@ const CodeCentral = () => {
     const[isSystemOpen, setIsSystemOpen] = useState(false); 
     const[isProcessOpen, setIsProcessOpen] = useState(false);
     const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
-    useEffect(() => {
-        if (featbugDescription && currentProject) {
-          askGptToFindWhichFiles(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
-        }
-      }, [featbugDescription]);
 
     const [currentProcessState, setCurrentProcessState] = useState<string>('None');
     
     const handleStartProcess = async () => {
-        console.log('ok lets start' )
-        // Start the process
-        setCurrentProcessState('find-projects');
-        
+        setCurrentProcessState('find-projects');           
     }
 
     useEffect(() => {
@@ -305,15 +302,23 @@ const CodeCentral = () => {
                 getProjects(projectDir).then((projects) => {
                     const projectsString = projects.map((project:Project) => project.name).join(', ');
                     askGptToFindWhichProject(projectsString, featbugDescription).then((answer) => {
-                        if (answer) {
-
-                            console.log('Answer:', answer);
-                        }})
+                        const selectedProject = projects.find((project:Project) => project.name === answer[0]);
+                        if (selectedProject) {
+                            dispatch(setCurrentProject(selectedProject));
+                            setCurrentProcessState('find-files');
+                        }
+                    })
                 }
             );
         }
         }
-    }, [currentProcessState]);
+        if (currentProcessState === 'find-files') {
+            if (featbugDescription && currentProject && currentProjectFileNames.length > 0) {
+                askGptToFindWhichFiles(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
+                setCurrentProcessState('None');
+            }
+        }
+    }, [currentProcessState, currentProjectFileNames]);
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
