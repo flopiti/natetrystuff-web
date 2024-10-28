@@ -6,7 +6,7 @@ import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
 import Chat from './Chat';
-import { askChatNoStream } from '@/services/chatService';
+import { askChatNoStream, fetchAndAskChatGPT } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
@@ -34,6 +34,9 @@ const CodeCentral = () => {
         }
     }, [chatMessages]);
 
+
+    const [featbugDescription, setFeatbugDescription] = useState<string>("");
+
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
@@ -51,6 +54,7 @@ const CodeCentral = () => {
     const [prTitle, setPrTitle] = useState<string>('');
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
+
     useEffect(() => {
         if (currentProject && doesCurrentProjectHaveTerminal) {
             const runCommandWithLogging = `cd /dev-projects/${currentProject.name}`;
@@ -278,8 +282,14 @@ const CodeCentral = () => {
     }
 
     const[isSystemOpen, setIsSystemOpen] = useState(false); 
-    const[isProcessOpen, setIsProcessOpen] = useState(false); // Add state for process dashboard
+    const[isProcessOpen, setIsProcessOpen] = useState(false);
     const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
+    useEffect(() => {
+        if (featbugDescription && currentProject) {
+          fetchAndAskChatGPT(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
+        }
+      }, [featbugDescription]);
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div className="flex justify-between m-2">
@@ -325,14 +335,13 @@ const CodeCentral = () => {
                     }
                     
                     <Chat 
-                        handleNewSelectedFile={handleNewSelectedFile}
-                        handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
                         conversation={chatMessages} 
                         runCommand={runCommandInCurrentProject}  
                         commitMessage={commitMessage} 
                         prTitle={prTitle} 
                         prBody={prBody} 
                         selectedProject={currentProject} 
+                        setFeatbugDescription={setFeatbugDescription}
                     />
                     <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
                     <TerminalDisplay

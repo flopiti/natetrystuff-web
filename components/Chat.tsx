@@ -13,8 +13,7 @@ const Chat = ({
   commitMessage,
   prTitle,
   prBody,
-  handleNewHighlitghtedFiles,
-  handleNewSelectedFile,
+  setFeatbugDescription,
 }: any) => {
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "gh pr create --title ",
@@ -32,16 +31,7 @@ const Chat = ({
 
   const [currentTextInput, setCurrentTextInput] = useState<string>("");
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
-  const [featbugDescription, setFeatbugDescription] = useState<string>("");
   
-  useEffect(() => {
-    console.log('featbugDescription:', featbugDescription);
-    if (featbugDescription && currentProject) {
-      console.log('fetching and asking ChatGPT');
-      fetchAndAskChatGPT(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
-    }
-  }, [featbugDescription]);
-
 
   useEffect(() => {
     if (branchName)
