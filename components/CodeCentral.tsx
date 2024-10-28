@@ -300,6 +300,29 @@ const CodeCentral = () => {
                     onClick={() => setIsSystemOpen(!isSystemOpen)}
                     className="bg-blue-500 text-white p-2"
                 >System Dashboard ?</button>
+
+                <div className="flex items-center space-x-2">
+                    <input 
+                        type="text" 
+                        placeholder="Enter description" 
+                        className="p-2 border border-gray-300 rounded"
+                        value={featbugDescription}
+                        onChange={(e) => setFeatbugDescription(e.target.value)}
+                    />
+                    <button 
+                        onClick={() => {
+                            if (featbugDescription.trim() !== "") {
+                                // Trigger any necessary actions when the start button is clicked
+                                console.log("Start button clicked with description:", featbugDescription);
+                            } else {
+                                alert("Please enter a description");
+                            }
+                        }} 
+                        className="bg-green-500 text-white p-2 rounded"
+                    >
+                        Start
+                    </button>
+                </div>
                 <button
                     onClick={() => setIsProcessOpen(!isProcessOpen)}
                     className="bg-purple-500 text-white p-2"
