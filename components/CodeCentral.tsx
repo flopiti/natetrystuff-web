@@ -290,6 +290,13 @@ const CodeCentral = () => {
         }
       }, [featbugDescription]);
 
+    const [currentProcessState, setCurrentProcessState] = useState<string>('None');
+    
+    const handleStartProcess = async () => {
+        console.log('ok lets start' )
+        // Start the process
+        // setCurrentProcessState('');
+    }
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div className="flex justify-between m-2">
@@ -302,11 +309,15 @@ const CodeCentral = () => {
                 >System Dashboard ?</button>
 
                 <div className="flex items-center flex flex-1">
-
+                    <span className='m-2 p-2'>
+                        {
+                            currentProcessState
+                        }
+                    </span>
                     <input 
                         type="text" 
                         placeholder="Enter description" 
-                        className="p-2 border border-gray-300 rounded flex-1"
+                        className="p-2 border border-gray-300 rounded flex-1 text-black"
                         value={featbugDescription}
                         onChange={(e) => setFeatbugDescription(e.target.value)}
                     />
@@ -314,6 +325,7 @@ const CodeCentral = () => {
                         onClick={() => {
                             if (featbugDescription.trim() !== "") {
                                 console.log("Start button clicked with description:", featbugDescription);
+                                handleStartProcess();
                             } else {
                                 alert("Please enter a description");
                             }
