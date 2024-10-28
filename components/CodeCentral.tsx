@@ -6,11 +6,11 @@ import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
 import Chat from './Chat';
-import { askChatNoStream, askGptToFindWhichFiles } from '@/services/chatService';
+import { askChatNoStream, askGptToFindWhichFiles, askGptToFindWhichProject } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
-import { ProjectFile } from '@/types/project';
+import { Project, ProjectFile } from '@/types/project';
 import { setBranchName, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 import { getGitBranch, getGitDiff } from '@/services/gitService';
 import SystemDashboard from './SystemDashboard';
@@ -295,8 +295,26 @@ const CodeCentral = () => {
     const handleStartProcess = async () => {
         console.log('ok lets start' )
         // Start the process
-        // setCurrentProcessState('');
+        setCurrentProcessState('find-projects');
+        
     }
+
+    useEffect(() => {
+        if (currentProcessState === 'find-projects') {
+            if (featbugDescription) {
+                getProjects(projectDir).then((projects) => {
+                    const projectsString = projects.map((project:Project) => project.name).join(', ');
+                    askGptToFindWhichProject(projectsString, featbugDescription).then((answer) => {
+                        if (answer) {
+
+                            console.log('Answer:', answer);
+                        }})
+                }
+            );
+        }
+        }
+    }, [currentProcessState]);
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div className="flex justify-between m-2">
