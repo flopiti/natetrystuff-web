@@ -293,19 +293,20 @@ const CodeCentral = () => {
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div className="flex justify-between m-2">
-                <button onClick={toggleTerminal} className="bg-green-500 text-white p-2">
+                <button onClick={toggleTerminal} className="bg-green-500 text-white p-2 m-2">
                     {isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}
                 </button>
                 <button
                     onClick={() => setIsSystemOpen(!isSystemOpen)}
-                    className="bg-blue-500 text-white p-2"
+                    className="bg-blue-500 text-white p-2 m-2"
                 >System Dashboard ?</button>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center flex flex-1">
+
                     <input 
                         type="text" 
                         placeholder="Enter description" 
-                        className="p-2 border border-gray-300 rounded"
+                        className="p-2 border border-gray-300 rounded flex-1"
                         value={featbugDescription}
                         onChange={(e) => setFeatbugDescription(e.target.value)}
                     />
@@ -317,14 +318,14 @@ const CodeCentral = () => {
                                 alert("Please enter a description");
                             }
                         }} 
-                        className="bg-green-500 text-white p-2 rounded"
+                        className="bg-green-500 text-white p-2 mx-2 rounded"
                     >
                         Start
                     </button>
                 </div>
                 <button
                     onClick={() => setIsProcessOpen(!isProcessOpen)}
-                    className="bg-purple-500 text-white p-2"
+                    className="bg-purple-500 text-white p-2 m-2"
                 >Process Dashboard ?</button>
             </div>
             <div>
