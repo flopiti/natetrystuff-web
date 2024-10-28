@@ -6,12 +6,12 @@ import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
 import Chat from './Chat';
-import { askChatNoStream } from '@/services/chatService';
+import { askChatNoStream, askGptToFindWhichFiles, askGptToFindWhichProject } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
-import { ProjectFile } from '@/types/project';
-import { setBranchName, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
+import { Project, ProjectFile } from '@/types/project';
+import { setBranchName, setCurrentProject, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 import { getGitBranch, getGitDiff } from '@/services/gitService';
 import SystemDashboard from './SystemDashboard';
 import ProcessDashboard from './ProcessDashboard'; // Import new ProcessDashboard
@@ -34,6 +34,9 @@ const CodeCentral = () => {
         }
     }, [chatMessages]);
 
+
+    const [featbugDescription, setFeatbugDescription] = useState<string>("");
+
     const [terminals, setTerminals] = useState<{ id: number; terminalInstance: Terminal | null; ws: WebSocket | null }[]>([]);
     const [selectedTerminal, setSelectedTerminal] = useState<number | null>(null);
     const [devTerminalId, setDevTerminalId] = useState<number | null>(null);
@@ -51,6 +54,7 @@ const CodeCentral = () => {
     const [prTitle, setPrTitle] = useState<string>('');
     const [prBody, setPrBody] = useState<string>('');
     const [gitDiff, setGitDiff] = useState<any>(null);
+
     useEffect(() => {
         if (currentProject && doesCurrentProjectHaveTerminal) {
             const runCommandWithLogging = `cd /dev-projects/${currentProject.name}`;
@@ -236,11 +240,16 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
+        console.log('New Highlighted FilesZZ:', filenames);
+        console.log(currentProject)
+        console.log(currentProjectFileNames)
         if (!currentProject) {
             console.error('No project selected.');
             return;
         }
         const newHighlightedFileNames = filenames.filter(filename => currentProjectFileNames.includes(filename));
+
+        console.log('New Highlighted Files:ZZss', newHighlightedFileNames);
         Promise.all(newHighlightedFileNames.map(async (filename) => {
             return { name: filename, content: await getFile(filename, currentProject.name) };
         })).then(newHighlightedFiles => {
@@ -278,21 +287,80 @@ const CodeCentral = () => {
     }
 
     const[isSystemOpen, setIsSystemOpen] = useState(false); 
-    const[isProcessOpen, setIsProcessOpen] = useState(false); // Add state for process dashboard
+    const[isProcessOpen, setIsProcessOpen] = useState(false);
     const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
+
+    const [currentProcessState, setCurrentProcessState] = useState<string>('None');
+    
+    const handleStartProcess = async () => {
+        setCurrentProcessState('find-projects');           
+    }
+
+    useEffect(() => {
+        if (currentProcessState === 'find-projects') {
+            if (featbugDescription) {
+                getProjects(projectDir).then((projects) => {
+                    const projectsString = projects.map((project:Project) => project.name).join(', ');
+                    askGptToFindWhichProject(projectsString, featbugDescription).then((answer) => {
+                        const selectedProject = projects.find((project:Project) => project.name === answer[0]);
+                        if (selectedProject) {
+                            dispatch(setCurrentProject(selectedProject));
+                            setCurrentProcessState('find-files');
+                        }
+                    })
+                }
+            );
+        }
+        }
+        if (currentProcessState === 'find-files') {
+            if (featbugDescription && currentProject && currentProjectFileNames.length > 0) {
+                askGptToFindWhichFiles(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
+                setCurrentProcessState('None');
+            }
+        }
+    }, [currentProcessState, currentProjectFileNames]);
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div className="flex justify-between m-2">
-                <button onClick={toggleTerminal} className="bg-green-500 text-white p-2">
+                <button onClick={toggleTerminal} className="bg-green-500 text-white p-2 m-2">
                     {isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}
                 </button>
                 <button
                     onClick={() => setIsSystemOpen(!isSystemOpen)}
-                    className="bg-blue-500 text-white p-2"
+                    className="bg-blue-500 text-white p-2 m-2"
                 >System Dashboard ?</button>
+
+                <div className="flex items-center flex flex-1">
+                    <span className='m-2 p-2'>
+                        {
+                            currentProcessState
+                        }
+                    </span>
+                    <input 
+                        type="text" 
+                        placeholder="Enter description" 
+                        className="p-2 border border-gray-300 rounded flex-1 text-black"
+                        value={featbugDescription}
+                        onChange={(e) => setFeatbugDescription(e.target.value)}
+                    />
+                    <button 
+                        onClick={() => {
+                            if (featbugDescription.trim() !== "") {
+                                console.log("Start button clicked with description:", featbugDescription);
+                                handleStartProcess();
+                            } else {
+                                alert("Please enter a description");
+                            }
+                        }} 
+                        className="bg-green-500 text-white p-2 mx-2 rounded"
+                    >
+                        Start
+                    </button>
+                </div>
                 <button
                     onClick={() => setIsProcessOpen(!isProcessOpen)}
-                    className="bg-purple-500 text-white p-2"
+                    className="bg-purple-500 text-white p-2 m-2"
                 >Process Dashboard ?</button>
             </div>
             <div>
@@ -325,14 +393,13 @@ const CodeCentral = () => {
                     }
                     
                     <Chat 
-                        handleNewSelectedFile={handleNewSelectedFile}
-                        handleNewHighlitghtedFiles={handleNewHighlitghtedFiles}
                         conversation={chatMessages} 
                         runCommand={runCommandInCurrentProject}  
                         commitMessage={commitMessage} 
                         prTitle={prTitle} 
                         prBody={prBody} 
                         selectedProject={currentProject} 
+                        setFeatbugDescription={setFeatbugDescription}
                     />
                     <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
                     <TerminalDisplay

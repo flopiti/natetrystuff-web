@@ -1,5 +1,5 @@
 //DESC: This file defines a React component for a chat interface that handles Git operations using various services.
-import { askChatNoStream, fetchAndAskChatGPT, generateBranchName } from "@/services/chatService";
+import { generateBranchName } from "@/services/chatService";
 import { getGitBranch, gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import { addMessage } from "@/slices/MessagesSlice";
 import { setBranchName } from "@/slices/ProjectSlice";
@@ -13,8 +13,7 @@ const Chat = ({
   commitMessage,
   prTitle,
   prBody,
-  handleNewHighlitghtedFiles,
-  handleNewSelectedFile,
+  setFeatbugDescription,
 }: any) => {
   const [commandsReadyToGo, setCommandsReadyToGo] = useState<string[]>([
     "gh pr create --title ",
@@ -32,16 +31,7 @@ const Chat = ({
 
   const [currentTextInput, setCurrentTextInput] = useState<string>("");
   const [newChangeBranch, setNewChangeBranch] = useState<string>("");
-  const [featbugDescription, setFeatbugDescription] = useState<string>("");
   
-  useEffect(() => {
-    console.log('featbugDescription:', featbugDescription);
-    if (featbugDescription && currentProject) {
-      console.log('fetching and asking ChatGPT');
-      fetchAndAskChatGPT(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
-    }
-  }, [featbugDescription]);
-
 
   useEffect(() => {
     if (branchName)
