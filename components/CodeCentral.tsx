@@ -6,7 +6,7 @@ import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
 import Chat from './Chat';
-import { askChatNoStream, fetchAndAskChatGPT } from '@/services/chatService';
+import { askChatNoStream, askGptToFindWhichFiles } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
@@ -286,7 +286,7 @@ const CodeCentral = () => {
     const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
     useEffect(() => {
         if (featbugDescription && currentProject) {
-          fetchAndAskChatGPT(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
+          askGptToFindWhichFiles(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
         }
       }, [featbugDescription]);
 

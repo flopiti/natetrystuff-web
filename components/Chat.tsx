@@ -1,5 +1,5 @@
 //DESC: This file defines a React component for a chat interface that handles Git operations using various services.
-import { askChatNoStream, fetchAndAskChatGPT, generateBranchName } from "@/services/chatService";
+import { generateBranchName } from "@/services/chatService";
 import { getGitBranch, gitCheckoutBranch, gitSendIt, goMain } from "@/services/gitService";
 import { addMessage } from "@/slices/MessagesSlice";
 import { setBranchName } from "@/slices/ProjectSlice";

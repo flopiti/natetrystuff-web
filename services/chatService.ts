@@ -35,7 +35,7 @@ export const askChatNoStream = async (messages: any[]): Promise<any> => {
     }
 };
 
-export const fetchAndAskChatGPT = async (featbugDescription:string, 
+export const askGptToFindWhichFiles = async (featbugDescription:string, 
   selectedProjectName:string, 
   handleNewHighlitghtedFiles: (files: string[]) => void,
   handleNewSelectedFile: (file: string) => void
