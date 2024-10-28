@@ -312,7 +312,6 @@ const CodeCentral = () => {
                     <button 
                         onClick={() => {
                             if (featbugDescription.trim() !== "") {
-                                // Trigger any necessary actions when the start button is clicked
                                 console.log("Start button clicked with description:", featbugDescription);
                             } else {
                                 alert("Please enter a description");
