@@ -59,3 +59,15 @@ export const askGptToFindWhichFiles = async (featbugDescription:string,
       }
   }
 };
+
+export const askGptToFindWhichProject = async (projectsString: string, featbugDescription:string) => {
+  try {
+      const message = `Which project should we work on to execute the task: ${featbugDescription}. Here are the projects: ${projectsString}. Please return a JSON with the 'answer' field containing the project name in a array (Because yes, there can be more than a single project).`;
+      const messages = [{ role: 'user', content: message }];
+      const chatResponse = await askChatNoStream(messages);
+      console.log('ChatGPT Response:', chatResponse);
+      return chatResponse.answer;
+  } catch (error) {
+      console.error('Error fetching and asking ChatGPT:', error);
+  }
+}
