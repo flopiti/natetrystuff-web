@@ -29,7 +29,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
   };
 
   const handleRemoveIngredient = (index: number) => {
-    setEditMealIngredients(editMealIngredients.filter((item, idx) => idx !== index));
+    setEditMealIngredients(editMealIngredients.filter((_, idx) => idx !== index));
   };
 
   const startEditMeal = (meal: any) => {
@@ -38,7 +38,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
     } else {
       setEditMealId(meal.mealId);
       setEditMealName(meal.mealName);
-      setEditMealIngredients(meal.mealIngredients);
+      setEditMealIngredients(meal.mealIngredients || []);
     }
   };
 
