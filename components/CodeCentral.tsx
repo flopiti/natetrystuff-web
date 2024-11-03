@@ -80,7 +80,7 @@ const CodeCentral = () => {
             getProjects(projectDir).then((data) => {
                 dispatch(setProjects(data));
             }).catch((error) => {
-                console.error('Error:', error);
+                console.error('Error fetching projects:', error);
             });
         }
     }, [projectDir]);
@@ -179,7 +179,7 @@ const CodeCentral = () => {
                                 });
                                 const newChatCodes = arrayElementsValues.map((element) => ({
                                     name: element[0],
-                                    content: element[1] ? element[1].replace(/\\n/g, '\n') : ''
+                                    content: element[1] ? element[1].replace(/\n/g, '\n') : ''
                                 }));
                                 setEditedFiles(newChatCodes);
 
@@ -417,6 +417,27 @@ const CodeCentral = () => {
                     />            </div>
                 </div>
             </div>
+            <button onClick={async () => {
+                // Make a call to /api/embed and log results
+                const response = await fetch('/api/embed', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        vectors: [
+                            { id: 'vec1', values: [1.0, 1.5], metadata: { genre: 'drama' } },
+                            { id: 'vec2', values: [2.0, 1.0], metadata: { genre: 'action' } },
+                            { id: 'vec3', values: [0.1, 0.3], metadata: { genre: 'drama' } },
+                            { id: 'vec4', values: [1.0, -2.5], metadata: { genre: 'action' } }
+                        ]
+                    })
+                });
+
+                const result = await response.json();
+                console.log(result);
+            }}
+            >Log Pinecone Result</button>
         </div>
     );
 }
