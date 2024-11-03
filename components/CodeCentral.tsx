@@ -296,6 +296,9 @@ const CodeCentral = () => {
         setCurrentProcessState('find-projects');           
     }
 
+    console.log('currently selected file:', selectedFileName);
+    console.log('content of selected file:', selectedFileContent);
+
     useEffect(() => {
         if (currentProcessState === 'find-projects') {
             if (featbugDescription) {
@@ -419,23 +422,36 @@ const CodeCentral = () => {
             </div>
             <button onClick={async () => {
                 // Make a call to /api/embed and log results
-                const response = await fetch('/api/embed', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        vectors: [
-                            { id: 'vec1', values: [1.0, 1.5], metadata: { genre: 'drama' } },
-                            { id: 'vec2', values: [2.0, 1.0], metadata: { genre: 'action' } },
-                            { id: 'vec3', values: [0.1, 0.3], metadata: { genre: 'drama' } },
-                            { id: 'vec4', values: [1.0, -2.5], metadata: { genre: 'action' } }
-                        ]
-                    })
-                });
 
-                const result = await response.json();
-                console.log(result);
+                askChatNoStream([{ role: 'user', content: `
+                    Give me a structured explanation of what is happening in this file.
+                    Filename: ${selectedFileName}, fileContent: ${selectedFileContent} Return in JSON only.
+                    The FIRST high level field MUST BE EXACLTY : filename : ${selectedFileName}  
+                    ` }]).then( async data => {
+
+
+                        console.log(selectedFileName)
+                        const jsonString = JSON.stringify(data, null, 2);
+                        console.log({id: selectedFileName, toEmbed: jsonString })
+
+                        const response = await fetch('/api/embed', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                                
+                            },
+                            cache: 'no-store',
+                            body: JSON.stringify({id: selectedFileName, toEmbed: jsonString })
+                        });
+        
+                        const result = await response.json();
+                        console.log(result);
+                        
+
+                }
+                );
+
+
             }}
             >Log Pinecone Result</button>
         </div>
