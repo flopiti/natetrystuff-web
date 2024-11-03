@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       console.log(embedding.data.map((value: any) => parseFloat(value)))
 
     const pc = new Pinecone({
-        apiKey: '24353792-dce7-4d9b-820f-9d30202e3669'
+        apiKey: ''
     });
     const index = pc.index('codebase');
 
