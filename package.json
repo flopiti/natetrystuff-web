@@ -17,6 +17,7 @@
     "@babel/parser": "^7.24.6",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@pinecone-database/pinecone": "^4.0.0",
     "@reduxjs/toolkit": "^2.3.0",
     "@storybook/react": "^8.3.5",
     "axios": "^1.7.0",
