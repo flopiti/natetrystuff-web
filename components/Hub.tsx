@@ -6,7 +6,7 @@ import { useState } from "react";
 import Meals from "./Meals";
 import Schedule from "./Schedule";
 import CodeCentral from "./CodeCentral";
-import ChessBoard from "./ChessBoardComponent";
+import ChessBoard from "./ChessBoard";
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
