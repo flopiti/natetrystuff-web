@@ -6,7 +6,8 @@ import { useState } from "react";
 import Meals from "./Meals";
 import Schedule from "./Schedule";
 import CodeCentral from "./CodeCentral";
-import ChessBoardComponent from "./ChessBoardComponent";
+import ChessBoard from "./ChessBoardComponent";
+
 
 const Hub = () => {
     const[page, setPage] = useState('schedule')
@@ -30,7 +31,7 @@ const Hub = () => {
                 <CodeCentral />
             ) : 
             page === 'chess-board' ? (
-                <ChessBoardComponent />
+                <ChessBoard />
             ) : null
         }
         </Provider>
