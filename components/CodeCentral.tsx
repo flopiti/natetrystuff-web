@@ -420,40 +420,7 @@ const CodeCentral = () => {
                     />            </div>
                 </div>
             </div>
-            <button onClick={async () => {
-                // Make a call to /api/embed and log results
 
-                askChatNoStream([{ role: 'user', content: `
-                    Give me a structured explanation of what is happening in this file.
-                    Filename: ${selectedFileName}, fileContent: ${selectedFileContent} Return in JSON only.
-                    The FIRST high level field MUST BE EXACLTY : filename : ${selectedFileName}  
-                    ` }]).then( async data => {
-
-
-                        console.log(selectedFileName)
-                        const jsonString = JSON.stringify(data, null, 2);
-                        console.log({id: selectedFileName, toEmbed: jsonString })
-
-                        const response = await fetch('/api/embed', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                                
-                            },
-                            cache: 'no-store',
-                            body: JSON.stringify({id: selectedFileName, toEmbed: jsonString })
-                        });
-        
-                        const result = await response.json();
-                        console.log(result);
-                        
-
-                }
-                );
-
-
-            }}
-            >Log Pinecone Result</button>
         </div>
     );
 }
