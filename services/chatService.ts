@@ -42,18 +42,9 @@ export const askGptToFindWhichFiles = async (featbugDescription:string,
 ) => {
   if (featbugDescription) {
       try {
-          const response = await fetch(`/api/get-desc-comments?project=${selectedProjectName}`);
-          const result = await response.json();
-          const descComments = JSON.stringify(result.data);
-          const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription}, and here are the files with with additional comments: ${descComments}. Please make sure to return a JSON with the 'answer' field containing the file names in a array.`;
-          const messages = [{ role: 'user', content: message }];
-          const chatResponse = await askChatNoStream(messages);
+        const file = await  queryFileForFeatBug(featbugDescription)
+        console.log(file)
 
-          if (chatResponse.answer) {
-              handleNewHighlitghtedFiles(chatResponse.answer);
-              handleNewSelectedFile(chatResponse.answer[0]);
-          }
-          console.log('ChatGPT Response:', chatResponse);
       } catch (error) {
           console.error('Error fetching and asking ChatGPT:', error);
       }
@@ -108,6 +99,7 @@ try {
 
     const result = await response.json();
     console.log(result);
+    return result.matches[0].id;
 } catch (error) {
     console.error('Error querying file for feature/bug description:', error);
 }

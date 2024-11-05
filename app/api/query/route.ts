@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         });
         console.log('Query result:', queryResult);
 
-        return new NextResponse(JSON.stringify({ message: 'Vectors upserted successfully' , queryResult}), {
+        return new NextResponse(JSON.stringify( queryResult), {
             status: 200,
             headers: {
                 'Content-Type': 'application/json'
