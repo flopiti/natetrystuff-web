@@ -71,3 +71,44 @@ export const askGptToFindWhichProject = async (projectsString: string, featbugDe
       console.error('Error fetching and asking ChatGPT:', error);
   }
 }
+
+export const embedFile = async (fileName: string, file:string) =>{
+  askChatNoStream([{ role: 'user', content: `
+    Give me a structured explanation of what is happening in this file.
+    Filename: ${fileName}, fileContent: ${file} Return in JSON only.
+    The FIRST high level field MUST BE EXACLTY : filename : ${fileName}  
+    ` }]).then( async data => {
+        const jsonString = JSON.stringify(data, null, 2);
+        const response = await fetch('/api/embed', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                
+            },
+            cache: 'no-store',
+            body: JSON.stringify({id: file, toEmbed: jsonString })
+        });
+        const result = await response.json();
+        console.log(result);
+}
+);
+
+}
+
+export const queryFileForFeatBug = async (featBugDescrsiption:string) => {
+try {
+    const response = await fetch('/api/query', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        cache: 'no-store',
+        body: JSON.stringify({ featbugDescription: featBugDescrsiption })
+    });
+
+    const result = await response.json();
+    console.log(result);
+} catch (error) {
+    console.error('Error querying file for feature/bug description:', error);
+}
+ }
