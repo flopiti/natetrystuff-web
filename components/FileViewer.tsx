@@ -37,18 +37,18 @@ const FileViewer: React.FC<FileViewerProps> = ({
     }
   }, [selectedChatCode]);
 
-  const removeLine = (lineNumber: number) => {
+  const removeBlock = (startLine: number, blockLength: number) => {
     const lines = selectedChatCode?.split('\n') || [];
-    const newCode = lines.filter((_, index) => index !== lineNumber - 1);
+    const newCode = lines.filter((_, index) => index < startLine - 1 || index >= startLine - 1 + blockLength);
     setSelectedChatCode(newCode.join('\n'));
   };
 
-  const addLine = (line: string, lineNumber: number) => {
+  const addBlock = (block: string[], startLine: number) => {
     const lines = selectedChatCode?.split('\n') || [];
     const newCode = [
-      ...lines.slice(0, lineNumber - 1),
-      line,
-      ...lines.slice(lineNumber - 1),
+      ...lines.slice(0, startLine - 1),
+      ...block,
+      ...lines.slice(startLine - 1),
     ];
     setSelectedChatCode(newCode.join('\n'));
   };
@@ -59,41 +59,50 @@ const FileViewer: React.FC<FileViewerProps> = ({
     const diff = diffLines(selectedFileContent, selectedChatCode);
     let lineNumber = 1;
 
-    diff.forEach((part, index) => {
+    for (let i = 0; i < diff.length; i++) {
+      const part = diff[i];
       const lines = part.value.split('\n');
-      if (part.added || part.removed) {
-        const block = [
-          ...lines.map((line, i) => {
-            if (line === '' && i === lines.length - 1) return null;
-            return (
-              <div key={`line-${lineNumber}-${index}`} style={{ backgroundColor: part.added ? 'lightgreen' : 'lightcoral' }}>
-                <span className="text-gray-500">{lineNumber}: </span>
-                {line}
-              </div>
-            );
-          }),
-        ];
+      const length = lines.length;
+
+      if (part.added) {
         displayLines.push(
-          <Fragment key={`block-${lineNumber}-${index}`}>
-            {block}
-            {part.added && <RemoveButton removeLine={removeLine} lineNumber={lineNumber} />}
-            {part.removed && <AddButton lineNumber={lineNumber} line={lines.join('\n')} addLine={addLine} />}
+          <Fragment key={`added-block-${i}`}>
+            <div style={{ backgroundColor: 'lightgreen' }}>
+              {lines.map((line, index) => (
+                <div key={`added-line-${lineNumber + index}`}>
+                  <span className="text-gray-500">{lineNumber + index}: </span>
+                  {line}
+                </div>
+              ))}
+            </div>
+            <RemoveButton removeLine={removeBlock} lineNumber={lineNumber} blockLength={length - 1} />
           </Fragment>
         );
-        lineNumber += lines.length - 1;
-      } else {
-        lines.forEach((line, i) => {
-          if (line === '' && i === lines.length - 1) return; // Skip the last empty line
-          displayLines.push(
-            <div key={`unchanged-${lineNumber}`}>
-              <span className="text-gray-500">{lineNumber}: </span>
-              {line}
+        lineNumber += length - 1;
+      } else if (part.removed) {
+        displayLines.push(
+          <Fragment key={`removed-block-${i}`}>
+            <div style={{ backgroundColor: 'lightcoral' }}>
+              {lines.map((line, index) => (
+                <div key={`removed-line-${lineNumber + index}`}>
+                  <span className="text-gray-500">{lineNumber + index}: </span>
+                  {line}
+                </div>
+              ))}
             </div>
-          );
-          lineNumber++;
-        });
+            <AddButton lineNumber={lineNumber} block={lines.slice(0, length - 1)} addLine={addBlock} />
+          </Fragment>
+        );
+      } else {
+        displayLines.push(
+          <div key={`unchanged-${lineNumber}`}>
+            <span className="text-gray-500">{lineNumber}: </span>
+            {part.value.trim()}
+          </div>
+        );
+        lineNumber += length - 1;
       }
-    });
+    }
   }
 
   const handleReplaceCode = async () => {
@@ -165,25 +174,25 @@ const FileViewer: React.FC<FileViewerProps> = ({
   );
 };
 
-const AddButton: React.FC<any> = ({ line, lineNumber, addLine }) => {
+const AddButton: React.FC<any> = ({ lineNumber, block, addLine }) => {
   return (
     <button
       className="bg-[#2f2f2f] text-white p-2"
-      onClick={() => addLine(line, lineNumber)}
+      onClick={() => addLine(block, lineNumber)}
     >
-      Add code
+      Add block
     </button>
   );
 };
 
-const RemoveButton: React.FC<any> = ({ lineNumber, removeLine }) => {
+const RemoveButton: React.FC<any> = ({ lineNumber, blockLength, removeLine }) => {
   return (
     <button
       key={lineNumber}
       className="bg-[#2f2f2f] text-white p-2"
-      onClick={() => removeLine(lineNumber)}
+      onClick={() => removeLine(lineNumber, blockLength)}
     >
-      Remove code {lineNumber}
+      Remove block starting at {lineNumber}
     </button>
   );
 };
