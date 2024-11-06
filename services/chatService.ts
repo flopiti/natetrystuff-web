@@ -85,7 +85,7 @@ try {
         body: JSON.stringify({ featbugDescription: featBugDescrsiption })
     });
     const result = await response.json();
-    return result.matches[0].id;
+    return result.matches[0].metadata.fileName;
 } catch (error) {
     console.error('Error querying file for feature/bug description:', error);
 }

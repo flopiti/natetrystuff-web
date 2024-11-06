@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { embedFile, getAllNodes } from '@/services/chatService';
 import { Project } from "@/types/project";
-import { getFile } from "@/app/utils";
+import { getFile, getProjectFiles } from "@/app/utils";
 import { get } from "http";
 
 export interface SystemDashboardProps {
@@ -15,11 +15,9 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/file-descriptions?project=${project.name}`
-        );
-        const response_ = await response.json();
-        setFiles(response_.data);
+        const data = await getProjectFiles(project);
+        const formattedData = data.map((file: any) => ({ name: file }));
+        setFiles(formattedData);
       } catch (error) {
         console.error("Error fetching file descriptions:", error);
       }
