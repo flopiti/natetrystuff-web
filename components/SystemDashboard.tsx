@@ -10,6 +10,8 @@ export interface SystemDashboardProps {
 
 const SystemDashboard = ({ project }: SystemDashboardProps) => {
   const [files, setFiles] = useState<any>([]);
+  const [nodes, setNodes] = useState<any>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,13 +31,37 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
     const fetchNodes = async () => {
       try {
         const nodes = await getAllNodes();
-        console.log("All nodes:", nodes);
+        setNodes(nodes.matches);
+        console.log("All nodes:", nodes.matches);
+
       } catch (error) {
         console.error("Error fetching nodes:", error);
       }
     };
     fetchNodes();
   }, []);
+
+  useEffect(() => {
+    files.forEach((file: any) => {
+      nodes.length > 1 && nodes.forEach((node: any) => {
+        console.log('www')
+        if (node?.metadata?.fileName === file.name) {
+          console.log(`Matching file found: ${file.name}`);
+          setFiles((prevFiles: any) => {
+            return prevFiles.map((prevFile: any) => {
+              if (prevFile.name === file.name) {
+                return { ...prevFile, node: node };
+              }
+              return prevFile;
+            });
+          }
+          );
+        }
+      });
+    });
+  }, [nodes]);
+
+
 
   const handleEmbedFile = async (fileName:string) => {
     embedFile(fileName, await getFile(fileName, project.name),  project.name);
@@ -51,9 +77,11 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
           <div className="file-name font-bold flex-1 truncate overflow-hidden whitespace-nowrap">
             {file.name}
           </div>
-          <button onClick={()=>handleEmbedFile(file.name)}>
-            Get It
-          </button>
+          {!file.node && (
+            <button onClick={() => handleEmbedFile(file.name)}>
+              Get It
+            </button>
+          )}
         </div>
       ))}
     </div>
