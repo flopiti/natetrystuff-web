@@ -38,10 +38,14 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   useEffect(() => {
+    console.log('running the CHECK')
+    console.log(files)
+    console.log(nodes)
     files.forEach((file: any) => {
       nodes.length > 1 && nodes.forEach((node: any) => {
         if (node?.metadata?.fileName === file.name) {
           setFiles((prevFiles: any) => {
+            console.log('setting new file')
             return prevFiles.map((prevFile: any) => {
               if (prevFile.name === file.name) {
                 return { ...prevFile, node: node };
@@ -56,6 +60,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, [nodes]);
 
 
+  console.log(files);
 
   const handleEmbedFile = async (fileName:string) => {
     embedFile(fileName, await getFile(fileName, project.name),  project.name);
