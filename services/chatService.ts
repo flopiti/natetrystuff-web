@@ -8,7 +8,6 @@ export const generateBranchName = async (
     };
     try {
       const response = await askChatNoStream([initialMessage]);
-      console.log("Branch Name Suggestion:", response);
       return response.branchName;
     } catch (error) {
       console.error("Error in generating branch name:", error);
@@ -26,7 +25,6 @@ export const askChatNoStream = async (messages: any[]): Promise<any> => {
     });
     if (response.ok) {
         const data = await response.json();
-        console.log('Response from chat-no-stream:', data);
         return data;
     } else {
         console.error('Error calling chat-no-stream:', response.statusText);

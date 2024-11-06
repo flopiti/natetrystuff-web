@@ -29,7 +29,6 @@ export const setFourDaysScheduleDisplay = (fourDaysSchedule:any, setMeals:any, s
             setMealsSchedule(mealSchedulesData.data);
             setGroceries(groceriesData.data);
             setInOfficeDays(inOfficeDays.data);
-            console.log(mealSchedulesData.data); // Log meals schedule when received from hook
         };
         fetchInitialData();
     }, [fourDaysSchedule]);
