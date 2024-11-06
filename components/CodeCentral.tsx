@@ -317,10 +317,17 @@ const CodeCentral = () => {
         }
         if (currentProcessState === 'find-files') {
             if (featbugDescription && currentProject && currentProjectFileNames.length > 0) {
-                askGptToFindWhichFiles(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
-                setCurrentProcessState('None');
-            }
+                askGptToFindWhichFiles(featbugDescription).then((fileName) => {
+
+                if (currentProjectFileNames.includes(fileName)) {
+                    setCurrentProcessState('None');
+                    handleNewHighlitghtedFiles([fileName]);
+                    handleNewSelectedFile(fileName);
+                }
+                }
+            );
         }
+    }
     }, [currentProcessState, currentProjectFileNames]);
 
     return (

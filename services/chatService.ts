@@ -35,15 +35,10 @@ export const askChatNoStream = async (messages: any[]): Promise<any> => {
     }
 };
 
-export const askGptToFindWhichFiles = async (featbugDescription:string, 
-  selectedProjectName:string, 
-  handleNewHighlitghtedFiles: (files: string[]) => void,
-  handleNewSelectedFile: (file: string) => void
-) => {
+export const askGptToFindWhichFiles = async (featbugDescription:string) => {
   if (featbugDescription) {
       try {
-        const file = await  queryFileForFeatBug(featbugDescription)
-        console.log(file)
+        return await queryFileForFeatBug(featbugDescription)
 
       } catch (error) {
           console.error('Error fetching and asking ChatGPT:', error);
