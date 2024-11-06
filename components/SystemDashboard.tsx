@@ -13,6 +13,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log('FETCHING ALL FILES')
       try {
         const data = await getProjectFiles(project);
         const formattedData = data.map((file: any) => ({ name: file }));
@@ -22,15 +23,13 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
       }
     };
     fetchData();
-  }, [project]);
+  }, []);
 
   useEffect(() => {
     const fetchNodes = async () => {
-      console.log('about to fetch nodes')
       try {
-        const nodesData = await getAllNodes();
-        console.log('received nodes')
-        setNodes(nodesData.matches);
+        const nodes = await getAllNodes();
+        setNodes(nodes.matches);
       } catch (error) {
         console.error("Error fetching nodes:", error);
       }
@@ -39,17 +38,17 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('nodes?? ' )
-    console.log(nodes)
-    const nodeMap = new Map(nodes.map((node: any) => [node.metadata.fileName, node]));
-
-    console.log("Files with nodes:", files.filter(file => file.node));
-    setFiles((prevFiles) =>
-      prevFiles.map((file) => ({
-        ...file,
-        node: nodeMap.get(file.name) || file.node,
-      }))
-    );
+    if (nodes.length > 0) {
+      setFiles((prevFiles) => {
+        return prevFiles.map((file) => {
+          const matchingNode = nodes.find(node => node?.metadata?.fileName === file.name);
+          if (matchingNode) {
+            return { ...file, node: matchingNode };
+          }
+          return file;
+        });
+      });
+    }
   }, [nodes]);
 
   const handleEmbedFile = async (fileName: string) => {
