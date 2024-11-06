@@ -8,11 +8,11 @@ export async function GET(request: NextRequest) {
         apiKey: '24353792-dce7-4d9b-820f-9d30202e3669'
     });
     const index = pc.index('codebase');
-
     try {
         const data = await index.namespace('ns1').query({
-            topK: 1000, // or another number that makes sense for retrieving all entries
-            includeMetadata: true
+            topK: 1000,
+            includeMetadata: true,
+            vector: Array.from({ length: 1536 }, () => Math.random()), // Generating a random 1536-dimensional vector
         });
         console.log('Retrieved vectors successfully');
 
