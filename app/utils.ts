@@ -2,7 +2,6 @@
 import { ProjectFile } from "@/types/project";
 
 export const getProjects = async (dirPath:string) => {
-    console.log('calling getProjects'); 
     const res = await fetch(`api/get-projects?dirPath=${dirPath}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -80,8 +79,6 @@ export const replaceCode = async (projectName: any, chatCodes: ProjectFile[]) =>
         },
         body: JSON.stringify({ project: projectName, files: chatCodes })
     });
-    console.log('I think iz okay no?')
-    console.log(response)
     if (!response.ok) {
         throw new Error('Failed to replace code');
     }
