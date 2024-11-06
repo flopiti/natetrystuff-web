@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getAllNodes } from '@/services/chatService';
+import { embedFile, getAllNodes } from '@/services/chatService';
+import { Project } from "@/types/project";
+import { getFile } from "@/app/utils";
+import { get } from "http";
 
 export interface SystemDashboardProps {
   project: Project;
@@ -34,6 +37,15 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
     fetchNodes();
   }, []);
 
+  const handleEmbedFile = async (fileName:string) => {
+    console.log(fileName)
+    console.log(project)
+    console.log('wwdsdds')
+    console.log(await getFile(fileName, project.name))
+    console.log("WTTTFG")
+    embedFile(fileName, await getFile(fileName, project.name),  project.name);
+  }
+
   return (
     <div className="w-full bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
       {files.map((file: any, index: number) => (
@@ -44,6 +56,9 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
           <div className="file-name font-bold flex-1 truncate overflow-hidden whitespace-nowrap">
             {file.name}
           </div>
+          <button onClick={()=>handleEmbedFile(file.name)}>
+            Get It
+          </button>
         </div>
       ))}
     </div>

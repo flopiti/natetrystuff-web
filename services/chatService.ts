@@ -70,7 +70,7 @@ export const embedFile = async (fileName: string, file:string, projectName: stri
                 
             },
             cache: 'no-store',
-            body: JSON.stringify({id: file, projectName, toEmbed: jsonString })
+            body: JSON.stringify({id: `${projectName}/${fileName}`, projectName, toEmbed: jsonString })
         });
         const result = await response.json();
         console.log(result);
