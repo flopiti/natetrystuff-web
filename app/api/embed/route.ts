@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
                 id: x.id,
                 values: embedding.data[0].embedding,
                 metadata: {
-                    filename: x.filename,
+                    fileName: x.fileName,
                     projectName: x.projectName
                 }
             }

@@ -38,11 +38,6 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   const handleEmbedFile = async (fileName:string) => {
-    console.log(fileName)
-    console.log(project)
-    console.log('wwdsdds')
-    console.log(await getFile(fileName, project.name))
-    console.log("WTTTFG")
     embedFile(fileName, await getFile(fileName, project.name),  project.name);
   }
 
