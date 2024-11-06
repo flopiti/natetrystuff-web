@@ -26,8 +26,10 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   useEffect(() => {
     const fetchNodes = async () => {
+      console.log('about to fetch nodes')
       try {
         const nodesData = await getAllNodes();
+        console.log('received nodes')
         setNodes(nodesData.matches);
       } catch (error) {
         console.error("Error fetching nodes:", error);
@@ -37,6 +39,8 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   useEffect(() => {
+    console.log('nodes?? ' )
+    console.log(nodes)
     const nodeMap = new Map(nodes.map((node: any) => [node.metadata.fileName, node]));
 
     console.log("Files with nodes:", files.filter(file => file.node));
