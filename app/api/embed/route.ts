@@ -31,8 +31,6 @@ export async function POST(request: NextRequest) {
                 }
             }
         ]);
-        console.log('Vectors upserted successfully');
-
         return new NextResponse(JSON.stringify({ message: 'Vectors upserted successfully' }), {
             status: 200,
             headers: {

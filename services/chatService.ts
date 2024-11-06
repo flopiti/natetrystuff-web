@@ -49,7 +49,6 @@ export const askGptToFindWhichProject = async (projectsString: string, featbugDe
       const message = `Which project should we work on to execute the task: ${featbugDescription}. Here are the projects: ${projectsString}. Please return a JSON with the 'answer' field containing the project name in a array (Because yes, there can be more than a single project).`;
       const messages = [{ role: 'user', content: message }];
       const chatResponse = await askChatNoStream(messages);
-      console.log('ChatGPT Response:', chatResponse);
       return chatResponse.answer;
   } catch (error) {
       console.error('Error fetching and asking ChatGPT:', error);
@@ -71,9 +70,8 @@ export const embedFile = async (fileName: string, file:string, projectName: stri
             cache: 'no-store',
             body: JSON.stringify({id: `${projectName}/${fileName}`, projectName, toEmbed: jsonString, fileName:fileName })
         });
-        const result = await response.json();
-        console.log(result);
-}
+        return await response.json();
+      }
 );
 
 }
@@ -88,9 +86,7 @@ try {
         cache: 'no-store',
         body: JSON.stringify({ featbugDescription: featBugDescrsiption })
     });
-
     const result = await response.json();
-    console.log(result);
     return result.matches[0].id;
 } catch (error) {
     console.error('Error querying file for feature/bug description:', error);
@@ -108,7 +104,6 @@ export const getAllNodes = async () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log('All nodes from vector database:', data);
       return data;
     } else {
       console.error('Error fetching all nodes:', response.statusText);

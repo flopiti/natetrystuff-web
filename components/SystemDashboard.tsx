@@ -32,8 +32,6 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
       try {
         const nodes = await getAllNodes();
         setNodes(nodes.matches);
-        console.log("All nodes:", nodes.matches);
-
       } catch (error) {
         console.error("Error fetching nodes:", error);
       }
@@ -44,9 +42,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   useEffect(() => {
     files.forEach((file: any) => {
       nodes.length > 1 && nodes.forEach((node: any) => {
-        console.log('www')
         if (node?.metadata?.fileName === file.name) {
-          console.log(`Matching file found: ${file.name}`);
           setFiles((prevFiles: any) => {
             return prevFiles.map((prevFile: any) => {
               if (prevFile.name === file.name) {
