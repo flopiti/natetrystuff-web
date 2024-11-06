@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAllNodes } from "../chatService"; // Adjust the path as necessary
+import { getAllNodes } from '@/services/chatService';
 
 export interface SystemDashboardProps {
   project: Project;
@@ -7,26 +7,32 @@ export interface SystemDashboardProps {
 
 const SystemDashboard = ({ project }: SystemDashboardProps) => {
   const [files, setFiles] = useState<any>([]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch file descriptions
         const response = await fetch(
           `/api/file-descriptions?project=${project.name}`
         );
         const response_ = await response.json();
         setFiles(response_.data);
-
-        // Get all nodes from chatService
-        const allNodes = await getAllNodes();
-        console.log("All Nodes:", allNodes);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching file descriptions:", error);
       }
     };
     fetchData();
-  }, [project.name]);
+  }, []);
+
+  useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const nodes = await getAllNodes();
+        console.log("All nodes:", nodes);
+      } catch (error) {
+        console.error("Error fetching nodes:", error);
+      }
+    };
+    fetchNodes();
+  }, []);
 
   return (
     <div className="w-full bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
