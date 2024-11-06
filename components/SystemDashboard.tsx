@@ -39,25 +39,18 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('running the CHECK')
-    console.log(files)
-    console.log(nodes)
-    files.forEach((file: any) => {
-      nodes.length > 1 && nodes.forEach((node: any) => {
-        if (node?.metadata?.fileName === file.name) {
-          setFiles((prevFiles: any) => {
-            console.log('setting new file')
-            return prevFiles.map((prevFile: any) => {
-              if (prevFile.name === file.name) {
-                return { ...prevFile, node: node };
-              }
-              return prevFile;
-            });
-          }
-          );
-        }
-      });
-    });
+    console.log('running the CHECK');
+    console.log(files);
+    console.log(nodes);
+  
+    const nodeMap = new Map(nodes.map((node: any) => [node.metadata.fileName, node]));
+  
+    setFiles((prevFiles: any[]) =>
+      prevFiles.map((file: any) => ({
+        ...file,
+        node: nodeMap.get(file.name) || file.node,
+      }))
+    );
   }, [nodes]);
 
 
