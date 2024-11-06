@@ -35,25 +35,11 @@ export const askChatNoStream = async (messages: any[]): Promise<any> => {
     }
 };
 
-export const askGptToFindWhichFiles = async (featbugDescription:string, 
-  selectedProjectName:string, 
-  handleNewHighlitghtedFiles: (files: string[]) => void,
-  handleNewSelectedFile: (file: string) => void
-) => {
+export const askGptToFindWhichFiles = async (featbugDescription:string) => {
   if (featbugDescription) {
       try {
-          const response = await fetch(`/api/get-desc-comments?project=${selectedProjectName}`);
-          const result = await response.json();
-          const descComments = JSON.stringify(result.data);
-          const message = `What are the file names we should look for to fix the current feature/problem described in: ${featbugDescription}, and here are the files with with additional comments: ${descComments}. Please make sure to return a JSON with the 'answer' field containing the file names in a array.`;
-          const messages = [{ role: 'user', content: message }];
-          const chatResponse = await askChatNoStream(messages);
+        return await queryFileForFeatBug(featbugDescription)
 
-          if (chatResponse.answer) {
-              handleNewHighlitghtedFiles(chatResponse.answer);
-              handleNewSelectedFile(chatResponse.answer[0]);
-          }
-          console.log('ChatGPT Response:', chatResponse);
       } catch (error) {
           console.error('Error fetching and asking ChatGPT:', error);
       }
@@ -71,3 +57,45 @@ export const askGptToFindWhichProject = async (projectsString: string, featbugDe
       console.error('Error fetching and asking ChatGPT:', error);
   }
 }
+
+export const embedFile = async (fileName: string, file:string) =>{
+  askChatNoStream([{ role: 'user', content: `
+    Give me a structured explanation of what is happening in this file.
+    Filename: ${fileName}, fileContent: ${file} Return in JSON only.
+    The FIRST high level field MUST BE EXACLTY : filename : ${fileName}  
+    ` }]).then( async data => {
+        const jsonString = JSON.stringify(data, null, 2);
+        const response = await fetch('/api/embed', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                
+            },
+            cache: 'no-store',
+            body: JSON.stringify({id: file, toEmbed: jsonString })
+        });
+        const result = await response.json();
+        console.log(result);
+}
+);
+
+}
+
+export const queryFileForFeatBug = async (featBugDescrsiption:string) => {
+try {
+    const response = await fetch('/api/query', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        cache: 'no-store',
+        body: JSON.stringify({ featbugDescription: featBugDescrsiption })
+    });
+
+    const result = await response.json();
+    console.log(result);
+    return result.matches[0].id;
+} catch (error) {
+    console.error('Error querying file for feature/bug description:', error);
+}
+ }

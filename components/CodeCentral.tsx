@@ -80,7 +80,7 @@ const CodeCentral = () => {
             getProjects(projectDir).then((data) => {
                 dispatch(setProjects(data));
             }).catch((error) => {
-                console.error('Error:', error);
+                console.error('Error fetching projects:', error);
             });
         }
     }, [projectDir]);
@@ -179,7 +179,7 @@ const CodeCentral = () => {
                                 });
                                 const newChatCodes = arrayElementsValues.map((element) => ({
                                     name: element[0],
-                                    content: element[1] ? element[1].replace(/\\n/g, '\n') : ''
+                                    content: element[1] ? element[1].replace(/\n/g, '\n') : ''
                                 }));
                                 setEditedFiles(newChatCodes);
 
@@ -296,6 +296,9 @@ const CodeCentral = () => {
         setCurrentProcessState('find-projects');           
     }
 
+    console.log('currently selected file:', selectedFileName);
+    console.log('content of selected file:', selectedFileContent);
+
     useEffect(() => {
         if (currentProcessState === 'find-projects') {
             if (featbugDescription) {
@@ -314,10 +317,17 @@ const CodeCentral = () => {
         }
         if (currentProcessState === 'find-files') {
             if (featbugDescription && currentProject && currentProjectFileNames.length > 0) {
-                askGptToFindWhichFiles(featbugDescription, currentProject.name, handleNewHighlitghtedFiles, handleNewSelectedFile);
-                setCurrentProcessState('None');
-            }
+                askGptToFindWhichFiles(featbugDescription).then((fileName) => {
+
+                if (currentProjectFileNames.includes(fileName)) {
+                    setCurrentProcessState('None');
+                    handleNewHighlitghtedFiles([fileName]);
+                    handleNewSelectedFile(fileName);
+                }
+                }
+            );
         }
+    }
     }, [currentProcessState, currentProjectFileNames]);
 
     return (
@@ -417,6 +427,7 @@ const CodeCentral = () => {
                     />            </div>
                 </div>
             </div>
+
         </div>
     );
 }

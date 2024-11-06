@@ -8,7 +8,6 @@ import Schedule from "./Schedule";
 import CodeCentral from "./CodeCentral";
 import ChessBoard from "./ChessBoard";
 
-
 const Hub = () => {
     const[page, setPage] = useState('schedule')
 

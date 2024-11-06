@@ -188,7 +188,6 @@ const AddButton: React.FC<any> = ({ lineNumber, block, addLine }) => {
 const RemoveButton: React.FC<any> = ({ lineNumber, blockLength, removeLine }) => {
   return (
     <button
-      key={lineNumber}
       className="bg-[#2f2f2f] text-white p-2"
       onClick={() => removeLine(lineNumber, blockLength)}
     >
