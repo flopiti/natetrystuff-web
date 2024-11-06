@@ -27,9 +27,7 @@ export const askChatNoStream = async (messages: any[]): Promise<any> => {
     if (response.ok) {
         const data = await response.json();
         console.log('Response from chat-no-stream:', data);
-        // Handle the response data accordingly
         return data;
-        // If there are files, you can update the state to reflect them as well
     } else {
         console.error('Error calling chat-no-stream:', response.statusText);
     }
@@ -58,10 +56,10 @@ export const askGptToFindWhichProject = async (projectsString: string, featbugDe
   }
 }
 
-export const embedFile = async (fileName: string, file:string) =>{
+export const embedFile = async (fileName: string, file:string, projectName: string) =>{
   askChatNoStream([{ role: 'user', content: `
     Give me a structured explanation of what is happening in this file.
-    Filename: ${fileName}, fileContent: ${file} Return in JSON only.
+    Filename: ${fileName}, fileContent: ${file}, projectName: ${projectName}. Return in JSON only.
     The FIRST high level field MUST BE EXACLTY : filename : ${fileName}  
     ` }]).then( async data => {
         const jsonString = JSON.stringify(data, null, 2);
@@ -72,7 +70,7 @@ export const embedFile = async (fileName: string, file:string) =>{
                 
             },
             cache: 'no-store',
-            body: JSON.stringify({id: file, toEmbed: jsonString })
+            body: JSON.stringify({id: file, projectName, toEmbed: jsonString })
         });
         const result = await response.json();
         console.log(result);
