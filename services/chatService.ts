@@ -97,3 +97,24 @@ try {
     console.error('Error querying file for feature/bug description:', error);
 }
  }
+
+export const getAllNodes = async () => {
+  try {
+    const response = await fetch('/api/get-all-nodes', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('All nodes from vector database:', data);
+      return data;
+    } else {
+      console.error('Error fetching all nodes:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching all nodes:', error);
+  }
+};
