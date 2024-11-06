@@ -39,6 +39,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   useEffect(() => {
     const nodeMap = new Map(nodes.map((node: any) => [node.metadata.fileName, node]));
 
+    console.log('got the node map')
     setFiles((prevFiles) =>
       prevFiles.map((file) => ({
         ...file,
