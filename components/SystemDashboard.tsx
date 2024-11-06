@@ -1,7 +1,8 @@
-import { getFile, replaceCode } from "@/app/utils";
-import { askChatNoStream } from "@/services/chatService";
-import { Project, ProjectFile } from "@/types/project";
 import React, { useState, useEffect } from "react";
+import { embedFile, getAllNodes } from '@/services/chatService';
+import { Project } from "@/types/project";
+import { getFile, getProjectFiles } from "@/app/utils";
+import { get } from "http";
 
 export interface SystemDashboardProps {
   project: Project;
@@ -9,14 +10,14 @@ export interface SystemDashboardProps {
 
 const SystemDashboard = ({ project }: SystemDashboardProps) => {
   const [files, setFiles] = useState<any>([]);
+  const [nodes, setNodes] = useState<any>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `/api/file-descriptions?project=${project.name}`
-        );
-        const response_ = await response.json();
-        setFiles(response_.data);
+        const data = await getProjectFiles(project);
+        const formattedData = data.map((file: any) => ({ name: file }));
+        setFiles(formattedData);
       } catch (error) {
         console.error("Error fetching file descriptions:", error);
       }
@@ -24,38 +25,41 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
     fetchData();
   }, []);
 
-  const handleGetDesc = async (fileName: string) => {
-    try {
-      getFile(fileName, project.name).then(async (fileContent) => {
-        console.log("File Content:", fileContent);
-        const initialMessage = {
-          role: "user",
-          content: `Please return exactly this file, ONLY THIS FILE, but add a comment at the top that begins with eaxctly: //DESC: and then you 
-          add a description of the file in a single sentence. For example: //DESC: This file contains the logic for the user login page.
-          Here is the the file: ${fileContent}
-          The response must be in a JSON with the only field being fileContent`,
-        };
-        const response = await askChatNoStream([initialMessage]);
+  useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const nodes = await getAllNodes();
+        setNodes(nodes.matches);
+      } catch (error) {
+        console.error("Error fetching nodes:", error);
+      }
+    };
+    fetchNodes();
+  }, []);
 
-        const newFile :ProjectFile = {name: fileName, content: response.fileContent};
-        replaceCode( project.name, [newFile]).then(() => {
-            setFiles((prevFiles: any) => {
-                const newFiles = prevFiles.map((file: any) => {
-                if (file.name === fileName) {
-                    return { ...file, DESC: 1 };
-                }
-                return file;
-                });
-                return newFiles;
+  useEffect(() => {
+    files.forEach((file: any) => {
+      nodes.length > 1 && nodes.forEach((node: any) => {
+        if (node?.metadata?.fileName === file.name) {
+          setFiles((prevFiles: any) => {
+            return prevFiles.map((prevFile: any) => {
+              if (prevFile.name === file.name) {
+                return { ...prevFile, node: node };
+              }
+              return prevFile;
             });
-            });
-
-
+          }
+          );
+        }
       });
-    } catch (error) {
-      console.error("Error fetching file description:", error);
-    }
-  };
+    });
+  }, [nodes]);
+
+
+
+  const handleEmbedFile = async (fileName:string) => {
+    embedFile(fileName, await getFile(fileName, project.name),  project.name);
+  }
 
   return (
     <div className="w-full bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
@@ -67,16 +71,11 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
           <div className="file-name font-bold flex-1 truncate overflow-hidden whitespace-nowrap">
             {file.name}
           </div>
-          <div className="desc flex-1">DESC: {file.DESC}</div>
-          {file.DESC === 0 && (
-            <button
-              className="get-desc-btn flex-none"
-              onClick={() => handleGetDesc(file.name)}
-            >
-              Get a DESC
+          {!file.node && (
+            <button onClick={() => handleEmbedFile(file.name)}>
+              Get It
             </button>
           )}
-          <div className="feat flex-1">FEAT: {file.FEAT}</div>
         </div>
       ))}
     </div>

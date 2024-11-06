@@ -24,11 +24,13 @@ export async function POST(request: NextRequest) {
         await index.namespace('ns1').upsert([
             {
                 id: x.id,
-                values: embedding.data[0].embedding
+                values: embedding.data[0].embedding,
+                metadata: {
+                    fileName: x.fileName,
+                    projectName: x.projectName
+                }
             }
         ]);
-        console.log('Vectors upserted successfully');
-
         return new NextResponse(JSON.stringify({ message: 'Vectors upserted successfully' }), {
             status: 200,
             headers: {

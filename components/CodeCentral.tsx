@@ -202,7 +202,6 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
-            console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {setCommitMessage(data.answer) });
@@ -211,7 +210,6 @@ const CodeCentral = () => {
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
-            console.log('Git Diff:', gitDiff);
             const message = `Please provide a JSON response with the 'answer' fields containing the PR title and body based on these changes: ${gitDiff.data.diff}`;
             askChatNoStream([{ role: 'user', content: message }])
                 .then(data => {
@@ -240,16 +238,11 @@ const CodeCentral = () => {
     };
 
     const handleNewHighlitghtedFiles = (filenames: string[]) => {
-        console.log('New Highlighted FilesZZ:', filenames);
-        console.log(currentProject)
-        console.log(currentProjectFileNames)
         if (!currentProject) {
             console.error('No project selected.');
             return;
         }
         const newHighlightedFileNames = filenames.filter(filename => currentProjectFileNames.includes(filename));
-
-        console.log('New Highlighted Files:ZZss', newHighlightedFileNames);
         Promise.all(newHighlightedFileNames.map(async (filename) => {
             return { name: filename, content: await getFile(filename, currentProject.name) };
         })).then(newHighlightedFiles => {
@@ -289,15 +282,10 @@ const CodeCentral = () => {
     const[isSystemOpen, setIsSystemOpen] = useState(false); 
     const[isProcessOpen, setIsProcessOpen] = useState(false);
     const editedCodeToDisplay = editedFiles.find((fileData) => fileData.name === selectedFileName)?.content ?? null
-
     const [currentProcessState, setCurrentProcessState] = useState<string>('None');
-    
     const handleStartProcess = async () => {
         setCurrentProcessState('find-projects');           
     }
-
-    console.log('currently selected file:', selectedFileName);
-    console.log('content of selected file:', selectedFileContent);
 
     useEffect(() => {
         if (currentProcessState === 'find-projects') {
@@ -357,7 +345,6 @@ const CodeCentral = () => {
                     <button 
                         onClick={() => {
                             if (featbugDescription.trim() !== "") {
-                                console.log("Start button clicked with description:", featbugDescription);
                                 handleStartProcess();
                             } else {
                                 alert("Please enter a description");

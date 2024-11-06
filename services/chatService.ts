@@ -8,7 +8,6 @@ export const generateBranchName = async (
     };
     try {
       const response = await askChatNoStream([initialMessage]);
-      console.log("Branch Name Suggestion:", response);
       return response.branchName;
     } catch (error) {
       console.error("Error in generating branch name:", error);
@@ -26,10 +25,7 @@ export const askChatNoStream = async (messages: any[]): Promise<any> => {
     });
     if (response.ok) {
         const data = await response.json();
-        console.log('Response from chat-no-stream:', data);
-        // Handle the response data accordingly
         return data;
-        // If there are files, you can update the state to reflect them as well
     } else {
         console.error('Error calling chat-no-stream:', response.statusText);
     }
@@ -51,17 +47,16 @@ export const askGptToFindWhichProject = async (projectsString: string, featbugDe
       const message = `Which project should we work on to execute the task: ${featbugDescription}. Here are the projects: ${projectsString}. Please return a JSON with the 'answer' field containing the project name in a array (Because yes, there can be more than a single project).`;
       const messages = [{ role: 'user', content: message }];
       const chatResponse = await askChatNoStream(messages);
-      console.log('ChatGPT Response:', chatResponse);
       return chatResponse.answer;
   } catch (error) {
       console.error('Error fetching and asking ChatGPT:', error);
   }
 }
 
-export const embedFile = async (fileName: string, file:string) =>{
+export const embedFile = async (fileName: string, file:string, projectName: string) =>{
   askChatNoStream([{ role: 'user', content: `
     Give me a structured explanation of what is happening in this file.
-    Filename: ${fileName}, fileContent: ${file} Return in JSON only.
+    Filename: ${fileName}, fileContent: ${file}, projectName: ${projectName}. Return in JSON only.
     The FIRST high level field MUST BE EXACLTY : filename : ${fileName}  
     ` }]).then( async data => {
         const jsonString = JSON.stringify(data, null, 2);
@@ -69,14 +64,12 @@ export const embedFile = async (fileName: string, file:string) =>{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-                
             },
             cache: 'no-store',
-            body: JSON.stringify({id: file, toEmbed: jsonString })
+            body: JSON.stringify({id: `${projectName}/${fileName}`, projectName, toEmbed: jsonString, fileName:fileName })
         });
-        const result = await response.json();
-        console.log(result);
-}
+        return await response.json();
+      }
 );
 
 }
@@ -91,11 +84,29 @@ try {
         cache: 'no-store',
         body: JSON.stringify({ featbugDescription: featBugDescrsiption })
     });
-
     const result = await response.json();
-    console.log(result);
-    return result.matches[0].id;
+    return result.matches[0].metadata.fileName;
 } catch (error) {
     console.error('Error querying file for feature/bug description:', error);
 }
  }
+
+export const getAllNodes = async () => {
+  try {
+    const response = await fetch('/api/get-all-nodes', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      console.error('Error fetching all nodes:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching all nodes:', error);
+  }
+};
