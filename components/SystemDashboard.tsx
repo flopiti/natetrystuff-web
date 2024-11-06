@@ -2,19 +2,17 @@ import React, { useState, useEffect } from "react";
 import { embedFile, getAllNodes } from '@/services/chatService';
 import { Project } from "@/types/project";
 import { getFile, getProjectFiles } from "@/app/utils";
-import { get } from "http";
 
 export interface SystemDashboardProps {
   project: Project;
 }
 
 const SystemDashboard = ({ project }: SystemDashboardProps) => {
-  const [files, setFiles] = useState<any>([]);
-  const [nodes, setNodes] = useState<any>([]);
+  const [files, setFiles] = useState<any[]>([]);
+  const [nodes, setNodes] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('FETCHING ALL FILES')
       try {
         const data = await getProjectFiles(project);
         const formattedData = data.map((file: any) => ({ name: file }));
@@ -24,13 +22,13 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
       }
     };
     fetchData();
-  }, []);
+  }, [project]);
 
   useEffect(() => {
     const fetchNodes = async () => {
       try {
-        const nodes = await getAllNodes();
-        setNodes(nodes.matches);
+        const nodesData = await getAllNodes();
+        setNodes(nodesData.matches);
       } catch (error) {
         console.error("Error fetching nodes:", error);
       }
@@ -39,32 +37,30 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('running the CHECK');
-    console.log(files);
-    console.log(nodes);
-  
     const nodeMap = new Map(nodes.map((node: any) => [node.metadata.fileName, node]));
-  
-    setFiles((prevFiles: any[]) =>
-      prevFiles.map((file: any) => ({
+
+    setFiles((prevFiles) =>
+      prevFiles.map((file) => ({
         ...file,
         node: nodeMap.get(file.name) || file.node,
       }))
     );
   }, [nodes]);
 
-
-  console.log(files);
-
-  const handleEmbedFile = async (fileName:string) => {
-    embedFile(fileName, await getFile(fileName, project.name),  project.name);
-  }
+  const handleEmbedFile = async (fileName: string) => {
+    try {
+      const fileContent = await getFile(fileName, project.name);
+      await embedFile(fileName, fileContent, project.name);
+    } catch (error) {
+      console.error("Error embedding file:", error);
+    }
+  };
 
   return (
     <div className="w-full bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
-      {files.map((file: any, index: number) => (
+      {files.map((file) => (
         <div
-          key={index}
+          key={file.name}
           className="file-item p-2 border rounded bg-gray-200 text-black flex items-center justify-between space-x-4"
         >
           <div className="file-name font-bold flex-1 truncate overflow-hidden whitespace-nowrap">
