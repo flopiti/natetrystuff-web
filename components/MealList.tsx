@@ -12,7 +12,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
   const [editMealId, setEditMealId] = useState<number | null>(null);
   const [editMealName, setEditMealName] = useState('');
   const [editMealIngredients, setEditMealIngredients] = useState<MealIngredient[]>([]);
-  const [editImageUrl, setEditImageUrl] = useState(''); // New state for image URL
+  const [editImageUrl, setEditImageUrl] = useState('');
   const [openedMealId, setOpenedMealId] = useState<number | null>(null);
 
   const handleInputChange = (index: number, field: string, value: any) => {
@@ -40,7 +40,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
       setEditMealId(meal.mealId);
       setEditMealName(meal.mealName);
       setEditMealIngredients(meal.mealIngredients);
-      setEditImageUrl(meal.imageUrl || ''); // Set the image URL for editing
+      setEditImageUrl(meal.imageUrl || '');
     }
   };
 
@@ -75,6 +75,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
                     </li>
                   );
                 })}
+                {meal.imageUrl && <img src={meal.imageUrl} alt={meal.mealName} className='mt-2 w-32' />}
               </ul>
             )}
 
@@ -92,9 +93,9 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
                   type='text'
                   placeholder='Image URL'
                   value={editImageUrl}
-                  onChange={(e) => setEditImageUrl(e.target.value)} // Editable image URL
+                  onChange={(e) => setEditImageUrl(e.target.value)}
                 />
-                {editImageUrl && <img src={editImageUrl} alt='Meal Preview' className='w-32 h-32 object-cover mb-2 rounded' />} 
+                {editImageUrl && <img src={editImageUrl} alt='Preview' className='mt-2 w-32' />}
                 <div>
                   {editMealIngredients.map((mealIngredient: any, index: number) => (
                     <div key={index} className='flex items-center mb-2'>
