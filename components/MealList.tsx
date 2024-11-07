@@ -12,6 +12,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
   const [editMealId, setEditMealId] = useState<number | null>(null);
   const [editMealName, setEditMealName] = useState('');
   const [editMealIngredients, setEditMealIngredients] = useState<MealIngredient[]>([]);
+  const [editImageUrl, setEditImageUrl] = useState(''); // New state for image URL
   const [openedMealId, setOpenedMealId] = useState<number | null>(null);
 
   const handleInputChange = (index: number, field: string, value: any) => {
@@ -39,6 +40,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
       setEditMealId(meal.mealId);
       setEditMealName(meal.mealName);
       setEditMealIngredients(meal.mealIngredients);
+      setEditImageUrl(meal.imageUrl || ''); // Set the image URL for editing
     }
   };
 
@@ -85,6 +87,14 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
                   value={editMealName}
                   onChange={(e) => setEditMealName(e.target.value)}
                 />
+                <input
+                  className='text-black p-2 rounded w-full mb-2'
+                  type='text'
+                  placeholder='Image URL'
+                  value={editImageUrl}
+                  onChange={(e) => setEditImageUrl(e.target.value)} // Editable image URL
+                />
+                {editImageUrl && <img src={editImageUrl} alt='Meal Preview' className='w-32 h-32 object-cover mb-2 rounded' />} 
                 <div>
                   {editMealIngredients.map((mealIngredient: any, index: number) => (
                     <div key={index} className='flex items-center mb-2'>
@@ -114,7 +124,7 @@ const MealList = ({ meals, deleteMeal, updateMeal }: any) => {
                   ))}
                   <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={handleAddIngredient}>Add Ingredient</button>
                 </div>
-                <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => updateMeal(meal.mealId, editMealName, editMealIngredients)}>Update Meal</button>
+                <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => updateMeal(meal.mealId, editMealName, editMealIngredients, editImageUrl)}>Update Meal</button>
               </div>
             )}
           </li>
