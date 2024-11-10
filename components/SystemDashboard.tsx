@@ -30,6 +30,8 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
     const fetchNodes = async () => {
       try {
         const nodes = await getAllNodes();
+        console.log('NODES')
+        console.log(nodes)
         setNodes(nodes.matches);
       } catch (error) {
         console.error("Error fetching nodes:", error);

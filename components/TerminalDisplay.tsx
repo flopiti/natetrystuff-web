@@ -5,7 +5,6 @@ import "@xterm/xterm/css/xterm.css";
 import TerminalBar from "./TerminalBar";
 import TerminalInstance from "./TerminalInstance";
 
-
 const TerminalDisplay = ({
   terminals,
   setTerminals,
