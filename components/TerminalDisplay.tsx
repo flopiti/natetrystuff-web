@@ -1,7 +1,7 @@
 //DESC: This component manages the display and lifecycle of multiple terminal instances, handling creation, reconnection, and closure of terminal sessions.
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import "xterm/css/xterm.css";
+import "@xterm/xterm/css/xterm.css";
 import TerminalBar from "./TerminalBar";
 import TerminalInstance from "./TerminalInstance";
 
@@ -103,7 +103,7 @@ const TerminalDisplay = ({
   };
 
   const createTerminalSession = async (id: number, name: string) => {
-    const { Terminal } = await import("xterm");
+    const { Terminal } = await import("@xterm/xterm");
     const terminal = new Terminal();
     const terminalElement = await waitForElement(`terminal-${id}`);
     if (terminalElement) {
@@ -158,7 +158,7 @@ const TerminalDisplay = ({
       { id: id, terminalInstance: null, ws: null, name },
     ]);
     setSelectedTerminal(id);
-    const { Terminal } = await import("xterm");
+    const { Terminal } = await import("@xterm/xterm");
     const terminal = new Terminal();
     const terminalElement = await waitForElement(`terminal-${id}`);
     if (terminalElement) {

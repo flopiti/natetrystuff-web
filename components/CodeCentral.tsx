@@ -1,6 +1,6 @@
 //DESC: This file is responsible for managing a central code viewing and editing interface that includes functionalities for file handling, project selection, and interactive chat operations with automated coding responses.
 import { useEffect, useState } from 'react';
-import { Terminal } from 'xterm';
+import { Terminal } from '@xterm/xterm';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
