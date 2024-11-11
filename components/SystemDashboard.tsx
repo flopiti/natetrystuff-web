@@ -26,7 +26,6 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('FETCHING ALL FILES');
       try {
         const data = await getProjectFiles(project);
         const formattedData = data.map((file: any) => ({ name: file }));
