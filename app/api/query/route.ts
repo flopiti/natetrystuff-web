@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     });
     const embedding = await openai.embeddings.create({
         model: "text-embedding-3-small",
-        input: `Find me file you think is the best file to CHANGE, in order to accomplish the following feature or change: ${req.featbugDescription}`,
+        input: `Please give me a FILE DESCRIPTION of the file required to implement the following feature or bugfix: ${req.featbugDescription}`,
         encoding_format: "float",
     });
 
