@@ -41,25 +41,19 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('running effect to get nodes into files')
-    if (nodes.length > 0) {
-      console.log('nodes is greater than 0')
-
+    if (nodes.length > 0 && files.length > 0) {
       setFiles((prevFiles) => {
-        console.log('PREV FILES')
-        console.log(prevFiles)
         return prevFiles.map((file) => {
           const matchingNode = nodes.find(node => node?.metadata?.fileName === file.name);
           if (matchingNode) {
-            console.log('MATCHING NODE: ')
-            console.log(matchingNode)
             return { ...file, node: matchingNode };
           }
           return file;
         });
       });
     }
-  }, [nodes]);
+  }, [nodes, files]);
+  
 
   const handleEmbedFile = async (fileName: string) => {
     try {
