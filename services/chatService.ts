@@ -54,7 +54,7 @@ export const askGptToFindWhichProject = async (projectsString: string, featbugDe
 }
 
 export const embedFile = async (fileName: string, file:string, projectName: string) =>{
-  askChatNoStream([{ role: 'user', content: `
+  await askChatNoStream([{ role: 'user', content: `
     Give me a structured explanation of what is happening in this file.
     Filename: ${fileName}, fileContent: ${file}, projectName: ${projectName}. Return in JSON only.
     The FIRST high level field MUST BE EXACLTY : filename : ${fileName}  
