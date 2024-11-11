@@ -96,7 +96,9 @@ export const getAllNodes = async () => {
     const response = await fetch('/api/get-all-nodes', {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store'
+
       },
       cache: 'no-store',
 
