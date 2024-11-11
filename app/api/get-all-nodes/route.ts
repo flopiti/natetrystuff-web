@@ -10,13 +10,12 @@ export async function GET(request: NextRequest) {
     });
     const index = pc.index('codebase');
     try {
-        const data =''
-        //  await index.namespace('ns1').query({
-        //     topK: 1000,
-        //     includeMetadata: true,
-        //     vector: Array.from({ length: 1536 }, () => Math.random()), // Generating a random 1536-dimensional vector
-        // });
-        // console.log('Retrieved vectors successfully');
+        const data = await index.namespace('ns1').query({
+            topK: 1000,
+            includeMetadata: true,
+            vector: Array.from({ length: 1536 }, () => Math.random()), // Generating a random 1536-dimensional vector
+        });
+        console.log('Retrieved vectors successfully');
 
         // Ensure no caching by setting appropriate headers
         return new NextResponse(JSON.stringify(data), {
