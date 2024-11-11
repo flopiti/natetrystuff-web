@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { embedFile, getAllNodes } from '@/services/chatService';
 import { Project } from "@/types/project";
 import { getFile, getProjectFiles } from "@/app/utils";
@@ -14,7 +14,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('FETCHING ALL FILES');
+      console.log('FETCHING ALL FILES')
       try {
         const data = await getProjectFiles(project);
         const formattedData = data.map((file: any) => ({ name: file }));
@@ -30,8 +30,6 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
     const fetchNodes = async () => {
       try {
         const nodes = await getAllNodes();
-        console.log('NODES');
-        console.log(nodes);
         setNodes(nodes.matches);
       } catch (error) {
         console.error("Error fetching nodes:", error);
@@ -40,24 +38,27 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
     fetchNodes();
   }, []);
 
-  const filesWithNodes = useMemo(() => {
-    if (nodes.length > 0 && files.length > 0) {
-      return files.map((file) => {
-        const matchingNode = nodes.find(node => node?.metadata?.fileName === file.name);
-        if (matchingNode) {
-          return { ...file, node: matchingNode };
-        }
-        return file;
+  useEffect(() => {
+    if (nodes.length > 0) {
+      setFiles((prevFiles) => {
+        return prevFiles.map((file) => {
+          const matchingNode = nodes.find(node => node?.metadata?.fileName === file.name);
+          if (matchingNode) {
+            return { ...file, node: matchingNode };
+          }
+          return file;
+        });
       });
     }
-    return files;
-  }, [nodes, files]);
+  }, [nodes]);
 
   const handleEmbedFile = async (fileName: string) => {
     try {
       const fileContent = await getFile(fileName, project.name);
       await embedFile(fileName, fileContent, project.name);
       setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: true }));
+      // Re-fetch nodes after embedding to ensure updated state
+      await fetchNodes();
     } catch (error) {
       console.error("Error embedding file:", error);
     }
@@ -65,7 +66,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   return (
     <div className="w-full bg-blue-200 flex flex-col h-full overflow-y-scroll text-black text-xs p-2">
-      {filesWithNodes.map((file) => (
+      {files.map((file) => (
         <div
           key={file.name}
           className="file-item p-2 border rounded bg-gray-200 text-black flex items-center justify-between space-x-4"

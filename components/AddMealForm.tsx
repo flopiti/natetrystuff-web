@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 //DESC: Component for adding a meal, including its ingredients, quantity, and units.
 interface MealIngredient {
@@ -34,33 +35,37 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
   const handleAddMeal = async () => {
     const name = formMealName;
     const ingredients = formMealIngredients
-      .filter(mi => mi.ingredientName !== '' && mi.quantity !== 0 && mi.unit !==
-      '')
+      .filter(mi => mi.ingredientName !== '' && mi.quantity !== 0 && mi.unit !== '')
       .map((ingredient, index) => ({...ingredient, mealIngredientId: index + 1}));
     await addMeal(name, ingredients, imageUrl);
   }
 
-
   return (
-    <div className='mt-4 bg-gray-200 p-4 rounded'>
-      <input
+    <motion.div className='mt-4 bg-gray-200 p-4 rounded' initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5}}>
+      <motion.input
         className='text-black p-2 rounded w-full mb-2'
         type='text'
         placeholder='Meal Name'
         value={formMealName}
         onChange={(e) => setFormMealName(e.target.value)}
+        initial={{ x: -100 }}
+        animate={{ x: 0 }}
+        transition={{ type: "spring", stiffness: 100 }}
       />
-      <input
+      <motion.input
         className='text-black p-2 rounded w-full mb-2'
         type='text'
         placeholder='Image URL'
         value={imageUrl}
         onChange={(e) => setImageUrl(e.target.value)}
+        initial={{ x: -100 }}
+        animate={{ x: 0 }}
+        transition={{ type: "spring", stiffness: 100, delay: 0.1 }}
       />
       <div>
         {formMealIngredients.map((mealIngredient, index) => {
           return (
-            <div key={index} className='flex items-center mb-2'>
+            <motion.div key={index} className='flex items-center mb-2' initial={{ scale: 0.9 }} animate={{ scale: 1 }} transition={{ duration: 0.2 }}>
               <input
                 className='text-black p-2 rounded mr-2 flex-1'
                 type='text'
@@ -83,13 +88,13 @@ const AddMealForm: React.FC<AddMealFormProps> = ({
                 placeholder='Unit'
               />
               <button className='bg-red-500 text-white p-2 rounded' onClick={() => handleRemoveIngredient(index, 'form')}>Remove</button>
-            </div>
+            </motion.div>
           );
         })}
         <button className='bg-blue-500 text-white p-2 rounded mt-2' onClick={() => handleAddIngredient('form')}>Add Ingredient</button>
       </div>
       <button className='bg-green-500 text-white p-2 rounded mt-2' onClick={() => handleAddMeal()}>Add Meal</button>
-    </div>
+    </motion.div>
   );
 };
 
