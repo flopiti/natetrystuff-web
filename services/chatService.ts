@@ -97,8 +97,10 @@ export const getAllNodes = async () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store'
-
+        'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
       },
       cache: 'no-store',
 
