@@ -16,10 +16,15 @@ export async function GET(request: NextRequest) {
         });
         console.log('Retrieved vectors successfully');
 
+        // Ensure no caching by setting appropriate headers
         return new NextResponse(JSON.stringify(data), {
             status: 200,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+                'Surrogate-Control': 'no-store'
             }
         });
     } catch (error) {
@@ -27,7 +32,11 @@ export async function GET(request: NextRequest) {
         return new NextResponse(JSON.stringify({ error: 'Error retrieving vectors' }), {
             status: 500,
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+                'Surrogate-Control': 'no-store'
             }
         });
     }
