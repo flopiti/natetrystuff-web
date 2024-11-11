@@ -12,6 +12,15 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   const [nodes, setNodes] = useState<any[]>([]);
   const [embedStatus, setEmbedStatus] = useState<{ [key: string]: string }>({});
 
+  const fetchNodes = async () => {
+    try {
+      const nodes = await getAllNodes();
+      setNodes(nodes.matches);
+    } catch (error) {
+      console.error("Error fetching nodes:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       console.log('FETCHING ALL FILES')
@@ -27,14 +36,6 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
   }, []);
 
   useEffect(() => {
-    const fetchNodes = async () => {
-      try {
-        const nodes = await getAllNodes();
-        setNodes(nodes.matches);
-      } catch (error) {
-        console.error("Error fetching nodes:", error);
-      }
-    };
     fetchNodes();
   }, []);
 
@@ -54,7 +55,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   const handleEmbedFile = async (fileName: string) => {
     try {
-      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embedding...' }));
+      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embding...' })); // Set status to Embding...
       const fileContent = await getFile(fileName, project.name);
       await embedFile(fileName, fileContent, project.name);
       setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embedding Completed!' }));
@@ -62,7 +63,6 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
       await fetchNodes();
     } catch (error) {
       console.error("Error embedding file:", error);
-      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Error in Embedding' }));
     }
   };
 
@@ -85,9 +85,7 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
           )}
 
           {embedStatus[file.name] && (
-            <span className={embedStatus[file.name] === 'Embedding...' ? "text-yellow-500" : "text-green-500"}>
-              {embedStatus[file.name]}
-            </span>
+            <span className="text-green-500">{embedStatus[file.name]}</span>
           )}
         </div>
       ))}
