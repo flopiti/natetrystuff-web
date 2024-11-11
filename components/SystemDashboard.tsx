@@ -14,8 +14,10 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   const fetchNodes = async () => {
     try {
+      console.log('Fetching nodes...'); // Log fetching nodes
       const nodes = await getAllNodes();
       setNodes(nodes.matches);
+      console.log('Fetched nodes:', nodes.matches);
     } catch (error) {
       console.error("Error fetching nodes:", error);
     }
@@ -23,24 +25,27 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('FETCHING ALL FILES')
+      console.log('FETCHING ALL FILES');
       try {
         const data = await getProjectFiles(project);
         const formattedData = data.map((file: any) => ({ name: file }));
         setFiles(formattedData);
+        console.log('Fetched files:', formattedData);
       } catch (error) {
         console.error("Error fetching file descriptions:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [project]); // Added project dependency to account for different projects
 
   useEffect(() => {
+    console.log('Initial fetch nodes'); // Log initial fetch
     fetchNodes();
   }, []);
 
   useEffect(() => {
     if (nodes.length > 0) {
+      console.log('Updating files with nodes'); // Log file update
       setFiles((prevFiles) => {
         return prevFiles.map((file) => {
           const matchingNode = nodes.find(node => node?.metadata?.fileName === file.name);
@@ -55,10 +60,12 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   const handleEmbedFile = async (fileName: string) => {
     try {
-      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embding...' })); // Set status to Embding...
+      console.log(`Embedding file: ${fileName}`); // Log embedding
+      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embedding...' }));
       const fileContent = await getFile(fileName, project.name);
       await embedFile(fileName, fileContent, project.name);
       setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embedding Completed!' }));
+      console.log(`File embedded: ${fileName}`);
       // Re-fetch nodes after embedding to ensure updated state
       await fetchNodes();
     } catch (error) {
