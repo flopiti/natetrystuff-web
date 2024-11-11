@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import React, { useState, useEffect } from "react";
 import { embedFile, getAllNodes } from '@/services/chatService';
 import { Project } from "@/types/project";
