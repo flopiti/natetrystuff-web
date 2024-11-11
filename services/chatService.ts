@@ -92,6 +92,7 @@ try {
  }
 
 export const getAllNodes = async () => {
+  console.log('DUDE WHY THE FUCK is this not reacing')
   try {
     const response = await fetch('/api/get-all-nodes', {
       method: 'GET',
