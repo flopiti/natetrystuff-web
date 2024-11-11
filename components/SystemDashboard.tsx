@@ -45,21 +45,17 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
     if (nodes.length > 0) {
       console.log('nodes is greater than 0')
 
-      setFiles((prevFiles) => {
-        console.log('PREV FILES')
-        console.log(prevFiles)
-        return prevFiles.map((file) => {
-          const matchingNode = nodes.find(node => node?.metadata?.fileName === file.name);
-          if (matchingNode) {
-            console.log('MATCHING NODE: ')
-            console.log(matchingNode)
-            return { ...file, node: matchingNode };
-          }
-          return file;
-        });
-      });
+      setFiles(files.map((file) => {
+        const matchingNode = nodes.find(node => node?.metadata?.fileName === file.name);
+        if (matchingNode) {
+          console.log('MATCHING NODE: ')
+          console.log(matchingNode)
+          return { ...file, node: matchingNode };
+        }
+        return file;
+      }));
     }
-  }, [nodes]);
+  }, [nodes, files]);
 
   const handleEmbedFile = async (fileName: string) => {
     try {
