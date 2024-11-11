@@ -10,7 +10,7 @@ export interface SystemDashboardProps {
 const SystemDashboard = ({ project }: SystemDashboardProps) => {
   const [files, setFiles] = useState<any[]>([]);
   const [nodes, setNodes] = useState<any[]>([]);
-  const [embedStatus, setEmbedStatus] = useState<{ [key: string]: boolean }>({});
+  const [embedStatus, setEmbedStatus] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,13 +54,15 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
 
   const handleEmbedFile = async (fileName: string) => {
     try {
+      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embedding...' }));
       const fileContent = await getFile(fileName, project.name);
       await embedFile(fileName, fileContent, project.name);
-      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: true }));
+      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Embedding Completed!' }));
       // Re-fetch nodes after embedding to ensure updated state
       await fetchNodes();
     } catch (error) {
       console.error("Error embedding file:", error);
+      setEmbedStatus(prevStatus => ({ ...prevStatus, [fileName]: 'Error in Embedding' }));
     }
   };
 
@@ -83,7 +85,9 @@ const SystemDashboard = ({ project }: SystemDashboardProps) => {
           )}
 
           {embedStatus[file.name] && (
-            <span className="text-green-500">Embedding Completed!</span>
+            <span className={embedStatus[file.name] === 'Embedding...' ? "text-yellow-500" : "text-green-500"}>
+              {embedStatus[file.name]}
+            </span>
           )}
         </div>
       ))}
