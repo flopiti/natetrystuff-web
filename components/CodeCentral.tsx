@@ -288,8 +288,12 @@ const CodeCentral = () => {
     }
 
     useEffect(() => {
-        if (currentProcessState === 'find-projects' && !currentProject) {
-            if (featbugDescription) {
+        if (currentProcessState === 'find-projects') {
+            if(currentProject){
+                setCurrentProcessState('find-files');
+
+            }
+            else if (featbugDescription) {
                 getProjects(projectDir).then((projects) => {
                     const projectsString = projects.map((project:Project) => project.name).join(', ');
                     askGptToFindWhichProject(projectsString, featbugDescription).then((answer) => {
