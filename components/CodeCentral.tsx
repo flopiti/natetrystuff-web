@@ -288,7 +288,7 @@ const CodeCentral = () => {
     }
 
     useEffect(() => {
-        if (currentProcessState === 'find-projects') {
+        if (currentProcessState === 'find-projects' && !currentProject) {
             if (featbugDescription) {
                 getProjects(projectDir).then((projects) => {
                     const projectsString = projects.map((project:Project) => project.name).join(', ');
