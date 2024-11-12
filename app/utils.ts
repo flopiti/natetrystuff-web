@@ -61,9 +61,8 @@ export const getFile = async (fileName: any, project: any) => {
     return data.data;
 }
 export const unescapeString = (str: string) => {
-    return str.replace(/\n/g, '\n').replace(/\"/g, '"');
-  }
-  
+    return str.replace(/\\n/g, '\n').replace(/\\"/g, '"');
+}
   
 export const fetchHighlightedFilesContent = async (highlightedFiles: any[], projectName: any) => {
     const filesContentPromises = highlightedFiles.map((fileName: any) => getFile(fileName, projectName));
