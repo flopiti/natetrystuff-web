@@ -163,11 +163,9 @@ const FileViewer: React.FC<FileViewerProps> = ({
             </SyntaxHighlighter>            
         )}
         {!loading && activeTab === 'chat' && selectedChatCode && (
-          <div className="h-full inline-block">
-            <pre key={selectedChatCode} style={{ color: 'white' }}>
-              {displayLines}
-            </pre>
-          </div>
+          <pre key={selectedChatCode} style={{ color: 'white', margin: 0, whiteSpace: 'pre-wrap' }}>
+            {displayLines}
+          </pre>
         )}
       </div>
     </div>
