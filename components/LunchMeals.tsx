@@ -37,6 +37,7 @@ const LunchMeals = ({
                         <span className="text-white text-lg font-semibold text-center">
                             {lunchMeals[0].meal.mealName}
                         </span>
+                        <img src={lunchMeals[0].meal.imageUrl} alt={lunchMeals[0].meal.mealName} className="w-16 h-16 mt-2 rounded-full" />
                         <AnimatePresence mode="wait">
                             <motion.span
                                 key={lunchMeals[0].prepared ? "prepared" : "not-prepared"}
