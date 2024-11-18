@@ -31,7 +31,7 @@ const Meals = () => {
       <MealList
           meals={meals}
           deleteMeal={(meal:any) => deleteMeal(meal, setMeals)}
-          updateMeal={(mealId:any, name:any, ingredients:any) => updateMeal(mealId, name, ingredients, setMeals)}
+          updateMeal={(mealId:any, name:any, ingredients:any, imageUrl:any) => updateMeal(mealId, name, ingredients, imageUrl, setMeals)}
       />
       {isAddMealFormVisible && (
         <AddMealForm
