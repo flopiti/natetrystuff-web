@@ -1,18 +1,18 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 
 interface Objective {
-    id: string;
-    objective: string;
+    objectiveId: number;
+    finishedState: string;
     finished: boolean;
 }
 
 interface FormState {
-    objective: string;
+    finishedState: string;
 }
 
 const ToDo: React.FC = () => {
     const [objectives, setObjectives] = useState<Objective[]>([]);
-    const [form, setForm] = useState<FormState>({ objective: '' });
+    const [form, setForm] = useState<FormState>({ finishedState: '' });
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +25,9 @@ const ToDo: React.FC = () => {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
             const data = await response.json();
-            setObjectives(data.data);
+            // If data.data is a single object, wrap it in an array
+            const fetchedObjectives: Objective[] = Array.isArray(data.data) ? data.data : [data.data];
+            setObjectives(fetchedObjectives);
         } catch (err) {
             console.error('Failed to fetch objectives:', err);
             setError('Failed to fetch objectives. Please try again later.');
@@ -39,7 +41,7 @@ const ToDo: React.FC = () => {
     }, []);
 
     const handleAdd = async () => {
-        if (!form.objective.trim()) {
+        if (!form.finishedState.trim()) {
             alert('Objective cannot be empty.');
             return;
         }
@@ -53,7 +55,7 @@ const ToDo: React.FC = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    objective: form.objective.trim(), 
+                    finishedState: form.finishedState.trim(), 
                     finished: false 
                 }),
             });
@@ -64,7 +66,7 @@ const ToDo: React.FC = () => {
 
             const newObjective = await response.json();
             setObjectives([...objectives, newObjective.data]);
-            setForm({ objective: '' });
+            setForm({ finishedState: '' });
         } catch (err) {
             console.error('Failed to add objective:', err);
             setError('Failed to add objective. Please try again.');
@@ -73,7 +75,7 @@ const ToDo: React.FC = () => {
         }
     };
 
-    const handleEdit = async (id: string, currentStatus: boolean) => {
+    const handleEdit = async (id: number, currentStatus: boolean) => {
         setLoading(true);
         setError(null);
         try {
@@ -90,7 +92,7 @@ const ToDo: React.FC = () => {
             }
 
             setObjectives(objectives.map(obj => 
-                obj.id === id ? { ...obj, finished: !currentStatus } : obj
+                obj.objectiveId === id ? { ...obj, finished: !currentStatus } : obj
             ));
         } catch (err) {
             console.error('Failed to update objective:', err);
@@ -100,7 +102,7 @@ const ToDo: React.FC = () => {
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: number) => {
         if (!window.confirm('Are you sure you want to delete this objective?')) {
             return;
         }
@@ -119,7 +121,7 @@ const ToDo: React.FC = () => {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
 
-            setObjectives(objectives.filter(obj => obj.id !== id));
+            setObjectives(objectives.filter(obj => obj.objectiveId !== id));
         } catch (err) {
             console.error('Failed to delete objective:', err);
             setError('Failed to delete objective. Please try again.');
@@ -129,7 +131,7 @@ const ToDo: React.FC = () => {
     };
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, objective: e.target.value });
+        setForm({ ...form, finishedState: e.target.value });
     };
 
     return (
@@ -139,7 +141,7 @@ const ToDo: React.FC = () => {
             <div>
                 <input
                     type="text"
-                    value={form.objective}
+                    value={form.finishedState}
                     onChange={handleInputChange}
                     placeholder="Add new objective"
                 />
@@ -155,17 +157,17 @@ const ToDo: React.FC = () => {
             {objectives.length > 0 ? (
                 <ul>
                     {objectives.map(obj => (
-                        <li key={obj.id} style={{ textDecoration: obj.finished ? 'line-through' : 'none' }}>
-                            {obj.objective}
+                        <li key={obj.objectiveId} style={{ textDecoration: obj.finished ? 'line-through' : 'none' }}>
+                            {obj.finishedState}
                             <button 
-                                onClick={() => handleEdit(obj.id, obj.finished)} 
+                                onClick={() => handleEdit(obj.objectiveId, obj.finished)} 
                                 disabled={loading}
                                 style={{ marginLeft: '10px' }}
                             >
                                 {obj.finished ? 'Undo' : 'Complete'}
                             </button>
                             <button 
-                                onClick={() => handleDelete(obj.id)} 
+                                onClick={() => handleDelete(obj.objectiveId)} 
                                 disabled={loading}
                                 style={{ marginLeft: '5px' }}
                             >
