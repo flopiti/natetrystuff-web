@@ -20,7 +20,10 @@ const ToDo = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ objective: form.objective }),
+            body: JSON.stringify({ 
+                finishedState: form.objective, 
+                finished: false 
+            }),
         });
         const newObjective = await response.json();
         setObjectives([...objectives, newObjective.data]);
