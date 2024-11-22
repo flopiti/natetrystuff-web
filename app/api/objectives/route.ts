@@ -38,33 +38,3 @@ export async function POST(request: NextRequest) {
         },
     });
 }
-
-export async function PUT(request: NextRequest) {
-    const token = (await getAccessToken()).accessToken;
-    const { id } = request.params;
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/objectives/${id}/complete`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-    });
-    return new NextResponse(null, {
-        status: res.ok ? 200 : 404,
-    });
-}
-
-export async function DELETE(request: NextRequest) {
-    const token = (await getAccessToken()).accessToken;
-    const { id } = request.params;
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/objectives/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-    });
-    return new NextResponse(null, {
-        status: res.ok ? 204 : 404,
-    });
-}
