@@ -25,7 +25,6 @@ const ToDo: React.FC = () => {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
             const data = await response.json();
-            // If data.data is a single object, wrap it in an array
             const fetchedObjectives: Objective[] = Array.isArray(data.data) ? data.data : [data.data];
             setObjectives(fetchedObjectives);
         } catch (err) {
@@ -135,45 +134,59 @@ const ToDo: React.FC = () => {
     };
 
     return (
-        <div>
-            <h1>ToDo List</h1>
+        <div className="min-h-screen flex flex-col w-full p-4">
+            <h1 className="text-2xl font-bold mb-4">ToDo List</h1>
 
-            <div>
+            <div className="mb-4 flex flex-col items-center w-full">
                 <input
                     type="text"
                     value={form.finishedState}
                     onChange={handleInputChange}
                     placeholder="Add new objective"
-                    className="text-black"
+                    className="border p-2 rounded w-full max-w-md mb-2"
                 />
-                <button onClick={handleAdd} disabled={loading}>
+                <button 
+                    onClick={handleAdd} 
+                    disabled={loading}
+                    className="bg-blue-500 text-white p-2 rounded w-full max-w-md hover:bg-blue-600 transition"
+                >
                     {loading ? 'Adding...' : 'Add'}
                 </button>
             </div>
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
 
             {loading && <p>Loading...</p>}
 
             {objectives.length > 0 ? (
-                <ul>
+                <ul className="w-full">
                     {objectives.map(obj => (
-                        <li key={obj.objectiveId} style={{ textDecoration: obj.finished ? 'line-through' : 'none' }}>
-                            {obj.finishedState}
-                            <button 
-                                onClick={() => handleEdit(obj.objectiveId, obj.finished)} 
-                                disabled={loading}
-                                style={{ marginLeft: '10px' }}
-                            >
-                                {obj.finished ? 'Undo' : 'Complete'}
-                            </button>
-                            <button 
-                                onClick={() => handleDelete(obj.objectiveId)} 
-                                disabled={loading}
-                                style={{ marginLeft: '5px' }}
-                            >
-                                Delete
-                            </button>
+                        <li 
+                            key={obj.objectiveId} 
+                            className={`flex justify-between items-center bg-white p-2 mb-2 rounded text-black ${obj.finished ? 'line-through' : ''}`}
+                        >
+                            <div className="flex items-center">
+                                <span 
+                                    className={`inline-block w-3 h-3 mr-2 rounded-full ${obj.finished ? 'bg-white' : 'bg-green-500'}`}
+                                />
+                                {obj.finishedState}
+                            </div>
+                            <div>
+                                <button 
+                                    onClick={() => handleEdit(obj.objectiveId, obj.finished)} 
+                                    disabled={loading}
+                                    className="bg-yellow-500 text-white p-1 rounded mr-2 hover:bg-yellow-600 transition"
+                                >
+                                    {obj.finished ? 'Undo' : 'Complete'}
+                                </button>
+                                <button 
+                                    onClick={() => handleDelete(obj.objectiveId)} 
+                                    disabled={loading}
+                                    className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition"
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </li>
                     ))}
                 </ul>
