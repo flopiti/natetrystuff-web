@@ -143,7 +143,7 @@ const ToDo: React.FC = () => {
                     value={form.finishedState}
                     onChange={handleInputChange}
                     placeholder="Add new objective"
-                    className="border p-2 rounded w-full max-w-md mb-2"
+                    className="border p-2 rounded w-full max-w-md mb-2 text-black"
                 />
                 <button 
                     onClick={handleAdd} 
