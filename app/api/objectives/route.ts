@@ -38,22 +38,3 @@ export async function POST(request: NextRequest) {
     });
 }
 
-export async function PUT_TASK(request: NextRequest) {
-    const token = (await getAccessToken()).accessToken;
-    const { id, taskId, completed } = await request.json();
-    const res = await fetch(`${process.env.SPRING_BOOT_URL}/objectives/${id}/tasks/${taskId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ completed }),
-    });
-    const data = await res.json();
-    return new NextResponse(JSON.stringify({ data }), {
-        status: 200,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-}
