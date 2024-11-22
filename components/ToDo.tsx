@@ -134,7 +134,7 @@ const ToDo: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4">{/* Removed bg-gray-100 */}
+        <div className="min-h-screen flex flex-col items-center p-4">
             <h1 className="text-2xl font-bold mb-4">ToDo List</h1>
 
             <div className="mb-4 flex flex-col items-center w-full">
@@ -159,11 +159,11 @@ const ToDo: React.FC = () => {
             {loading && <p>Loading...</p>}
 
             {objectives.length > 0 ? (
-                <ul className="w-full max-w-md">
+                <ul className="w-full">
                     {objectives.map(obj => (
                         <li 
                             key={obj.objectiveId} 
-                            className={`flex justify-between items-center bg-white p-2 mb-2 rounded ${obj.finished ? 'line-through' : ''}`}
+                            className={`flex justify-between items-center bg-white p-2 mb-2 rounded text-black ${obj.finished ? 'line-through' : ''}`}
                         >
                             <div className="flex items-center">
                                 <span 
