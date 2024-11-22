@@ -144,6 +144,7 @@ const ToDo: React.FC = () => {
                     value={form.finishedState}
                     onChange={handleInputChange}
                     placeholder="Add new objective"
+                    className="text-black"
                 />
                 <button onClick={handleAdd} disabled={loading}>
                     {loading ? 'Adding...' : 'Add'}
