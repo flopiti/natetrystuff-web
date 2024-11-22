@@ -134,7 +134,7 @@ const ToDo: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-4">
+        <div className="min-h-screen flex flex-col w-full p-4">
             <h1 className="text-2xl font-bold mb-4">ToDo List</h1>
 
             <div className="mb-4 flex flex-col items-center w-full">
