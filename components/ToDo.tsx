@@ -7,7 +7,10 @@ const ToDo = () => {
     useEffect(() => {
         // Fetch current objectives
         fetch('/api/objectives')
-          .then(response => response.json())
+          .then(response => {
+              console.log('Response:', response); // Log the response
+              return response.json();
+          })
           .then(data => setObjectives(data.data));
     }, []);
 
