@@ -54,15 +54,19 @@ const ToDo = () => {
                 placeholder="Add new objective"
             />
             <button onClick={handleAdd}>Add</button>
-            <ul>
-                {objectives.map(obj => (
-                    <li key={obj.id}>
-                        {obj.objective}
-                        <button onClick={() => handleEdit(obj.id)}>Complete</button>
-                        <button onClick={() => handleDelete(obj.id)}>Delete</button>
-                    </li>
-                ))}
-            </ul>
+            {objectives.length > 0 ? (
+                <ul>
+                    {objectives.map(obj => (
+                        <li key={obj.id}>
+                            {obj.objective}
+                            <button onClick={() => handleEdit(obj.id)}>Complete</button>
+                            <button onClick={() => handleDelete(obj.id)}>Delete</button>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No objectives to show</p>
+            )}
         </div>
     );
 }
