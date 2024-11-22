@@ -134,7 +134,7 @@ const ToDo: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4 w-full">
+        <div className="min-h-screen flex flex-col items-center p-4">{/* Removed bg-gray-100 */}
             <h1 className="text-2xl font-bold mb-4">ToDo List</h1>
 
             <div className="mb-4 flex flex-col items-center w-full">
@@ -143,12 +143,12 @@ const ToDo: React.FC = () => {
                     value={form.finishedState}
                     onChange={handleInputChange}
                     placeholder="Add new objective"
-                    className="border p-2 rounded w-full mb-2"
+                    className="border p-2 rounded w-full max-w-md mb-2"
                 />
                 <button 
                     onClick={handleAdd} 
                     disabled={loading}
-                    className="bg-blue-500 text-white py-2 px-4 rounded w-full hover:bg-blue-600 transition"
+                    className="bg-blue-500 text-white p-2 rounded w-full max-w-md hover:bg-blue-600 transition"
                 >
                     {loading ? 'Adding...' : 'Add'}
                 </button>
@@ -159,7 +159,7 @@ const ToDo: React.FC = () => {
             {loading && <p>Loading...</p>}
 
             {objectives.length > 0 ? (
-                <ul className="w-full">
+                <ul className="w-full max-w-md">
                     {objectives.map(obj => (
                         <li 
                             key={obj.objectiveId} 
