@@ -4,15 +4,23 @@ interface Objective {
     objectiveId: number;
     finishedState: string;
     finished: boolean;
+    tasks?: Task[];
+}
+
+interface Task {
+    taskId: number;
+    taskName: string;
+    completed: boolean;
 }
 
 interface FormState {
     finishedState: string;
+    taskName?: string;
 }
 
 const ToDo: React.FC = () => {
     const [objectives, setObjectives] = useState<Objective[]>([]);
-    const [form, setForm] = useState<FormState>({ finishedState: '' });
+    const [form, setForm] = useState<FormState>({ finishedState: '', taskName: '' });
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -65,7 +73,7 @@ const ToDo: React.FC = () => {
 
             const newObjective = await response.json();
             setObjectives([...objectives, newObjective.data]);
-            setForm({ finishedState: '' });
+            setForm({ finishedState: '', taskName: '' });
         } catch (err) {
             console.error('Failed to add objective:', err);
             setError('Failed to add objective. Please try again.');
@@ -96,6 +104,41 @@ const ToDo: React.FC = () => {
         } catch (err) {
             console.error('Failed to update objective:', err);
             setError('Failed to update objective. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleTaskEdit = async (objectiveId: number, taskId: number, currentStatus: boolean) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/objectives/${objectiveId}/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ completed: !currentStatus }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            setObjectives(objectives.map(obj => {
+                if (obj.objectiveId === objectiveId) {
+                    return {
+                        ...obj,
+                        tasks: obj.tasks?.map(task =>
+                            task.taskId === taskId ? { ...task, completed: !currentStatus } : task
+                        )
+                    };
+                }
+                return obj;
+            }));
+        } catch (err) {
+            console.error('Failed to update task:', err);
+            setError('Failed to update task. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -187,6 +230,22 @@ const ToDo: React.FC = () => {
                                     Delete
                                 </button>
                             </div>
+                            {obj.tasks?.length > 0 && (
+                                <ul className="mt-2 pl-4 list-disc">
+                                    {obj.tasks.map(task => (
+                                        <li key={task.taskId} className={`flex justify-between items-center ${task.completed ? 'line-through' : ''}`}>
+                                            <span>{task.taskName}</span>
+                                            <button
+                                                onClick={() => handleTaskEdit(obj.objectiveId, task.taskId, task.completed)}
+                                                disabled={loading}
+                                                className="text-blue-500 hover:underline"
+                                            >
+                                                {task.completed ? 'Undo' : 'Complete'}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </li>
                     ))}
                 </ul>
