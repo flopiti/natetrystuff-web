@@ -6,13 +6,13 @@ const ToDo = () => {
 
     useEffect(() => {
         // Fetch current objectives
-        fetch('/app/api/objectives/route')
+        fetch('/api/objectives')
           .then(response => response.json())
           .then(data => setObjectives(data.data));
     }, []);
 
     const handleAdd = async () => {
-        const response = await fetch('/app/api/objectives/route', {
+        const response = await fetch('/api/objectives', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -25,7 +25,7 @@ const ToDo = () => {
     };
 
     const handleEdit = async id => {
-        await fetch(`/app/api/objectives/route/${id}`, {
+        await fetch(`/api/objectives/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const ToDo = () => {
     };
 
     const handleDelete = async id => {
-        await fetch(`/app/api/objectives/route/${id}`, {
+        await fetch(`/api/objectives/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
