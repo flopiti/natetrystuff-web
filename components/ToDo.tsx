@@ -8,8 +8,9 @@ interface Objective {
 }
 
 interface Task {
+    taskId: number;
     description: string;
-    isFinished: boolean;
+    finished: boolean;
 }
 
 interface FormState {
@@ -33,6 +34,7 @@ const ToDo = () => {
             }
             const data = await response.json();
             const fetchedObjectives: Objective[] = Array.isArray(data.data) ? data.data : [data.data];
+            console.log(fetchedObjectives)
             setObjectives(fetchedObjectives);
         } catch (err) {
             console.error('Failed to fetch objectives:', err);
@@ -265,9 +267,16 @@ const ToDo = () => {
                                 <strong>Tasks:</strong>
                                 <ul className="bg-gray-100 p-2 rounded">
                                     {obj.tasks.map((task, index) => (
-                                        <li key={index} className="flex justify-between">
+                                        <li key={index} className="flex justify-between items-center">
                                             <span>{task.description}</span>
-                                            <span>{task.isFinished ? 'Completed' : 'Not Completed'}</span>
+                                            <span>{task.finished ? 'Completed' : 'Not Completed'}</span>
+                                            <button 
+                                                onClick={() => handleCompleteTask(task.taskId)} 
+                                                disabled={loading || task.finished}
+                                                className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600 transition ml-2"
+                                            >
+                                                {task.finished ? 'Completed' : 'Complete'}
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
