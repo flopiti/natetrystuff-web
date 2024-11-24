@@ -16,11 +16,11 @@ interface FormState {
     finishedState: string;
 }
 
-const ToDo: React.FC = () => {
+const ToDo = () => {
     const [objectives, setObjectives] = useState<Objective[]>([]);
     const [form, setForm] = useState<FormState>({ finishedState: '' });
     const [taskForm, setTaskForm] = useState<{ description: string }>({ description: '' });
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchObjectives = async () => {
@@ -76,6 +76,30 @@ const ToDo: React.FC = () => {
         } catch (err) {
             console.error('Failed to add objective:', err);
             setError('Failed to add objective. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
+    const handleCompleteTask = async (taskId: number) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/tasks/${taskId}/complete`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            // After completing the task, refetch the objectives to update the UI
+            await fetchObjectives();
+        } catch (err) {
+            console.error('Failed to complete task:', err);
+            setError('Failed to complete task. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -273,5 +297,6 @@ const ToDo: React.FC = () => {
         </div>
     );
 }
+
 
 export default ToDo;
