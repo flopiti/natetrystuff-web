@@ -28,3 +28,20 @@ export async function DELETE(request: NextRequest,{ params }: { params: { id: nu
         status: res.ok ? 204 : 404,
     });
 }
+
+export async function POST(request: NextRequest, { params }: { params: { id: number } }) {
+    const token = (await getAccessToken()).accessToken;
+    const taskData = await request.json(); // Assuming the task data is sent as a JSON payload.
+    const res = await fetch(`${process.env.SPRING_BOOT_URL}/tasks/objective/${params.id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(taskData),
+    });
+    const responseBody = await res.json();
+    return new NextResponse(JSON.stringify(responseBody), {
+        status: res.ok ? 201 : 400,
+    });
+}
