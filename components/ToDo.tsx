@@ -239,7 +239,14 @@ const ToDo: React.FC = () => {
 
                             <div className="mb-2">
                                 <strong>Tasks:</strong>
-                                <pre className="bg-gray-100 p-2 rounded">{JSON.stringify(obj.tasks, null, 2)}</pre>
+                                <ul className="bg-gray-100 p-2 rounded">
+                                    {obj.tasks.map((task, index) => (
+                                        <li key={index} className="flex justify-between">
+                                            <span>{task.description}</span>
+                                            <span>{task.isFinished ? 'Completed' : 'Not Completed'}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                             <div className="flex items-center">
                                 <input
