@@ -1,16 +1,15 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 
-interface Task {
-    taskId: number;
-    description: string;
-    completed: boolean;
-}
-
 interface Objective {
     objectiveId: number;
     finishedState: string;
     finished: boolean;
-    tasks: Task[]; // Include tasks array
+    tasks: Task[];
+}
+
+interface Task {
+    description: string;
+    isFinished: boolean;
 }
 
 interface FormState {
@@ -20,7 +19,7 @@ interface FormState {
 const ToDo: React.FC = () => {
     const [objectives, setObjectives] = useState<Objective[]>([]);
     const [form, setForm] = useState<FormState>({ finishedState: '' });
-    const [taskDescription, setTaskDescription] = useState<string>('');
+    const [taskForm, setTaskForm] = useState<{ description: string }>({ description: '' });
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -47,8 +46,43 @@ const ToDo: React.FC = () => {
         fetchObjectives();
     }, []);
 
+    const handleAdd = async () => {
+        if (!form.finishedState.trim()) {
+            alert('Objective cannot be empty.');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch('/api/objectives', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    finishedState: form.finishedState.trim(), 
+                    finished: false 
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            const newObjective = await response.json();
+            setObjectives([...objectives, newObjective.data]);
+            setForm({ finishedState: '' });
+        } catch (err) {
+            console.error('Failed to add objective:', err);
+            setError('Failed to add objective. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleAddTask = async (objectiveId: number) => {
-        if (!taskDescription.trim()) {
+        if (!taskForm.description.trim()) {
             alert('Task description cannot be empty.');
             return;
         }
@@ -56,26 +90,94 @@ const ToDo: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`/api/objectives/${objectiveId}`, {
+            const response = await fetch(`/api/objectives/${objectiveId}/tasks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ description: taskDescription.trim(), completed: false }),
+                body: JSON.stringify({
+                    description: taskForm.description.trim(),
+                    isFinished: false,
+                    objective: { objectiveId },
+                }),
             });
 
             if (!response.ok) {
                 throw new Error(`Error: ${response.status} ${response.statusText}`);
             }
 
-            await fetchObjectives(); // Refresh objectives to get updated tasks
-            setTaskDescription('');
+            // After adding the task, refetch the objectives to update the UI
+            await fetchObjectives();
+            setTaskForm({ description: '' });
         } catch (err) {
             console.error('Failed to add task:', err);
             setError('Failed to add task. Please try again.');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleEdit = async (id: number, currentStatus: boolean) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/objectives/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ finished: !currentStatus }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            setObjectives(objectives.map(obj => 
+                obj.objectiveId === id ? { ...obj, finished: !currentStatus } : obj
+            ));
+        } catch (err) {
+            console.error('Failed to update objective:', err);
+            setError('Failed to update objective. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDelete = async (id: number) => {
+        if (!window.confirm('Are you sure you want to delete this objective?')) {
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`/api/objectives/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+
+            setObjectives(objectives.filter(obj => obj.objectiveId !== id));
+        } catch (err) {
+            console.error('Failed to delete objective:', err);
+            setError('Failed to delete objective. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, finishedState: e.target.value });
+    };
+
+    const handleTaskInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setTaskForm({ description: e.target.value });
     };
 
     return (
@@ -86,16 +188,16 @@ const ToDo: React.FC = () => {
                 <input
                     type="text"
                     value={form.finishedState}
-                    onChange={(e) => setForm({ ...form, finishedState: e.target.value })}
+                    onChange={handleInputChange}
                     placeholder="Add new objective"
                     className="border p-2 rounded w-full max-w-md mb-2"
                 />
                 <button 
-                    onClick={() => { /* Add objective function here */ }} 
+                    onClick={handleAdd} 
                     disabled={loading}
                     className="bg-blue-500 text-white p-2 rounded w-full max-w-md hover:bg-blue-600 transition"
                 >
-                    {loading ? 'Adding...' : 'Add Objective'}
+                    {loading ? 'Adding...' : 'Add'}
                 </button>
             </div>
 
@@ -108,9 +210,9 @@ const ToDo: React.FC = () => {
                     {objectives.map(obj => (
                         <li 
                             key={obj.objectiveId} 
-                            className={`flex flex-col bg-white p-4 mb-4 rounded text-black ${obj.finished ? 'line-through' : ''}`}
+                            className={`flex flex-col bg-white p-4 mb-4 rounded text-black`}
                         >
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-center mb-2">
                                 <div className="flex items-center">
                                     <span 
                                         className={`inline-block w-3 h-3 mr-2 rounded-full ${obj.finished ? 'bg-white' : 'bg-green-500'}`}
@@ -119,14 +221,14 @@ const ToDo: React.FC = () => {
                                 </div>
                                 <div>
                                     <button 
-                                        onClick={() => {/* Edit function here */}} 
+                                        onClick={() => handleEdit(obj.objectiveId, obj.finished)} 
                                         disabled={loading}
                                         className="bg-yellow-500 text-white p-1 rounded mr-2 hover:bg-yellow-600 transition"
                                     >
                                         {obj.finished ? 'Undo' : 'Complete'}
                                     </button>
                                     <button 
-                                        onClick={() => {/* Delete function here */}} 
+                                        onClick={() => handleDelete(obj.objectiveId)} 
                                         disabled={loading}
                                         className="bg-red-500 text-white p-1 rounded hover:bg-red-600 transition"
                                     >
@@ -134,24 +236,23 @@ const ToDo: React.FC = () => {
                                     </button>
                                 </div>
                             </div>
-                            {obj.tasks && obj.tasks.length > 0 && (
-                                <div className="mt-2 text-sm text-gray-600">
-                                    <h3>Tasks:</h3>
-                                    <pre>{JSON.stringify(obj.tasks, null, 2)}</pre>
-                                </div>
-                            )}
-                            <div className="flex mt-2">
+
+                            <div className="mb-2">
+                                <strong>Tasks:</strong>
+                                <pre className="bg-gray-100 p-2 rounded">{JSON.stringify(obj.tasks, null, 2)}</pre>
+                            </div>
+                            <div className="flex items-center">
                                 <input
                                     type="text"
-                                    value={taskDescription}
-                                    onChange={(e) => setTaskDescription(e.target.value)}
+                                    value={taskForm.description}
+                                    onChange={handleTaskInputChange}
                                     placeholder="Add new task"
-                                    className="border p-2 rounded-l w-full"
+                                    className="border p-2 rounded w-full mr-2"
                                 />
-                                <button
-                                    onClick={() => handleAddTask(obj.objectiveId)}
+                                <button 
+                                    onClick={() => handleAddTask(obj.objectiveId)} 
                                     disabled={loading}
-                                    className="bg-blue-500 text-white p-2 rounded-r hover:bg-blue-600 transition"
+                                    className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition"
                                 >
                                     Add Task
                                 </button>
