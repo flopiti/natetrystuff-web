@@ -90,7 +90,7 @@ const ToDo: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`/api/objectives/${objectiveId}/tasks`, {
+            const response = await fetch(`/api/objectives/${objectiveId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
