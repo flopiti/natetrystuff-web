@@ -402,20 +402,21 @@ const CodeCentral = () => {
                         selectedProject={currentProject} 
                         setFeatbugDescription={setFeatbugDescription}
                     />
-                    <div id='terminal-window' className={`${isTerminalOpen ? '' :'hidden'}`}>
-                    <TerminalDisplay
-                        terminals={terminals}
-                        setTerminals={setTerminals}
-                        selectedTerminal={selectedTerminal}
-                        setSelectedTerminal={setSelectedTerminal}
-                        runCommand={runCommand}
-                        runCommandInCurrentProject={runCommandInCurrentProject}
-                        doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal}
-                        setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
-                        devTerminalId={devTerminalId}
-                        setDevTerminalId={setDevTerminalId}
-                        selectedProject={currentProject}
-                    />            </div>
+                    {
+                    isTerminalOpen &&
+                        <TerminalDisplay terminals={terminals}
+                            setTerminals={setTerminals}
+                            selectedTerminal={selectedTerminal}
+                            setSelectedTerminal={setSelectedTerminal}
+                            runCommand={runCommand}
+                            runCommandInCurrentProject={runCommandInCurrentProject}
+                            doesCurrentProjectHaveTerminal={doesCurrentProjectHaveTerminal}
+                            setDoesCurrentProjectHaveTerminal={setDoesCurrentProjectHaveTerminal}
+                            devTerminalId={devTerminalId}
+                            setDevTerminalId={setDevTerminalId}
+                            selectedProject={currentProject}
+                        /> }          
+
                 </div>
             </div>
 

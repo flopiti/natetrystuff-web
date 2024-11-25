@@ -193,13 +193,15 @@ const TerminalDisplay = ({
   };
 
   return (
-    <div className="h-full p-4 overflow-auto">
-      <TerminalBar
+    <div className="h-full p-4 overflow-auto flex flex-col">
+      <div className="">
+        <TerminalBar
         terminals={terminals}
         selectedTerminal={selectedTerminal}
         setSelectedTerminal={setSelectedTerminal}
         openTerminal={openTerminal}
       />
+      </div>
       {terminals.map((t: any) => (
         <TerminalInstance
           key={t.id}

@@ -23,12 +23,12 @@ const TerminalBar = ({
           }`}
           onClick={() => setSelectedTerminal(terminal.id)}
         >
-         {terminal.name  ? terminal.name : `Terminal ${terminal.id}`}
+          {terminal.name ? terminal.name : `Terminal ${terminal.id}`}
         </span>
       ))}
       <button
         className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={()=>openTerminal()}
+        onClick={() => openTerminal()}
       >
         Open another Terminal
       </button>
