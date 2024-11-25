@@ -368,7 +368,7 @@ const CodeCentral = () => {
                 {branchName && <p>Current Branch: {branchName}</p>}
             </div>
             
-            <div className="flex flex-grow flex-col overflow-auto">
+            <div className="flex h-full flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
                         handleFlightClick={handleHighlight}
