@@ -152,6 +152,11 @@ const TerminalDisplay = ({
   };
 
   const reconnectTerminal = async (id: number, name: string) => {
+    const existingTerminal = terminals.find((t: any) => t.id === id);
+    if (existingTerminal) {
+      setSelectedTerminal(id);
+      return;
+    }
     setTerminals((prev: any) => [
       ...prev,
       { id: id, terminalInstance: null, ws: null, name },
@@ -188,7 +193,7 @@ const TerminalDisplay = ({
   };
 
   return (
-    <div className="p-4">
+    <div className="h-full p-4 overflow-auto">
       <TerminalBar
         terminals={terminals}
         selectedTerminal={selectedTerminal}
