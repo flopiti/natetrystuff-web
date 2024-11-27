@@ -15,11 +15,15 @@ import { setBranchName, setCurrentProject, setCurrentProjectFileNames, setProjec
 import { getGitBranch, getGitDiff } from '@/services/gitService';
 import SystemDashboard from './SystemDashboard';
 import ProcessDashboard from './ProcessDashboard'; // Import new ProcessDashboard
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
+import { motion } from 'framer-motion';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
+    const [isApiRunning, setIsApiRunning] = useState<boolean|null>(null);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
     const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
@@ -43,6 +47,12 @@ const CodeCentral = () => {
     }
     , [chatMessages]);
 
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            handleGetApiStatus();
+        }, 5000);
+        return () => clearInterval(intervalId);
+    }, []);
 
     const [featbugDescription, setFeatbugDescription] = useState<string>("");
 
@@ -262,6 +272,17 @@ const CodeCentral = () => {
     // Add state and handler for GET requests
     const [routeResponses, setRouteResponses] = useState<{ [key: string]: string }>({});
 
+    console.log(isApiRunning)
+    const handleGetApiStatus = async () => {
+        try {
+            const response = await fetch('/api/check-api-status');
+            const data = await response.json();
+            setIsApiRunning(data.data.isRunning);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
     const handleGetRequest = async (routeUrl: string) => {
         try {
             const response = await fetch(routeUrl);
@@ -277,6 +298,23 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
+            <div className="absolute top-0 left-0 m-10 flex flex-row items-center border-2 border-white">
+                {isApiRunning !== null && (
+                    <motion.div
+                        className="w-10 h-10 flex items-center justify-center"
+                        animate={isApiRunning ? { rotate: 360 } : {}}
+                        transition={isApiRunning ? { repeat: Infinity, duration: 4, ease: "linear" } : {}}
+                    >
+                        <FontAwesomeIcon 
+                            size="xl" 
+                            icon={isApiRunning ? faArrowsRotate : faTimesCircle} 
+                        />
+                    </motion.div>
+                )}
+                <div className='text-white p-2 rounded shadow-lg'>
+                    API
+                </div>
+            </div>
             <div className="flex justify-between m-2">
                 <button onClick={toggleTerminal} className="bg-green-500 text-white p-2 m-2">
                     {isTerminalOpen ? 'Close Terminal' : 'Open Terminal'}
