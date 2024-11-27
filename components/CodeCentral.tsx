@@ -388,10 +388,8 @@ const CodeCentral = () => {
                 <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
                 <button onClick={() => handleGetRequest('/api/check-api-status')} className="bg-teal-500 text-white p-2 m-2">Check API Status</button>
             </div>
-
-            {/* Display route responses */}
             <div className="p-2">
-                {Object.entries(routeResponses).map(([route, response]) => (
+                {Object.entries(routeResponses).slice(-1).map(([route, response]) => (
                     <div key={route} className="my-2">
                         <h4 className="font-bold">{route}</h4>
                         <pre className="bg-gray-200 p-2 overflow-auto">{response}</pre>
