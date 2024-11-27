@@ -1,4 +1,3 @@
-//DESC: This file is responsible for managing a central code viewing and editing interface that includes functionalities for file handling, project selection, and interactive chat operations with automated coding responses.
 import { useEffect, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import FileViewer from './FileViewer';
@@ -314,6 +313,16 @@ const CodeCentral = () => {
                 <div className='text-white p-2 rounded shadow-lg'>
                     API
                 </div>
+                {/* Start Button */}
+                <motion.button
+                    className="bg-red-500 text-white p-2 rounded ml-2"
+                    initial={{ x: '-100%' }}
+                    animate={{ x: 0 }}
+                    transition={{ type: 'spring', stiffness: 120 }}
+                    onClick={handleStartProcess}
+                >
+                    Start Process
+                </motion.button>
             </div>
             <div className="flex justify-between m-2">
                 <button onClick={toggleTerminal} className="bg-green-500 text-white p-2 m-2">
