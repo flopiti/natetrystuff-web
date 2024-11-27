@@ -319,6 +319,17 @@ const CodeCentral = () => {
                 <div className='text-white p-2 rounded shadow-lg'>
                     API
                 </div>
+                {isApiRunning && isHovered && ( // Add stop button conditional rendering
+                    <motion.button 
+                        className="bg-red-500 text-white p-2 mx-2 rounded"
+                        initial={{ x: '-100vw' }}
+                        animate={{ x: 0 }}
+                        transition={{ type: 'spring', stiffness: 120 }}
+                        onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
+                    >
+                        Stop Running API
+                    </motion.button>
+                )}
                 {!isApiRunning && isHovered && (
                     <motion.button 
                         className="bg-green-500 text-white p-2 mx-2 rounded"
