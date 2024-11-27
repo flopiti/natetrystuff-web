@@ -1,3 +1,4 @@
+//DESC: This file is responsible for managing a central code viewing and editing interface that includes functionalities for file handling, project selection, and interactive chat operations with automated coding responses.
 import { useEffect, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import FileViewer from './FileViewer';
@@ -23,6 +24,7 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
     const [isApiRunning, setIsApiRunning] = useState<boolean|null>(null);
+    const [isHovered, setIsHovered] = useState<boolean>(false); // New state for hover status
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
     const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
@@ -297,7 +299,11 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
-            <div className="absolute top-0 left-0 m-10 flex flex-row items-center border-2 border-white">
+            <div 
+                className="absolute top-0 left-0 m-10 flex flex-row items-center border-2 border-white"
+                onMouseEnter={() => setIsHovered(true)} 
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 {isApiRunning !== null && (
                     <motion.div
                         className="w-10 h-10 flex items-center justify-center"
@@ -313,16 +319,17 @@ const CodeCentral = () => {
                 <div className='text-white p-2 rounded shadow-lg'>
                     API
                 </div>
-                {/* Start Button */}
-                <motion.button
-                    className="bg-red-500 text-white p-2 rounded ml-2"
-                    initial={{ x: '-100%' }}
-                    animate={{ x: 0 }}
-                    transition={{ type: 'spring', stiffness: 120 }}
-                    onClick={handleStartProcess}
-                >
-                    Start Process
-                </motion.button>
+                {!isApiRunning && isHovered && (
+                    <motion.button 
+                        className="bg-green-500 text-white p-2 mx-2 rounded"
+                        initial={{ x: '-100vw' }}
+                        animate={{ x: 0 }}
+                        transition={{ type: 'spring', stiffness: 120 }}
+                        onClick={handleStartProcess}
+                    >
+                        Start Process
+                    </motion.button>
+                )}
             </div>
             <div className="flex justify-between m-2">
                 <button onClick={toggleTerminal} className="bg-green-500 text-white p-2 m-2">
