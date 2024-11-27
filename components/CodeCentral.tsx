@@ -6,7 +6,7 @@ import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
 import { getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
 import Chat from './Chat';
-import { askChatNoStream, askGptToFindWhichFiles, askGptToFindWhichProject } from '@/services/chatService';
+import { askChat, askChatNoStream, askGptToFindWhichFiles, askGptToFindWhichProject } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
@@ -18,21 +18,30 @@ import ProcessDashboard from './ProcessDashboard'; // Import new ProcessDashboar
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
-    
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
     const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
 
-    // when there is a new message, check if it is a user message and if so, ask the chat
     useEffect(() => {
         const lastMessage = chatMessages[chatMessages.length - 1];
         if (lastMessage.role === 'user') {
             dispatch(setLoading(true));
-            askChat(chatMessages, highlightedFiles);
+            setActiveTab('chat');
+            askChat(chatMessages, highlightedFiles, (messages) => {
+                dispatch(setMessages(messages));
+            },
+            (editedFiles) => {
+                setEditedFiles(editedFiles);
+            },
+            (loading) => {
+                dispatch(setLoading(loading));
+            }
+            );
         }
-    }, [chatMessages]);
+    }
+    , [chatMessages]);
 
 
     const [featbugDescription, setFeatbugDescription] = useState<string>("");
@@ -135,68 +144,6 @@ const CodeCentral = () => {
     
     
 
-    const askChat = async (conversation: any[] , highlightedFiles: ProjectFile[]) => {
-        setActiveTab('chat');
-        const messages = conversation.map((message: { role: any; content: any; }) => {
-            return { role: message.role, content: message.content, type: 'text' };
-        });
-        const lastMessage = messages[messages.length - 1];
-        messages.pop();
-        const highlightedFilesText = highlightedFiles.map((highlightedFile) => `${highlightedFile.name}: ${highlightedFile.content}` )
-        messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
-        const response = await fetch('api/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-store'
-            },
-            body: JSON.stringify({ messages })
-        });
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
-        let chatCompletion = '';
-        while (!done) {
-            const { value, done: doneReading } = await reader?.read()!;
-            done = doneReading;
-            const chunk = decoder.decode(value, { stream: true });
-            chatCompletion += chunk;            
-            let buffer = '';
-            try {
-                const jsonStartIndex = chatCompletion.indexOf('{');                
-                if (jsonStartIndex !== -1) {
-                    buffer += chatCompletion.substring(jsonStartIndex);
-                    const valueMatches = getTopLevelValues(buffer);
-                    if (valueMatches) {
-                        valueMatches.forEach((value, index) => {
-                            if(index + 1 === 1){
-                                dispatch(setMessages([...conversation, { content: value, role: 'assistant', type: 'text' }]));
-                            }
-                            if(index + 1 === 2){
-                                const files = getTopLevelArrayElements(value);
-                                let arrayElementsValues = files.map((element) => {
-                                    return getTopLevelValues(element);
-                                });
-                                const newChatCodes = arrayElementsValues.map((element) => ({
-                                    name: element[0],
-                                    content: element[1] ? element[1].replace(/\n/g, '\n') : ''
-                                }));
-                                setEditedFiles(newChatCodes);
-
-                                
-                            }
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('Error processing JSON chunk:', error);
-            }
-        }
-        dispatch(setLoading(false));
-        console.log('Finished Chat Completion:', JSON.parse(chatCompletion).files);
-        setEditedFiles(JSON.parse(chatCompletion).files);
-        return  
-    }
 
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {

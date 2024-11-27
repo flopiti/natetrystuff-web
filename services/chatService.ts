@@ -1,3 +1,6 @@
+import { getTopLevelArrayElements, getTopLevelValues } from "@/app/utils";
+import { ProjectFile } from "@/types/project";
+
 //DESC: This file contains functions to generate branch names, interact with a chat API, and process feature descriptions.
 export const generateBranchName = async (
     changeDescription: string
@@ -14,6 +17,71 @@ export const generateBranchName = async (
       throw error;
     }
   };
+  export const askChat = async (
+    conversation: any[],
+    highlightedFiles: ProjectFile[],
+    dispatchSetMessages: (messages: any[]) => void,
+    setEdited: (editedFiles: ProjectFile[]) => void,
+    dispatchSetLoading: (loading: boolean) => void,
+  ) => {
+    const messages = conversation.map((message: { role: any; content: any; }) => {
+        return { role: message.role, content: message.content, type: 'text' };
+    });
+    const lastMessage = messages[messages.length - 1];
+    messages.pop();
+    const highlightedFilesText = highlightedFiles.map((highlightedFile) => `${highlightedFile.name}: ${highlightedFile.content}` )
+    messages.push({ content: lastMessage.content + ` The code is: ${highlightedFilesText}`, role: 'user', type: 'text' });
+    const response = await fetch('api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store'
+        },
+        body: JSON.stringify({ messages })
+    });
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    let chatCompletion = '';
+    while (!done) {
+        const { value, done: doneReading } = await reader?.read()!;
+        done = doneReading;
+        const chunk = decoder.decode(value, { stream: true });
+        chatCompletion += chunk;            
+        let buffer = '';
+        try {
+            const jsonStartIndex = chatCompletion.indexOf('{');                
+            if (jsonStartIndex !== -1) {
+                buffer += chatCompletion.substring(jsonStartIndex);
+                const valueMatches = getTopLevelValues(buffer);
+                if (valueMatches) {
+                    valueMatches.forEach((value, index) => {
+                        if(index + 1 === 1){
+                            dispatchSetMessages([...conversation, { content: value, role: 'assistant', type: 'text' }]);
+                        }
+                        if(index + 1 === 2){
+                            const files = getTopLevelArrayElements(value);
+                            let arrayElementsValues = files.map((element) => {
+                                return getTopLevelValues(element);
+                            });
+                            const newChatCodes = arrayElementsValues.map((element) => ({
+                                name: element[0],
+                                content: element[1] ? element[1].replace(/\n/g, '\n') : ''
+                            }));
+                            setEdited(newChatCodes);  
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error processing JSON chunk:', error);
+        }
+    }
+    dispatchSetLoading(false);
+    console.log('Finished Chat Completion:', JSON.parse(chatCompletion).files);
+    setEdited(JSON.parse(chatCompletion).files);
+    return  
+}
 
 export const askChatNoStream = async (messages: any[]): Promise<any> => {
     const response = await fetch('/api/chat-no-stream', {
@@ -71,7 +139,6 @@ export const embedFile = async (fileName: string, file:string, projectName: stri
         return await response.json();
       }
 );
-
 }
 
 export const queryFileForFeatBug = async (featBugDescrsiption:string) => {
