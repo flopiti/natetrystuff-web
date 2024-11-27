@@ -384,6 +384,7 @@ const CodeCentral = () => {
                     >
                         Start
                     </button>
+                    <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
                 </div>
                 <button
                     onClick={() => setIsProcessOpen(!isProcessOpen)}
@@ -395,10 +396,6 @@ const CodeCentral = () => {
             </div>
 
             <div className="flex justify-around bg-gray-100 p-2">
-                <button onClick={() => handleGetRequest('/api/start-api')} className="bg-teal-500 text-white p-2 m-2">Start API</button>
-                <button onClick={() => handleGetRequest('/api/stop-api')} className="bg-teal-500 text-white p-2 m-2">Stop API</button>
-                <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
-                <button onClick={() => handleGetRequest('/api/check-api-status')} className="bg-teal-500 text-white p-2 m-2">Check API Status</button>
             </div>
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
