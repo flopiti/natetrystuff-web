@@ -198,8 +198,6 @@ const CodeCentral = () => {
         return  
     }
 
-
-
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
             const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
@@ -322,6 +320,22 @@ const CodeCentral = () => {
     }
     }, [currentProcessState, currentProjectFileNames]);
 
+    // Add state and handler for GET requests
+    const [routeResponses, setRouteResponses] = useState<{ [key: string]: string }>({});
+
+    const handleGetRequest = async (routeUrl: string) => {
+        try {
+            const response = await fetch(routeUrl);
+            const data = await response.json();
+            setRouteResponses(prevState => ({
+                ...prevState,
+                [routeUrl]: JSON.stringify(data, null, 2)
+            }));
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div className="flex justify-between m-2">
@@ -367,8 +381,22 @@ const CodeCentral = () => {
             <div>
                 {branchName && <p>Current Branch: {branchName}</p>}
             </div>
-            
-            <div className="flex h-full flex-col overflow-auto">
+
+            <div className="flex justify-around bg-gray-100 p-2">
+                <button onClick={() => handleGetRequest('/api/start-api')} className="bg-teal-500 text-white p-2 m-2">Start API</button>
+                <button onClick={() => handleGetRequest('/api/stop-api')} className="bg-teal-500 text-white p-2 m-2">Stop API</button>
+                <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
+                <button onClick={() => handleGetRequest('/api/check-api-status')} className="bg-teal-500 text-white p-2 m-2">Check API Status</button>
+            </div>
+            <div className="p-2">
+                {Object.entries(routeResponses).slice(-1).map(([route, response]) => (
+                    <div key={route} className="my-2">
+                        <h4 className="font-bold">{route}</h4>
+                        <pre className="bg-gray-200 p-2 overflow-auto">{response}</pre>
+                    </div>
+                ))}
+            </div>
+            <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
                         handleFlightClick={handleHighlight}
