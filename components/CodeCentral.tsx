@@ -319,27 +319,35 @@ const CodeCentral = () => {
                 <div className='text-white p-2 rounded shadow-lg'>
                     API
                 </div>
-                {isApiRunning && isHovered && ( // Add stop button conditional rendering
-                    <motion.button 
-                        className="bg-red-500 text-white p-2 mx-2 rounded"
-                        initial={{ x: '-100vw' }}
-                        animate={{ x: 0 }}
-                        transition={{ type: 'spring', stiffness: 120 }}
-                        onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
+                {isHovered && (
+                    <motion.div
+                        className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
                     >
-                        Stop Running API
-                    </motion.button>
-                )}
-                {!isApiRunning && isHovered && (
-                    <motion.button 
-                        className="bg-green-500 text-white p-2 mx-2 rounded"
-                        initial={{ x: '-100vw' }}
-                        animate={{ x: 0 }}
-                        transition={{ type: 'spring', stiffness: 120 }}
-                        onClick={() => handleGetRequest('/api/start-api')} // Start API action
-                    >
-                        Start Process
-                    </motion.button>
+                        {isApiRunning ? (
+                            <motion.button 
+                                className="bg-red-500 text-white w-full p-2"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 80 }}
+                                onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
+                            >
+                                Stop
+                            </motion.button>
+                        ) : (
+                            <motion.button 
+                                className="bg-green-500 text-white w-full p-2"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 80 }}
+                                onClick={() => handleGetRequest('/api/start-api')} // Start API action
+                            >
+                                Start
+                            </motion.button>
+                        )}
+                    </motion.div>
                 )}
             </div>
             <div className="flex justify-between m-2">
