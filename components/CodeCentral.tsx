@@ -272,8 +272,6 @@ const CodeCentral = () => {
 
     // Add state and handler for GET requests
     const [routeResponses, setRouteResponses] = useState<{ [key: string]: string }>({});
-
-    console.log(isApiRunning)
     const handleGetApiStatus = async () => {
         try {
             const response = await fetch('/api/check-api-status');
@@ -391,14 +389,6 @@ const CodeCentral = () => {
                 <button onClick={() => handleGetRequest('/api/stop-api')} className="bg-teal-500 text-white p-2 m-2">Stop API</button>
                 <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
                 <button onClick={() => handleGetRequest('/api/check-api-status')} className="bg-teal-500 text-white p-2 m-2">Check API Status</button>
-            </div>
-            <div className="p-2">
-                {Object.entries(routeResponses).slice(-1).map(([route, response]) => (
-                    <div key={route} className="my-2">
-                        <h4 className="font-bold">{route}</h4>
-                        <pre className="bg-gray-200 p-2 overflow-auto">{response}</pre>
-                    </div>
-                ))}
             </div>
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
