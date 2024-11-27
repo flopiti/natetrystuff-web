@@ -50,6 +50,7 @@ const CodeCentral = () => {
 
     useEffect(() => {
         const intervalId = setInterval(() => {
+
             handleGetApiStatus();
         }, 5000);
         return () => clearInterval(intervalId);
@@ -276,6 +277,7 @@ const CodeCentral = () => {
         try {
             const response = await fetch('/api/check-api-status');
             const data = await response.json();
+            console.log('API Status:', data.data.isRunning);
             setIsApiRunning(data.data.isRunning);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -334,7 +336,7 @@ const CodeCentral = () => {
                         initial={{ x: '-100vw' }}
                         animate={{ x: 0 }}
                         transition={{ type: 'spring', stiffness: 120 }}
-                        onClick={handleStartProcess}
+                        onClick={() => handleGetRequest('/api/start-api')} // Start API action
                     >
                         Start Process
                     </motion.button>
