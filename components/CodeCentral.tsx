@@ -322,6 +322,22 @@ const CodeCentral = () => {
     }
     }, [currentProcessState, currentProjectFileNames]);
 
+    // Add state and handler for GET requests
+    const [routeResponses, setRouteResponses] = useState<{ [key: string]: string }>({});
+
+    const handleGetRequest = async (routeUrl: string) => {
+        try {
+            const response = await fetch(routeUrl);
+            const data = await response.json();
+            setRouteResponses(prevState => ({
+                ...prevState,
+                [routeUrl]: JSON.stringify(data, null, 2)
+            }));
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
             <div className="flex justify-between m-2">
@@ -367,7 +383,25 @@ const CodeCentral = () => {
             <div>
                 {branchName && <p>Current Branch: {branchName}</p>}
             </div>
-            
+
+            <div className="flex justify-around bg-gray-100 p-2">
+                {/* Add buttons for each route */}
+                <button onClick={() => handleGetRequest('/api/route1')} className="bg-teal-500 text-white p-2 m-2">GET Route 1</button>
+                <button onClick={() => handleGetRequest('/api/route2')} className="bg-teal-500 text-white p-2 m-2">GET Route 2</button>
+                <button onClick={() => handleGetRequest('/api/route3')} className="bg-teal-500 text-white p-2 m-2">GET Route 3</button>
+                <button onClick={() => handleGetRequest('/api/route4')} className="bg-teal-500 text-white p-2 m-2">GET Route 4</button>
+            </div>
+
+            {/* Display route responses */}
+            <div className="p-2">
+                {Object.entries(routeResponses).map(([route, response]) => (
+                    <div key={route} className="my-2">
+                        <h4 className="font-bold">{route}</h4>
+                        <pre className="bg-gray-200 p-2 overflow-auto">{response}</pre>
+                    </div>
+                ))}
+            </div>
+
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
                     <FileListDropdown
