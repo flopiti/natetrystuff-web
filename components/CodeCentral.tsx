@@ -102,14 +102,6 @@ const CodeCentral = () => {
             })();
         }
     }, [currentProject]);
-
-
-    useEffect(() => {
-        if (editedFiles?.length > 0) {
-            // setActiveTab('chat'); 
-            const chatCode: ProjectFile | null = editedFiles?.find((fileData: ProjectFile) => fileData.name === selectedFileName) ?? null;
-        }
-    }, [editedFiles]);
     
     const runCommand = (command: any) => {
         const terminal = terminals.find((t) => t.id === selectedTerminal);
