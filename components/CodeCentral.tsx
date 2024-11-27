@@ -24,6 +24,7 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
     const [isApiRunning, setIsApiRunning] = useState<boolean|null>(null);
+    const [isHovered, setIsHovered] = useState<boolean>(false); // New state for hover status
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
     const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
@@ -271,8 +272,6 @@ const CodeCentral = () => {
 
     // Add state and handler for GET requests
     const [routeResponses, setRouteResponses] = useState<{ [key: string]: string }>({});
-
-    console.log(isApiRunning)
     const handleGetApiStatus = async () => {
         try {
             const response = await fetch('/api/check-api-status');
@@ -298,7 +297,11 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
-            <div className="absolute top-0 left-0 m-10 flex flex-row items-center border-2 border-white">
+            <div 
+                className="absolute top-0 left-0 m-10 flex flex-row items-center border-2 border-white"
+                onMouseEnter={() => setIsHovered(true)} 
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 {isApiRunning !== null && (
                     <motion.div
                         className="w-10 h-10 flex items-center justify-center"
@@ -314,6 +317,28 @@ const CodeCentral = () => {
                 <div className='text-white p-2 rounded shadow-lg'>
                     API
                 </div>
+                {isApiRunning && isHovered && ( // Add stop button conditional rendering
+                    <motion.button 
+                        className="bg-red-500 text-white p-2 mx-2 rounded"
+                        initial={{ x: '-100vw' }}
+                        animate={{ x: 0 }}
+                        transition={{ type: 'spring', stiffness: 120 }}
+                        onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
+                    >
+                        Stop Running API
+                    </motion.button>
+                )}
+                {!isApiRunning && isHovered && (
+                    <motion.button 
+                        className="bg-green-500 text-white p-2 mx-2 rounded"
+                        initial={{ x: '-100vw' }}
+                        animate={{ x: 0 }}
+                        transition={{ type: 'spring', stiffness: 120 }}
+                        onClick={handleStartProcess}
+                    >
+                        Start Process
+                    </motion.button>
+                )}
             </div>
             <div className="flex justify-between m-2">
                 <button onClick={toggleTerminal} className="bg-green-500 text-white p-2 m-2">
@@ -364,14 +389,6 @@ const CodeCentral = () => {
                 <button onClick={() => handleGetRequest('/api/stop-api')} className="bg-teal-500 text-white p-2 m-2">Stop API</button>
                 <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
                 <button onClick={() => handleGetRequest('/api/check-api-status')} className="bg-teal-500 text-white p-2 m-2">Check API Status</button>
-            </div>
-            <div className="p-2">
-                {Object.entries(routeResponses).slice(-1).map(([route, response]) => (
-                    <div key={route} className="my-2">
-                        <h4 className="font-bold">{route}</h4>
-                        <pre className="bg-gray-200 p-2 overflow-auto">{response}</pre>
-                    </div>
-                ))}
             </div>
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
