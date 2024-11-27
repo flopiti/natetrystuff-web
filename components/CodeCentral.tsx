@@ -198,8 +198,6 @@ const CodeCentral = () => {
         return  
     }
 
-
-
     useEffect(() => {
         if (gitDiff && gitDiff.data.diff !== '') {
             const message = `Please provide a JSON response with the 'answer' field containing the commit message based on these changes: ${gitDiff.data.diff}`;
@@ -385,11 +383,10 @@ const CodeCentral = () => {
             </div>
 
             <div className="flex justify-around bg-gray-100 p-2">
-                {/* Add buttons for each route */}
-                <button onClick={() => handleGetRequest('/api/route1')} className="bg-teal-500 text-white p-2 m-2">GET Route 1</button>
-                <button onClick={() => handleGetRequest('/api/route2')} className="bg-teal-500 text-white p-2 m-2">GET Route 2</button>
-                <button onClick={() => handleGetRequest('/api/route3')} className="bg-teal-500 text-white p-2 m-2">GET Route 3</button>
-                <button onClick={() => handleGetRequest('/api/route4')} className="bg-teal-500 text-white p-2 m-2">GET Route 4</button>
+                <button onClick={() => handleGetRequest('/api/start-api')} className="bg-teal-500 text-white p-2 m-2">Start API</button>
+                <button onClick={() => handleGetRequest('/api/stop-api')} className="bg-teal-500 text-white p-2 m-2">Stop API</button>
+                <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
+                <button onClick={() => handleGetRequest('/api/check-api-status')} className="bg-teal-500 text-white p-2 m-2">Check API Status</button>
             </div>
 
             {/* Display route responses */}
