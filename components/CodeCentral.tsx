@@ -302,8 +302,8 @@ const CodeCentral = () => {
                 {isApiRunning !== null && (
                     <motion.div
                         className="w-10 h-10 flex items-center justify-center"
-                        animate={{ rotate: isApiRunning ? 360 : 0 }}
-                        transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+                        animate={isApiRunning ? { rotate: 360 } : {}}
+                        transition={isApiRunning ? { repeat: Infinity, duration: 4, ease: "linear" } : {}}
                     >
                         <FontAwesomeIcon 
                             size="xl" 
