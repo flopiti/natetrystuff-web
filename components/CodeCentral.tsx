@@ -20,6 +20,7 @@ const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
+    const [isApiRunning, setIsApiRunning] = useState<boolean|null>(null);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
     const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
@@ -43,6 +44,9 @@ const CodeCentral = () => {
     }
     , [chatMessages]);
 
+    useEffect(() => {
+        handleGetApiStatus();
+    },[]);
 
     const [featbugDescription, setFeatbugDescription] = useState<string>("");
 
@@ -261,6 +265,18 @@ const CodeCentral = () => {
 
     // Add state and handler for GET requests
     const [routeResponses, setRouteResponses] = useState<{ [key: string]: string }>({});
+
+    console.log(isApiRunning)
+    const handleGetApiStatus = async () => {
+        try {
+            const response = await fetch('/api/check-api-status');
+            const data = await response.json();
+            console.log(data)
+            setIsApiRunning(data.data.isRunning);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
 
     const handleGetRequest = async (routeUrl: string) => {
         try {
