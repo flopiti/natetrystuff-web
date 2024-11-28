@@ -18,6 +18,7 @@ import ProcessDashboard from './ProcessDashboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
+import DevBox from './DevBox';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -313,107 +314,23 @@ const CodeCentral = () => {
 
     return (
         <div className="h-[70vh] border-2 border-white w-full flex flex-col">
-            <div 
-                className="absolute top-0 left-0 m-10 flex flex-row items-center border-2 border-white"
-                onMouseEnter={() => setIsHovered(true)} 
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                {isApiRunning !== null && (
-                    <motion.div
-                        className="w-10 h-10 flex items-center justify-center"
-                        animate={isApiRunning ? { rotate: 360 } : {}}
-                        transition={isApiRunning ? { repeat: Infinity, duration: 4, ease: "linear" } : {}}
-                    >
-                        <FontAwesomeIcon 
-                            size="xl" 
-                            icon={isApiRunning ? faArrowsRotate : faTimesCircle} 
-                        />
-                    </motion.div>
-                )}
-                <div className='text-white p-2 rounded shadow-lg'>
-                    API
-                </div>
-                {isHovered && (
-                    <motion.div
-                        className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        {isApiRunning ? (
-                            <motion.button 
-                                className="bg-red-500 text-whiterounded w-full"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 120 }}
-                                onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
-                            >
-                                Stop
-                            </motion.button>
-                        ) : (
-                            <motion.button 
-                                className="bg-green-500 text-white p-2 mx-2 rounded w-full"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 120 }}
-                                onClick={() => handleGetRequest('/api/start-api')} // Start API action
-                            >
-                                Start
-                            </motion.button>
-                        )}
-                    </motion.div>
-                )}
-            </div>
-            <div
-                className="absolute top-0 left-0 m-20 flex flex-row items-center border-2 border-white"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >   {/* New section for WEB */}
-                {isWebRunning !== null && (
-                    <motion.div
-                        className="w-10 h-10 flex items-center justify-center"
-                        animate={isWebRunning ? { rotate: 360 } : {}}
-                        transition={isWebRunning ? { repeat: Infinity, duration: 4, ease: "linear" } : {}}
-                    >
-                        <FontAwesomeIcon
-                            size="xl"
-                            icon={isWebRunning ? faArrowsRotate : faTimesCircle}
-                        />
-                    </motion.div>
-                )}
-                <div className='text-white p-2 rounded shadow-lg'>
-                    WEB
-                </div>
-                {isHovered && (
-                    <motion.div
-                        className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        {isWebRunning ? (
-                            <motion.button
-                                className="bg-red-500 text-whiterounded w-full"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 120 }}
-                                onClick={() => handleGetRequest('/web/stop-web')} // Stop WEB action
-                            >
-                                Stop
-                            </motion.button>
-                        ) : (
-                            <motion.button
-                                className="bg-green-500 text-white p-2 mx-2 rounded w-full"
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 120 }}
-                                onClick={() => handleGetRequest('/web/start-web')} // Start WEB action
-                            >
-                                Start
-                            </motion.button>
-                        )}
-                    </motion.div>
-                )}
+            <div id='dev-environment' className="absolute top-0 left-0 m-5">
+                <DevBox
+                    name={'API'}
+                    isRunning={isApiRunning}
+                    isHovered={isHovered}
+                    start={() => handleGetRequest('/api/start-api')}
+                    stop={() => handleGetRequest('/api/stop-api')}
+                    setIsHovered={setIsHovered}
+                />
+                <DevBox
+                    name={'WEB'}
+                    isRunning={isWebRunning} // New WEB status check
+                    isHovered={isHovered}
+                    start={() => handleGetRequest('/web/start-web')}
+                    stop={() => handleGetRequest('/web/stop-web')}
+                    setIsHovered={setIsHovered}
+                />
             </div>
             <div className="flex justify-between m-2">
                 <button onClick={toggleTerminal} className="bg-green-500 text-white p-2 m-2">
