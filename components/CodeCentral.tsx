@@ -49,9 +49,9 @@ const CodeCentral = () => {
     , [chatMessages]);
 
     useEffect(() => {
+        handleGetApiStatus(); // Run right away
         const intervalId = setInterval(() => {
-
-            handleGetApiStatus();
+            handleGetApiStatus(); // Run every 5 seconds
         }, 5000);
         return () => clearInterval(intervalId);
     }, []);
@@ -328,20 +328,20 @@ const CodeCentral = () => {
                     >
                         {isApiRunning ? (
                             <motion.button 
-                                className="bg-red-500 text-white w-full p-2"
+                                className="bg-red-500 text-whiterounded w-full"
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 80 }}
+                                transition={{ type: 'spring', stiffness: 120 }}
                                 onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
                             >
                                 Stop
                             </motion.button>
                         ) : (
                             <motion.button 
-                                className="bg-green-500 text-white w-full p-2"
+                                className="bg-green-500 text-white p-2 mx-2 rounded w-full"
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 80 }}
+                                transition={{ type: 'spring', stiffness: 120 }}
                                 onClick={() => handleGetRequest('/api/start-api')} // Start API action
                             >
                                 Start
