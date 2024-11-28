@@ -14,7 +14,7 @@ import { Project, ProjectFile } from '@/types/project';
 import { setBranchName, setCurrentProject, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
 import { getGitBranch, getGitDiff } from '@/services/gitService';
 import SystemDashboard from './SystemDashboard';
-import ProcessDashboard from './ProcessDashboard'; // Import new ProcessDashboard
+import ProcessDashboard from './ProcessDashboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
@@ -24,7 +24,8 @@ const CodeCentral = () => {
     const [highlightedFiles, setHighlightedFiles] = useState<ProjectFile[]>([]);
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
     const [isApiRunning, setIsApiRunning] = useState<boolean|null>(null);
-    const [isHovered, setIsHovered] = useState<boolean>(false); // New state for hover status
+    const [isWebRunning, setIsWebRunning] = useState<boolean|null>(null); // New state for WEB
+    const [isHovered, setIsHovered] = useState<boolean>(false);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
     const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
@@ -49,9 +50,11 @@ const CodeCentral = () => {
     , [chatMessages]);
 
     useEffect(() => {
-        handleGetApiStatus(); // Run right away
+        handleGetApiStatus();
+        handleGetWebStatus(); // New WEB status check
         const intervalId = setInterval(() => {
-            handleGetApiStatus(); // Run every 5 seconds
+            handleGetApiStatus();
+            handleGetWebStatus(); // Run every 5 seconds for WEB
         }, 5000);
         return () => clearInterval(intervalId);
     }, []);
@@ -284,6 +287,17 @@ const CodeCentral = () => {
         }
     }
 
+    const handleGetWebStatus = async () => {  // New function for WEB status
+        try {
+            const response = await fetch('/web/check-web-status');
+            const data = await response.json();
+            console.log('WEB Status:', data.data.isRunning);
+            setIsWebRunning(data.data.isRunning);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
     const handleGetRequest = async (routeUrl: string) => {
         try {
             const response = await fetch(routeUrl);
@@ -343,6 +357,57 @@ const CodeCentral = () => {
                                 animate={{ scale: 1 }}
                                 transition={{ type: 'spring', stiffness: 120 }}
                                 onClick={() => handleGetRequest('/api/start-api')} // Start API action
+                            >
+                                Start
+                            </motion.button>
+                        )}
+                    </motion.div>
+                )}
+            </div>
+            <div
+                className="absolute top-0 left-0 m-20 flex flex-row items-center border-2 border-white"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >   {/* New section for WEB */}
+                {isWebRunning !== null && (
+                    <motion.div
+                        className="w-10 h-10 flex items-center justify-center"
+                        animate={isWebRunning ? { rotate: 360 } : {}}
+                        transition={isWebRunning ? { repeat: Infinity, duration: 4, ease: "linear" } : {}}
+                    >
+                        <FontAwesomeIcon
+                            size="xl"
+                            icon={isWebRunning ? faArrowsRotate : faTimesCircle}
+                        />
+                    </motion.div>
+                )}
+                <div className='text-white p-2 rounded shadow-lg'>
+                    WEB
+                </div>
+                {isHovered && (
+                    <motion.div
+                        className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        {isWebRunning ? (
+                            <motion.button
+                                className="bg-red-500 text-whiterounded w-full"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 120 }}
+                                onClick={() => handleGetRequest('/web/stop-web')} // Stop WEB action
+                            >
+                                Stop
+                            </motion.button>
+                        ) : (
+                            <motion.button
+                                className="bg-green-500 text-white p-2 mx-2 rounded w-full"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 120 }}
+                                onClick={() => handleGetRequest('/web/start-web')} // Start WEB action
                             >
                                 Start
                             </motion.button>
