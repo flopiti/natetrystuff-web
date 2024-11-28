@@ -49,8 +49,9 @@ const CodeCentral = () => {
     , [chatMessages]);
 
     useEffect(() => {
+        handleGetApiStatus(); // Run right away
         const intervalId = setInterval(() => {
-            handleGetApiStatus();
+            handleGetApiStatus(); // Run every 5 seconds
         }, 5000);
         return () => clearInterval(intervalId);
     }, []);
@@ -276,6 +277,7 @@ const CodeCentral = () => {
         try {
             const response = await fetch('/api/check-api-status');
             const data = await response.json();
+            console.log('API Status:', data.data.isRunning);
             setIsApiRunning(data.data.isRunning);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -317,27 +319,35 @@ const CodeCentral = () => {
                 <div className='text-white p-2 rounded shadow-lg'>
                     API
                 </div>
-                {isApiRunning && isHovered && ( // Add stop button conditional rendering
-                    <motion.button 
-                        className="bg-red-500 text-white p-2 mx-2 rounded"
-                        initial={{ x: '-100vw' }}
-                        animate={{ x: 0 }}
-                        transition={{ type: 'spring', stiffness: 120 }}
-                        onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
+                {isHovered && (
+                    <motion.div
+                        className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-50 bg-black"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
                     >
-                        Stop Running API
-                    </motion.button>
-                )}
-                {!isApiRunning && isHovered && (
-                    <motion.button 
-                        className="bg-green-500 text-white p-2 mx-2 rounded"
-                        initial={{ x: '-100vw' }}
-                        animate={{ x: 0 }}
-                        transition={{ type: 'spring', stiffness: 120 }}
-                        onClick={handleStartProcess}
-                    >
-                        Start Process
-                    </motion.button>
+                        {isApiRunning ? (
+                            <motion.button 
+                                className="bg-red-500 text-whiterounded w-full"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 120 }}
+                                onClick={() => handleGetRequest('/api/stop-api')} // Stop API action
+                            >
+                                Stop
+                            </motion.button>
+                        ) : (
+                            <motion.button 
+                                className="bg-green-500 text-white p-2 mx-2 rounded w-full"
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 120 }}
+                                onClick={() => handleGetRequest('/api/start-api')} // Start API action
+                            >
+                                Start
+                            </motion.button>
+                        )}
+                    </motion.div>
                 )}
             </div>
             <div className="flex justify-between m-2">
@@ -374,6 +384,7 @@ const CodeCentral = () => {
                     >
                         Start
                     </button>
+                    <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
                 </div>
                 <button
                     onClick={() => setIsProcessOpen(!isProcessOpen)}
@@ -385,10 +396,6 @@ const CodeCentral = () => {
             </div>
 
             <div className="flex justify-around bg-gray-100 p-2">
-                <button onClick={() => handleGetRequest('/api/start-api')} className="bg-teal-500 text-white p-2 m-2">Start API</button>
-                <button onClick={() => handleGetRequest('/api/stop-api')} className="bg-teal-500 text-white p-2 m-2">Stop API</button>
-                <button onClick={() => handleGetRequest('/api/compile-api')} className="bg-teal-500 text-white p-2 m-2">Compile API</button>
-                <button onClick={() => handleGetRequest('/api/check-api-status')} className="bg-teal-500 text-white p-2 m-2">Check API Status</button>
             </div>
             <div className="flex flex-grow flex-col overflow-auto">
                 <div className="flex flex-row w-full h-full">
