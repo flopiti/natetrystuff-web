@@ -1,17 +1,18 @@
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
 
 interface DevBoxProps {
     name: string;
     isRunning: boolean | null;
-    isHovered: boolean;
-    setIsHovered: (hovered: boolean) => void;
     start: () => void;
     stop: () => void;
 }
 
-const DevBox = ({  name,isRunning, isHovered, start, stop,  setIsHovered }:DevBoxProps) => {
+const DevBox = ({  name,isRunning, start, stop }:DevBoxProps) => {
+    const [isHovered, setIsHovered] = useState<boolean>(false);
+    
     return (
         <div  
             id='api-box'

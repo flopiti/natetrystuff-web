@@ -26,7 +26,6 @@ const CodeCentral = () => {
     const [editedFiles, setEditedFiles] = useState<ProjectFile[]>([]);
     const [isApiRunning, setIsApiRunning] = useState<boolean|null>(null);
     const [isWebRunning, setIsWebRunning] = useState<boolean|null>(null); // New state for WEB
-    const [isHovered, setIsHovered] = useState<boolean>(false);
 
     const chatMessages = useSelector((state: RootState) => state.Messages.messages);
     const {projectDir, currentProjectFileNames, currentProject, branchName} = useSelector((state: RootState) => state.Projects);
@@ -318,18 +317,14 @@ const CodeCentral = () => {
                 <DevBox
                     name={'API'}
                     isRunning={isApiRunning}
-                    isHovered={isHovered}
                     start={() => handleGetRequest('/api/start-api')}
                     stop={() => handleGetRequest('/api/stop-api')}
-                    setIsHovered={setIsHovered}
                 />
                 <DevBox
                     name={'WEB'}
                     isRunning={isWebRunning} // New WEB status check
-                    isHovered={isHovered}
                     start={() => handleGetRequest('/web/start-web')}
                     stop={() => handleGetRequest('/web/stop-web')}
-                    setIsHovered={setIsHovered}
                 />
             </div>
             <div className="flex justify-between m-2">
