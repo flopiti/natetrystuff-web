@@ -89,7 +89,6 @@ export const chatCleanSentence = async (sentence: string) => {
   const directive = `Please clean the following sentence: "${sentence}". Make sure to just clean the types and grammatical errors. Allow words to look kind of real, but fix the gibberish one. 
   ONLY RETURN THE FIXED SENTENCE. THIS WILL BE DISPLAYED AND REPLACE THE CURRENT SENTENCE. WE ONLY NEED THE CLEANED SENTENCE. `
   const messages = [{ role: 'user', content: directive }];
-  console.log(sentence)
   try {
       const response = await fetch('/api/chat-clean-sentence', {
           method: 'POST',
