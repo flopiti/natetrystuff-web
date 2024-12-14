@@ -8,6 +8,7 @@ import Schedule from "./Schedule";
 import CodeCentral from "./CodeCentral";
 import ChessBoard from "./ChessBoard";
 import ToDo from "./ToDo";
+import TextComplete from './TextComplete';
 
 const Hub = () => {
     const[page, setPage] = useState('schedule');
@@ -20,6 +21,7 @@ const Hub = () => {
             <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
             <button className="mx-2" onClick={() => setPage('chess-board')}>Chess Board</button>
             <button className="mx-2" onClick={() => setPage('todo')}>ToDo</button>
+            <button className="mx-2" onClick={() => setPage('text-complete')}>Text Complete</button>
         </div>
         {
             page === 'schedule' ? (
@@ -36,7 +38,11 @@ const Hub = () => {
             ) : 
             page === 'todo' ? (
                 <ToDo />
-            ) : null
+            ) :
+            page === 'text-complete'  ? (
+                <TextComplete />
+            ) :
+            null
         }
         </Provider>
     );
