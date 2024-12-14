@@ -7,7 +7,12 @@ const TextComplete = () => {
     const [cleanedText, setCleanedText] = useState('');
     useEffect(() => {
         chatCleanSentence(text).then((data) => {
-            // setCleanedText(data.sentence);
+            console.log(data)
+            if (data)
+            {
+                setCleanedText(data);
+
+            }
         });
     }
     , [text]);
@@ -20,14 +25,14 @@ const TextComplete = () => {
             <div className="w-full h-full">
                 <h2>Cleaned Text:</h2>
                 <textarea 
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2 border  text-black  border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={cleanedText}
                     readOnly
                 />
 
                 <h2>Original Text:</h2>
                 <textarea 
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-2  text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Type your text here..."
                     value={text}
                     onChange={(e) => setText(e.target.value)}

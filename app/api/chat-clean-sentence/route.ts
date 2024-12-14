@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+
+export async function POST(request: NextRequest) {
+    const body = await request.json();
+    console.log(body)
+    const openai = new OpenAI({
+        apiKey: process.env.OPEN_AI_API_KEY
+    });
+
+    // Create a readable stream to handle the AI chat completion
+    const stream = new ReadableStream({
+        async start(controller) {
+            const chatCompletion = await openai.chat.completions.create({
+                messages: body.messages,
+                model: 'gpt-4o-mini',
+                stream: true,
+            });
+
+            for await (const chunk of chatCompletion) {
+                const text = chunk.choices[0].delta.content;
+                if (text) {
+                    controller.enqueue(new TextEncoder().encode(text));
+                }
+            }
+            controller.close();
+        }
+    });
+
+    return new NextResponse(stream, {
+        status: 200,
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+    });
+}
