@@ -5,9 +5,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const dirPath = searchParams.get("dirPath");
-    console.log('getting branch');
-    console.log('Received dirPath:', dirPath);
-    console.log(`${process.env.CODE_HELPER_URL}/current-branch?dirPath=${dirPath}`);
     const res = await fetch(`${process.env.CODE_HELPER_URL}/current-branch?dirPath=${dirPath}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +19,6 @@ export async function GET(request: NextRequest) {
 
     const data = await res.json();
 
-    console.log('data', data)
     return new NextResponse(JSON.stringify({ data }), {
       status: 200,
       headers: {

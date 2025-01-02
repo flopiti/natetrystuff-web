@@ -5,8 +5,6 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const project = searchParams.get("project");
-    console.log('getting desc comments');
-    console.log('Received project:', project);
     const res = await fetch(`${process.env.CODE_HELPER_URL}/get-desc-comments?project=${project}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -19,8 +17,6 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await res.json();
-
-    console.log('data', data);
     return new NextResponse(JSON.stringify({ data }), {
       status: 200,
       headers: {

@@ -4,9 +4,7 @@ import OpenAI from "openai";
 
 export async function POST(request: NextRequest) {
     try {
-        console.log("Received POST request"); // Log when a POST request is received
         const body = await request.json();
-        console.log("Request body:", body);
         const openai = new OpenAI({
             apiKey: process.env.OPEN_AI_API_KEY
         });
@@ -18,7 +16,6 @@ export async function POST(request: NextRequest) {
             response_format: { "type": "json_object" }
         });
 
-        console.log("Chat completion response:", chatCompletion);
         const text = chatCompletion.choices[0].message.content;
 
         return new NextResponse(text, {

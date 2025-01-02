@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
             'Authorization': `Bearer ${token}`
         },
     });
-    console.log('Response:', response);  // Log the response before parsing as JSON
     const data = await response.json();
     return new NextResponse(JSON.stringify({ data }), {
         status: 200,
