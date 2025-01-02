@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
     });
 
     const resText = await res.text();
-    console.log('Response:', resText); // Log the response as a string
     const data = JSON.parse(resText);
 
     return new NextResponse(JSON.stringify({ data }), {

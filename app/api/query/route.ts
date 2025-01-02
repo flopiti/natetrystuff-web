@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
             vector: embedding.data[0].embedding,
             includeMetadata: true
         });
-        console.log('Query result:', queryResult);
 
         return new NextResponse(JSON.stringify( queryResult), {
             status: 200,

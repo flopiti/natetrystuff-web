@@ -12,8 +12,6 @@ export async function GET(request: NextRequest) {
 
     const driver = neo4j.driver('bolt://localhost:7687', neo4j.auth.basic('neo4j', 'password'));
     const session = driver.session();
-    console.log(`MATCH (f:File {name: $fileName})-[:DEFINED_IN]-(func:Function) RETURN func.name AS functionName`)
-
         
     try {
         const result = await session.run(
