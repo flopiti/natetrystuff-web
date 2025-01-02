@@ -8,6 +8,9 @@ export async function GET(request: NextRequest) {
     const branchName = searchParams.get('branchName');
     const commitMessage = searchParams.get('commitMessage');
 
+    console.log('project:', project);
+    console.log('branchName:', branchName);
+    console.log('commitMessage:', commitMessage);
     const res = await fetch(`${process.env.CODE_HELPER_URL}/send-it?project=${project}&branchName=${branchName}&commitMessage=${commitMessage}`, {
         headers: {
           'Content-Type': 'application/json',

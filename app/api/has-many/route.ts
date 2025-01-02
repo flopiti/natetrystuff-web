@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
         const requestBody = await request.json();
         try {
+            console.log('requestBody', requestBody)
         const response = await axios.post(`${process.env.CODE_HELPER_URL}/has-many`, {
             headers: {
                 'Content-Type': 'application/json',

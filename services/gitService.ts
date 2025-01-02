@@ -30,6 +30,11 @@ export const gitSendIt = (
         mess="Adding a comment"
     }
 
+    
+    console.log('send-it')
+    console.log(commitMessage);
+    console.log(branchName);
+    console.log(projectName)
     if (mess.trim() && branchName) {
       fetch(
         `/api/send-it?project=${projectName}&branchName=${branchName}&commitMessage=${mess}`
