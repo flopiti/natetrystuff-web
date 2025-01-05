@@ -9,15 +9,14 @@ import CodeCentral from "./CodeCentral";
 import ChessBoard from "./ChessBoard";
 import ToDo from "./ToDo";
 import TextComplete from './TextComplete';
+import NavDropdown from './UI/NavDropdown';
 
 const Hub = () => {
     const[page, setPage] = useState('schedule');
 
     return (
         <Provider store={store}>
-            <div>
-
-            </div>
+        <NavDropdown />
         <div>
             <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
             <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
