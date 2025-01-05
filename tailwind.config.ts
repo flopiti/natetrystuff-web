@@ -1,3 +1,4 @@
+import { Orbit, Orbitron } from "next/font/google";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -10,6 +11,7 @@ const config: Config = {
     extend: {      
       fontFamily: {
         AlphaLyrae: ['AlphaLyrae', 'sans-serif'],
+        Orbitron: ['Orbitron', 'sans-serif'],
     },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
