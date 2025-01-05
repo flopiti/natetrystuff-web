@@ -15,10 +15,13 @@ const Hub = () => {
 
     return (
         <Provider store={store}>
+            <div>
+
+            </div>
         <div>
             <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
             <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
-            <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
+            <button className="mx-2" onClick={() => setPage('code-central')}>Code Central</button>
             <button className="mx-2" onClick={() => setPage('chess-board')}>Chess Board</button>
             <button className="mx-2" onClick={() => setPage('todo')}>ToDo</button>
             <button className="mx-2" onClick={() => setPage('text-complete')}>Text Complete</button>
@@ -30,7 +33,7 @@ const Hub = () => {
             page === 'meals' ? (
                 <Meals />
             ) : 
-            page === '/code-central' ? (
+            page === 'code-central' ? (
                 <CodeCentral />
             ) : 
             page === 'chess-board' ? (
