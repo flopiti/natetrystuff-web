@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AppNames } from '@/app/constants/global';
 
-const NavDropdown = () => {
+interface NavDropdownProps {
+    setPage: (page: string) => void;
+}
+
+const NavDropdown = ({ setPage }: NavDropdownProps) => {
   const [hovered, setHovered] = useState(false);
-  const items = ["sched", "meals", "code", "chess", "todo", "text"];
-
   const dropdownVariants = {
     hidden: { height: 0, opacity: 0 },
     visible: { 
@@ -43,11 +46,12 @@ const NavDropdown = () => {
             variants={dropdownVariants}
             style={{ overflow: 'hidden' }}
           >
-            {items.map((item, index) => (
+            {AppNames.map((item, index) => (
               <motion.button
                 className='py-1 block text-center w-full'
                 key={index}
                 variants={itemVariants}
+                onClick={() => setPage(item)}
               >
                 {item}
               </motion.button>

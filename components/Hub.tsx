@@ -10,38 +10,40 @@ import ChessBoard from "./ChessBoard";
 import ToDo from "./ToDo";
 import TextComplete from './TextComplete';
 import NavDropdown from './UI/NavDropdown';
+import { AppNames } from '@/app/constants/global';
+import { EAppNames } from '@/app/enums/global';
 
 const Hub = () => {
     const[page, setPage] = useState('schedule');
 
     return (
         <Provider store={store}>
-        <NavDropdown />
+        <NavDropdown setPage={setPage}/>
         <div>
-            <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
-            <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
-            <button className="mx-2" onClick={() => setPage('code-central')}>Code Central</button>
-            <button className="mx-2" onClick={() => setPage('chess-board')}>Chess Board</button>
-            <button className="mx-2" onClick={() => setPage('todo')}>ToDo</button>
+            {AppNames.map((app:string, index:number) => (
+                <button key={index} className="mx-2" onClick={() => setPage(app)}>
+                    {app}
+                </button>
+            ))}
             <button className="mx-2" onClick={() => setPage('text-complete')}>Text Complete</button>
         </div>
         {
-            page === 'schedule' ? (
+            page === EAppNames.SCHEDULE ? (
                 <Schedule /> 
             ) : 
-            page === 'meals' ? (
+            page === EAppNames.MEALS ? (
                 <Meals />
             ) : 
-            page === 'code-central' ? (
+            page === EAppNames.CODE_CENTRAL ? (
                 <CodeCentral />
             ) : 
-            page === 'chess-board' ? (
+            page === EAppNames.CHESS_BOARD ? (
                 <ChessBoard />
             ) : 
-            page === 'todo' ? (
+            page === EAppNames.TODO ? (
                 <ToDo />
             ) :
-            page === 'text-complete'  ? (
+            page === EAppNames.TEXT_COMPLETE  ? (
                 <TextComplete />
             ) :
             null
