@@ -10,7 +10,6 @@ import ChessBoard from "./ChessBoard";
 import ToDo from "./ToDo";
 import TextComplete from './TextComplete';
 import NavDropdown from './UI/NavDropdown';
-import { AppNames } from '@/app/constants/global';
 import { EAppNames } from '@/app/enums/global';
 
 const Hub = () => {
@@ -19,14 +18,6 @@ const Hub = () => {
     return (
         <Provider store={store}>
         <NavDropdown setPage={setPage}/>
-        <div>
-            {AppNames.map((app:string, index:number) => (
-                <button key={index} className="mx-2" onClick={() => setPage(app)}>
-                    {app}
-                </button>
-            ))}
-            <button className="mx-2" onClick={() => setPage('text-complete')}>Text Complete</button>
-        </div>
         {
             page === EAppNames.SCHEDULE ? (
                 <Schedule /> 

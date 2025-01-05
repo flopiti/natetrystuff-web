@@ -14,8 +14,8 @@ const NavDropdown = ({ setPage }: NavDropdownProps) => {
       height: 'auto', 
       opacity: 1, 
       transition: { 
-        staggerChildren: 0.2, 
-        duration: 0.6 // Change this value
+        staggerChildren: 0.1, 
+        duration: 0.5
       } 
     },
   };
@@ -25,7 +25,7 @@ const NavDropdown = ({ setPage }: NavDropdownProps) => {
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 1} // Change this value
+      transition: { duration: 1}
     },
   };
   
