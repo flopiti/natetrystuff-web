@@ -280,7 +280,6 @@ const CodeCentral = () => {
         try {
             const response = await fetch('/api/check-api-status');
             const data = await response.json();
-            console.log('API Status:', data.data.isRunning);
             setIsApiRunning(data.data.isRunning);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -291,7 +290,6 @@ const CodeCentral = () => {
         try {
             const response = await fetch('/web/check-web-status');
             const data = await response.json();
-            console.log('WEB Status:', data.data.isRunning);
             setIsWebRunning(data.data.isRunning);
         } catch (error) {
             console.error('Error fetching data:', error);
