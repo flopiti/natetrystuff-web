@@ -5,5 +5,5 @@ export enum EAppNames {
     CHESS_BOARD = "chess",
     TODO = "todo",
     TEXT_COMPLETE = "text",
-    CODEV2 = "codev2"
+    CODEV2 = "v2"
 }

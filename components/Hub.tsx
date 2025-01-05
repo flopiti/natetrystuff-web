@@ -11,6 +11,7 @@ import ToDo from "./ToDo";
 import TextComplete from './TextComplete';
 import NavDropdown from './UI/NavDropdown';
 import { EAppNames } from '@/app/enums/global';
+import CodeV2 from './CodeV2';
 
 const Hub = () => {
     const[page, setPage] = useState('schedule');
@@ -37,7 +38,9 @@ const Hub = () => {
             page === EAppNames.TEXT_COMPLETE  ? (
                 <TextComplete />
             ) :
-            null
+            page === EAppNames.CODEV2 ? (
+                <CodeV2 />
+            ) : null
         }
         </Provider>
     );
