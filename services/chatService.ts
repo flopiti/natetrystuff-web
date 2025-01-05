@@ -146,11 +146,22 @@ export const askGptToFindWhichProject = async (projectsString: string, featbugDe
 
 export const embedFile = async (fileName: string, file:string, projectName: string) =>{
   await askChatNoStream([{ role: 'user', content: `
-    Give me a structured explanation of what is happening in this file.
+    Take this TSX file, and give me ONLY the important information about it. The file needs to be super short, tell me what is displayed on the page, and what the user can do. Here 
+    is a very simple example of what I want:UI Elements : {
+        button : {
+          label: Previous, 
+          function: blabla
+      }
+
+      DaySchedule : {
+        function : display the day’s meal and allow users to add new meal to their schedules
+        }
+
+      }
     Filename: ${fileName}, fileContent: ${file}, projectName: ${projectName}. Return in JSON only.
     The FIRST high level field MUST BE EXACLTY : filename : ${fileName}  
     ` }]).then( async data => {
-        const jsonString = JSON.stringify(data, null, 2);
+      const jsonString = JSON.stringify(data, null, 2);
         const response = await fetch('/api/embed', {
             method: 'POST',
             headers: {
