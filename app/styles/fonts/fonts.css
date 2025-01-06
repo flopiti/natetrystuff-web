@@ -20,12 +20,12 @@
     font-style: normal;
 }
 
-@font-face {
+/* @font-face {
     font-family: 'Orbitron';
     src: url('../../assets/Orbitron/Orbitron-Extrabold.ttf') format('truetype');
     font-weight: 800;
     font-style: normal;
-}
+} */
 
 @font-face {
     font-family: 'Orbitron';
