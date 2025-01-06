@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setMessages, setLoading} from '@/slices/MessagesSlice';
 import { Project, ProjectFile } from '@/types/project';
 import { setBranchName, setCurrentProject, setCurrentProjectFileNames, setProjects } from '@/slices/ProjectSlice';
-import { getGitBranch, getGitDiff } from '@/services/gitService';
+import { getGitBranch, getGitDiff } from '@/services/gitServiceDepre';
 import SystemDashboard from './SystemDashboard';
 import ProcessDashboard from './ProcessDashboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

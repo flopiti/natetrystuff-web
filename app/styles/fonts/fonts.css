@@ -4,3 +4,39 @@
     font-weight: 400;
     font-style: normal;
   }
+
+
+  @font-face {
+    font-family: 'Orbitron';
+    src: url('../../assets/Orbitron/Orbitron-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+@font-face {
+    font-family: 'Orbitron';
+    src: url('../../assets/Orbitron/Orbitron-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Orbitron';
+    src: url('../../assets/Orbitron/Orbitron-Extrabold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Orbitron';
+    src: url('../../assets/Orbitron/Orbitron-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Orbitron';
+    src: url('../../assets/Orbitron/Orbitron-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}

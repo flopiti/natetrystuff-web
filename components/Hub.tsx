@@ -9,40 +9,38 @@ import CodeCentral from "./CodeCentral";
 import ChessBoard from "./ChessBoard";
 import ToDo from "./ToDo";
 import TextComplete from './TextComplete';
+import NavDropdown from './UI/NavDropdown';
+import { EAppNames } from '@/app/enums/global';
+import CodeV2 from './CodeV2';
 
 const Hub = () => {
     const[page, setPage] = useState('schedule');
 
     return (
         <Provider store={store}>
-        <div>
-            <button className="mx-2" onClick={() => setPage('schedule')}>Schedule</button>
-            <button className="mx-2" onClick={() => setPage('meals')}>Meals</button>
-            <button className="mx-2" onClick={() => setPage('/code-central')}>Code Central</button>
-            <button className="mx-2" onClick={() => setPage('chess-board')}>Chess Board</button>
-            <button className="mx-2" onClick={() => setPage('todo')}>ToDo</button>
-            <button className="mx-2" onClick={() => setPage('text-complete')}>Text Complete</button>
-        </div>
+        <NavDropdown setPage={setPage}/>
         {
-            page === 'schedule' ? (
+            page === EAppNames.SCHEDULE ? (
                 <Schedule /> 
             ) : 
-            page === 'meals' ? (
+            page === EAppNames.MEALS ? (
                 <Meals />
             ) : 
-            page === '/code-central' ? (
+            page === EAppNames.CODE_CENTRAL ? (
                 <CodeCentral />
             ) : 
-            page === 'chess-board' ? (
+            page === EAppNames.CHESS_BOARD ? (
                 <ChessBoard />
             ) : 
-            page === 'todo' ? (
+            page === EAppNames.TODO ? (
                 <ToDo />
             ) :
-            page === 'text-complete'  ? (
+            page === EAppNames.TEXT_COMPLETE  ? (
                 <TextComplete />
             ) :
-            null
+            page === EAppNames.CODEV2 ? (
+                <CodeV2 />
+            ) : null
         }
         </Provider>
     );
