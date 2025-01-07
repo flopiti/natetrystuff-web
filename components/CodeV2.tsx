@@ -3,13 +3,14 @@ import { getAllProjects } from "@/services/gitService";
 import { fetchProjectPaths } from "@/services/projectPathService";
 import { Project } from "@/types/project";
 import { useEffect, useState } from "react";
+import Dropdown from "./UI/Dropdown";
 
 const CodeV2 = () => {
 
     //state
-    const[AllProjects, setAllProjects] = useState<Project[]>([]);
+    const [allProjects, setAllProjects] = useState<Project[]>([]);
     const [projectPath, setProjectPath] = useState<string | null>(null);
-
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
     //fetch useEffects
     //1. Fetch project paths
@@ -28,9 +29,14 @@ const CodeV2 = () => {
     }, [projectPath]);
 
 
+    const handleSelectProject = (project: Project) => {
+        setSelectedProject(project);
+    }
+
     return (
         <div>
-            <h1>CodeV2</h1>
+            <h1>Embeddings Page</h1>
+            <Dropdown onSelect={setSelectedProject} options={allProjects} labelKey={'name'} />
         </div>
     );
 }
