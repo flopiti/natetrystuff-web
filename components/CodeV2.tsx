@@ -36,7 +36,7 @@ const CodeV2 = () => {
     return (
         <div>
             <h1>Embeddings Page</h1>
-            <Dropdown onSelect={setSelectedProject} options={allProjects} labelKey={'name'} />
+            <Dropdown<Project> onSelect={setSelectedProject} options={allProjects} labelKey={'name'} />
         </div>
     );
 }
