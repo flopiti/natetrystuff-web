@@ -35,7 +35,7 @@ interface DropdownProps<T> {
   
   return (
     <div
-      className="py-4 m-5 border-black border-[1px] font-Orbitron text-xs font-bold absolute top-0 right-0 w-[5rem] text-center"
+      className="py-4 m-5 border-black border-[1px] font-Orbitron text-xs font-bold w-[5rem] text-center"
       onMouseEnter={() => setOpened(true)}
       onMouseLeave={() => setOpened(false)}
     >
@@ -54,7 +54,7 @@ interface DropdownProps<T> {
             variants={dropdownVariants}
             style={{ overflow: 'hidden' }}
           >
-            {options.map((item, index) => (
+            {options?.map((item, index) => (
               <motion.button
                 className='py-1 block text-center w-full'
                 key={index}
