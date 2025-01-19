@@ -32,11 +32,12 @@ const CodeV2 = () => {
     const handleSelectProject = (project: Project) => {
         setSelectedProject(project);
     }
+    console.log('selected project:', selectedProject);
 
     return (
         <div>
             <h1>Embeddings Page</h1>
-            <Dropdown<Project> onSelect={setSelectedProject} options={allProjects} labelKey={'name'} />
+            <Dropdown<Project> onSelect={handleSelectProject} options={allProjects} labelKey={'name'} />
         </div>
     );
 }
