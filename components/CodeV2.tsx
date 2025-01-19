@@ -35,9 +35,7 @@ const CodeV2 = () => {
     }
     return (
         <div className="font-AlphaLyrae ">
-        <AnimatePresence mode="wait">
             <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
-        </AnimatePresence>
       </div>
       );
 }
