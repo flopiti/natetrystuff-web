@@ -4,6 +4,7 @@ import { fetchProjectPaths } from "@/services/projectPathService";
 import { Project } from "@/types/project";
 import { useEffect, useState } from "react";
 import Dropdown from "./UI/Dropdown";
+import {AnimatePresence, motion} from 'framer-motion';
 
 const CodeV2 = () => {
 
@@ -32,14 +33,31 @@ const CodeV2 = () => {
     const handleSelectProject = (project: Project) => {
         setSelectedProject(project);
     }
-    console.log('selected project:', selectedProject);
-
     return (
         <div>
-            <h1>Embeddings Page</h1>
-            <Dropdown<Project> onSelect={handleSelectProject} options={allProjects} labelKey={'name'} />
-        </div>
-    );
+        <AnimatePresence mode="wait">
+          {selectedProject ? (
+            <motion.div
+              key="project"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <h1>{selectedProject.name}</h1>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="dropdown"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+            >
+              <Dropdown<Project> onSelect={handleSelectProject} options={allProjects} labelKey='name' />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      );
 }
 
 export default CodeV2;
