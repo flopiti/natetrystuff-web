@@ -39,7 +39,7 @@ const NavDropdown = ({ setPage }: NavDropdownProps) => {
       <AnimatePresence>
         {hovered && (
           <motion.div
-            className='mt-2 flex flex-col items-center'
+            className='flex flex-col items-center'
             initial="hidden"
             animate="visible"
             exit="hidden"
@@ -48,7 +48,7 @@ const NavDropdown = ({ setPage }: NavDropdownProps) => {
           >
             {AppNames.map((item, index) => (
               <motion.button
-                className='py-1 block text-center w-full'
+                className={`py-1 block text-center w-full${index === 0 ? ' mt-4' : ''}`}
                 key={index}
                 variants={itemVariants}
                 onClick={() => setPage(item)}
