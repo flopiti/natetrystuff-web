@@ -34,27 +34,9 @@ const CodeV2 = () => {
         setSelectedProject(project);
     }
     return (
-        <div>
+        <div className="font-AlphaLyrae ">
         <AnimatePresence mode="wait">
-          {selectedProject ? (
-            <motion.div
-              key="project"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <h1>{selectedProject.name}</h1>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="dropdown"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-            >
-              <Dropdown<Project> onSelect={handleSelectProject} options={allProjects} labelKey='name' />
-            </motion.div>
-          )}
+            <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
         </AnimatePresence>
       </div>
       );
