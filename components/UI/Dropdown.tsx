@@ -38,9 +38,13 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
         exit: { opacity: 0, y: -20 },
     };
 
+    const toggleDropdown = () => {
+        setOpened(prev => !prev);
+    };
+
     return (
         <div
-            className={`py-4 m-5 ${selectedOption ? '' : 'border-black border-[1px]'} font-Orbitron text-xs font-bold w-[10rem] text-center`}
+            className={`py-4 m-5 ${selectedOption ? '' : 'border-black border-[1px]'} font-Orbitron text-xs font-bold w-[10rem] text-center cursor-pointer`}
             onMouseEnter={() => setOpened(true)}
             onMouseLeave={() => setOpened(false)}
         >
@@ -52,6 +56,8 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
                         animate="visible"
                         exit="exit"
                         variants={displayVariants}
+                        onClick={toggleDropdown}
+                        className="select-none"
                     >
                         <h1>{String(selectedOption[labelKey])}</h1>
                     </motion.div>
@@ -68,7 +74,7 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
                 )}
             </AnimatePresence>
             <AnimatePresence>
-                {opened && !selectedOption && (
+                {opened && (
                     <motion.div
                         className='flex flex-col items-center'
                         initial="hidden"
@@ -82,7 +88,10 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
                                 className={`py-1 block text-center w-full${index === 0 ? ' mt-4' : ''}`}
                                 key={index}
                                 variants={itemVariants}
-                                onClick={() => onSelect(item)}
+                                onClick={() => {
+                                    onSelect(item);
+                                    setOpened(false);
+                                }}
                             >
                                 {String(item[labelKey])}
                             </motion.button>
