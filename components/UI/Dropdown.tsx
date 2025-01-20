@@ -47,7 +47,7 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
 
     return (
         <div
-            className={` relative py-4 ${selectedOption ? '' : 'border-black border-[1px]'} text-xs font-bold w-[10rem] text-center cursor-pointer`}
+            className={`py-4 ${selectedOption ? '' : 'border-black border-[1px]'} text-xs font-bold w-[10rem] text-center cursor-pointer`}
             onMouseEnter={() => setOpened(true)}
             onMouseLeave={() => setOpened(false)}
         >
@@ -80,7 +80,7 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
             <AnimatePresence>
                 {opened && (
                     <motion.div
-                        className='absolute flex flex-col items-center'
+                        className='flex flex-col items-center'
                         initial="hidden"
                         animate="visible"
                         exit="hidden"
