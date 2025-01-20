@@ -6,12 +6,41 @@ import { useEffect, useState } from "react";
 import Dropdown from "./UI/Dropdown";
 import {AnimatePresence, motion} from 'framer-motion';
 
+import React from "react";
+
+const Loader = () => {
+const grid = [
+[0, 1, 1, 1, 0],
+[1, 1, 1, 1, 1],
+[1, 1, 1, 1, 1],
+[1, 1, 1, 1, 1],
+[0, 1, 1, 1, 0],
+];
+
+return (
+    <div className="loader">
+      {grid.map((row, i) => (
+        <div key={i} className="row">
+          {row.map((col, j) => (
+            <div key={j} className={`dot ${col ? "filled" : ""}`} />
+          ))}
+        </div>
+      ))}
+    </div>
+);
+};
+
+
+
 const CodeV2 = () => {
 
     //state
     const [allProjects, setAllProjects] = useState<Project[]>([]);
     const [projectPath, setProjectPath] = useState<string | null>(null);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+    const [files, setFiles] = useState<string[]>([]);
+    const [nodes, setNodes] = useState<any[]>([]);
 
     const handleSelectProject = (project: Project) => {
         setSelectedProject(project);
@@ -20,11 +49,10 @@ const CodeV2 = () => {
     const getStats = () => {
         if (!selectedProject) return;
         getProjectFiles(selectedProject).then((files: any[]) => {
-            console.log(files);
-        });
-        console.log('fwefew')
+            setFiles(files);
+           });
         getAllPineconeNode().then((nodes: any) => {
-            console.log(nodes);
+            setNodes(nodes);
         }   );
     }
 
@@ -51,6 +79,7 @@ const CodeV2 = () => {
 
     return (
         <div className="font-AlphaLyrae ">
+            <Loader />
             <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
             
       </div>
