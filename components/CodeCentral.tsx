@@ -4,7 +4,7 @@ import { Terminal } from '@xterm/xterm';
 import FileViewer from './FileViewer';
 import FileListDropdown from './FileListDropdown';
 import TerminalDisplay from './TerminalDisplay';
-import { getFile, getProjectFiles, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
+import { getFile, getProjects, getTopLevelArrayElements, getTopLevelValues, replaceCode } from '../app/utils';
 import Chat from './Chat';
 import { askChat, askChatNoStream, askGptToFindWhichFiles, askGptToFindWhichProject } from '@/services/chatService';
 import { AppDispatch, RootState } from '@/store';
@@ -19,6 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { motion } from 'framer-motion';
 import DevBox from './DevBox';
+import { getProjectFiles } from '@/services/mainService';
 
 const CodeCentral = () => {
     const dispatch: AppDispatch = useDispatch();

@@ -11,7 +11,7 @@ export const getAllProjects = async (dirPath: string): Promise<Project[]> => {
     }
 }
 
-export const getProjectFiles = async (selectedProject: any) => {
+export const getProjectFiles = async (selectedProject: Project) => {
     if (!selectedProject) return [];
     const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
         headers: {
