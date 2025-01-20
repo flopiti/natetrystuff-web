@@ -8,6 +8,7 @@ import {AnimatePresence, motion, Variants} from 'framer-motion';
 
 import React from "react";
 import Loader from "./UI/Loader";
+import CustomButton from "./UI/CustomButton";
 
 
 
@@ -26,20 +27,13 @@ const CodeV2 = () => {
         setSelectedProject(project);
     }
 
-    const getStats = () => {
-        if (!selectedProject) return;
-        getProjectFiles(selectedProject).then((files: any[]) => {
-            setFiles(files);
-           });
-        getAllPineconeNode().then((nodes: any) => {
-            setNodes(nodes);
-        }   );
+    const handleEmbed = () => {
+        console.log('Embed');
     }
 
-    useEffect(() => {
-        if (!selectedProject) return;
-        getStats();
-    }, [selectedProject]);
+    const handleReembed = () => {
+        console.log('Reembed');
+    }
 
     //fetch useEffects
     //1. Fetch project paths
@@ -57,14 +51,37 @@ const CodeV2 = () => {
         });
     }, [projectPath]);
 
+
+    //3. Fetch stats
+    useEffect(() => {
+        if (!selectedProject) return;
+        if (!selectedProject) return;
+        getProjectFiles(selectedProject).then((files: any[]) => {
+            setFiles(files);
+           });
+        getAllPineconeNode().then((nodes: any) => {
+            setNodes(nodes.matches);
+        });
+    }, [selectedProject]);
+
+
     return (
-        <div className="font-AlphaLyrae ">
+        <div className="font-Orbitron ">
             <div className="flex justify-center">
-                <Loader loading={false}  className="my-2 mx-12"/>
                 <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
-                
-            </div>
-            
+            </div>                            
+            {
+                selectedProject && (
+                    <div className="flex justify-center items-center gap-10 my-10"> 
+                        <Loader loading={false}/>
+                        <span className="text-sm">{`${nodes?.length} / ${files?.length} embedded`}</span>
+                        <span className="flex">
+                            <CustomButton onClick={() => handleEmbed} >Embed</CustomButton>
+                            <CustomButton className="-ml-[0.0625rem]" onClick={() => handleReembed} >Re-embed</CustomButton>
+                        </span>                    
+                    </div>
+                )
+            }
       </div>
       );
 }

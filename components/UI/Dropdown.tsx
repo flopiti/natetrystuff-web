@@ -47,7 +47,7 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
 
     return (
         <div
-            className={`py-4 ${selectedOption ? '' : 'border-black border-[1px]'} font-Orbitron text-xs font-bold w-[10rem] text-center cursor-pointer`}
+            className={`py-4 ${selectedOption ? '' : 'border-black border-[1px]'} text-xs font-bold w-[10rem] text-center cursor-pointer`}
             onMouseEnter={() => setOpened(true)}
             onMouseLeave={() => setOpened(false)}
         >
@@ -89,7 +89,7 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
                     >
                         {options.map((item, index) => (
                             <motion.button
-                                className={`py-1 block text-center w-full${index === 0 ? ' mt-4' : ''}`}
+                                className={`py-1 block text-center bg-white w-full${index === 0 ? ' mt-4' : ''}`}
                                 key={index}
                                 variants={itemVariants}
                                 onClick={() => {
