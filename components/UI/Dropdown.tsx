@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 interface DropdownProps<T> {
     onSelect: (option: T) => void;
@@ -57,9 +60,10 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
                         exit="exit"
                         variants={displayVariants}
                         onClick={toggleDropdown}
-                        className="select-none"
+                        className='flex items-center justify-center gap-4'
                     >
-                        <h1>{String(selectedOption[labelKey])}</h1>
+                        <FontAwesomeIcon icon={faGithub as IconProp} size='2xl' />
+                        <span>{String(selectedOption[labelKey])}</span>
                     </motion.div>
                 ) : (
                     <motion.div
