@@ -7,8 +7,7 @@
 .loader { display: inline-block; }
 .row { display: flex; }
 .dot {
-  width: 8px; height: 8px; margin: 2px; border-radius: 50%;
-  background: transparent; animation: pulse 1s infinite ease-in-out;
+  width: 0.15rem; height: 0.15rem; margin: 0.1rem; border-radius: 50%;
+  background: transparent;
 }
 .filled { background: black; }
-@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(0.5); } }

@@ -10,24 +10,37 @@ import React from "react";
 
 const Loader = () => {
 const grid = [
-[0, 1, 1, 1, 0],
-[1, 1, 1, 1, 1],
-[1, 1, 1, 1, 1],
-[1, 1, 1, 1, 1],
-[0, 1, 1, 1, 0],
+  [0, 1, 1, 1, 1, 0],
+  [1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1],
+  [0, 1, 1, 1, 1, 0],
 ];
 
-return (
+const dotVariants = {
+    animate: {
+      scale: [1, 1.1, 1],
+      transition: { duration: 1, repeat: Infinity, ease: "easeInOut" },
+    },
+  };
+
+  return (
     <div className="loader">
       {grid.map((row, i) => (
         <div key={i} className="row">
           {row.map((col, j) => (
-            <div key={j} className={`dot ${col ? "filled" : ""}`} />
+            <motion.div
+              key={j}
+              className={`dot ${col ? "filled" : ""}`}
+              variants={dotVariants}
+              animate="animate"
+            />
           ))}
         </div>
       ))}
     </div>
-);
+  );
 };
 
 
