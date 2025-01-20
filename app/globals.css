@@ -2,12 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 @import './styles/fonts/fonts.css';
-
-/* CircleLoader.css */
-.loader { display: inline-block; }
-.row { display: flex; }
-.dot {
-  width: 0.15rem; height: 0.15rem; margin: 0.1rem; border-radius: 50%;
-  background: transparent;
-}
-.filled { background: black; }

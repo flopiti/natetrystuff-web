@@ -4,44 +4,11 @@ import { fetchProjectPaths } from "@/services/projectPathService";
 import { Project } from "@/types/project";
 import { useEffect, useState } from "react";
 import Dropdown from "./UI/Dropdown";
-import {AnimatePresence, motion} from 'framer-motion';
+import {AnimatePresence, motion, Variants} from 'framer-motion';
 
 import React from "react";
+import Loader from "./UI/Loader";
 
-const Loader = () => {
-const grid = [
-  [0, 1, 1, 1, 1, 0],
-  [1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1],
-  [0, 1, 1, 1, 1, 0],
-];
-
-const dotVariants = {
-    animate: {
-      scale: [1, 1.1, 1],
-      transition: { duration: 1, repeat: Infinity, ease: "easeInOut" },
-    },
-  };
-
-  return (
-    <div className="loader">
-      {grid.map((row, i) => (
-        <div key={i} className="row">
-          {row.map((col, j) => (
-            <motion.div
-              key={j}
-              className={`dot ${col ? "filled" : ""}`}
-              variants={dotVariants}
-              animate="animate"
-            />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-};
 
 
 
@@ -92,8 +59,11 @@ const CodeV2 = () => {
 
     return (
         <div className="font-AlphaLyrae ">
-            <Loader />
-            <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
+            <div className="flex justify-center items-center">
+                <Loader loading={true} />
+                <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
+                
+            </div>
             
       </div>
       );
