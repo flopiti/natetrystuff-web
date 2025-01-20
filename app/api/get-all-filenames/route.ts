@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     });
 
     const data = await res.json();
-    return new NextResponse(JSON.stringify({ data }), {
+    return new NextResponse(JSON.stringify(data), {
         status: 200,
         headers: {
             'Content-Type': 'application/json',

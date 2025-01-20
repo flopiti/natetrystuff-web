@@ -14,9 +14,8 @@ export async function GET(request: NextRequest) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
 
-    const data = await res.json();
 
-    return new NextResponse(JSON.stringify({ data }), {
+    return new NextResponse(JSON.stringify(await res.json()), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
