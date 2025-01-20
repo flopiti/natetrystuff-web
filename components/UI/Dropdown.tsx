@@ -47,7 +47,7 @@ const Dropdown = <T,>({ options, onSelect, selectedOption, labelKey }: DropdownP
 
     return (
         <div
-            className={`py-4 m-5 ${selectedOption ? '' : 'border-black border-[1px]'} font-Orbitron text-xs font-bold w-[10rem] text-center cursor-pointer`}
+            className={`py-4 ${selectedOption ? '' : 'border-black border-[1px]'} font-Orbitron text-xs font-bold w-[10rem] text-center cursor-pointer`}
             onMouseEnter={() => setOpened(true)}
             onMouseLeave={() => setOpened(false)}
         >

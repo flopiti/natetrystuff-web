@@ -59,8 +59,8 @@ const CodeV2 = () => {
 
     return (
         <div className="font-AlphaLyrae ">
-            <div className="flex justify-center items-center">
-                <Loader loading={true} />
+            <div className="flex justify-center">
+                <Loader loading={false}  className="my-2 mx-12"/>
                 <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
                 
             </div>

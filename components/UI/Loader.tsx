@@ -14,11 +14,12 @@ const grid = [
   
 interface LoaderProps {
     loading: boolean;
+    className?: string;
 }
 
-const Loader = ({loading} : LoaderProps) => {
+const Loader = ({ loading, className }: LoaderProps) => {
     return (
-    <span >
+    <span className={className}>
         {grid.map((row, i) => (
         <span key={i} className="flex">
             {row.map((col, j) =>
