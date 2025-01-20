@@ -11,14 +11,35 @@ export const getAllProjects = async (dirPath: string): Promise<Project[]> => {
     }
 }
 
-export const getProjectFiles = async (selectedProject: Project) => {
+export const getProjectFiles = async (selectedProject: Project): Promise<string[]> => {
     if (!selectedProject) return [];
-    const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store'
-        },
-    });
-    const files = await res.json();
-    return files.data;
+    try {
+        const response = await get<string[]>(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
+            headers: {
+                'Cache-Control': 'no-store'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching project files:', error);
+        return [];
+    }
 }
+
+export const getAllPineconeNode = async () => {
+    try {
+        const response = await get<any>('/api/get-all-nodes', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+                'Surrogate-Control': 'no-store'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching all nodes:', error);
+        return [];
+    }
+};
