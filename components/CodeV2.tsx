@@ -1,5 +1,5 @@
 import { ProjectPath } from "@/interfaces/project";
-import { getAllProjects } from "@/services/mainService";
+import { getAllPineconeNode, getAllProjects, getProjectFiles } from "@/services/mainService";
 import { fetchProjectPaths } from "@/services/projectPathService";
 import { Project } from "@/types/project";
 import { useEffect, useState } from "react";
@@ -17,7 +17,15 @@ const CodeV2 = () => {
         setSelectedProject(project);
     }
 
-    const getStats = () => {    
+    const getStats = () => {
+        if (!selectedProject) return;
+        getProjectFiles(selectedProject).then((files: any[]) => {
+            console.log(files);
+        });
+        console.log('fwefew')
+        getAllPineconeNode().then((nodes: any) => {
+            console.log(nodes);
+        }   );
     }
 
     useEffect(() => {
