@@ -19,7 +19,6 @@ export const getProjectFiles = async (selectedProject: Project) => {
             'Cache-Control': 'no-store'
         },
     });
-
     const files = await res.json();
     return files.data;
 }
