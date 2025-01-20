@@ -1,5 +1,5 @@
 import { ProjectPath } from "@/interfaces/project";
-import { getAllProjects } from "@/services/gitService";
+import { getAllProjects } from "@/services/mainService";
 import { fetchProjectPaths } from "@/services/projectPathService";
 import { Project } from "@/types/project";
 import { useEffect, useState } from "react";
@@ -12,6 +12,18 @@ const CodeV2 = () => {
     const [allProjects, setAllProjects] = useState<Project[]>([]);
     const [projectPath, setProjectPath] = useState<string | null>(null);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+    const handleSelectProject = (project: Project) => {
+        setSelectedProject(project);
+    }
+
+    const getStats = () => {    
+    }
+
+    useEffect(() => {
+        if (!selectedProject) return;
+        getStats();
+    }, [selectedProject]);
 
     //fetch useEffects
     //1. Fetch project paths
@@ -29,13 +41,10 @@ const CodeV2 = () => {
         });
     }, [projectPath]);
 
-
-    const handleSelectProject = (project: Project) => {
-        setSelectedProject(project);
-    }
     return (
         <div className="font-AlphaLyrae ">
             <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
+            
       </div>
       );
 }

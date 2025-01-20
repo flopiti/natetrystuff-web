@@ -20,18 +20,7 @@ export const formatISODate = (date: Date): string => {
     return `${date.toISOString().split('T')[0]}T00:00:00`;
 };
 
-export const getProjectFiles = async (selectedProject: any) => {
-    if (!selectedProject) return [];
-    const res = await fetch(`api/get-all-filenames?project=${selectedProject.name}&type=${selectedProject.type}`, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store'
-        },
-    });
 
-    const files = await res.json();
-    return files.data;
-}
 
 
 

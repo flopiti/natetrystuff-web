@@ -2,7 +2,8 @@ export const dynamic = 'force-dynamic'
 import React, { useState, useEffect } from "react";
 import { embedFile, getAllNodes } from '@/services/chatService';
 import { Project } from "@/types/project";
-import { getFile, getProjectFiles } from "@/app/utils";
+import { getFile } from "@/app/utils";
+import { getProjectFiles } from "@/services/mainService";
 
 export interface SystemDashboardProps {
   project: Project;
