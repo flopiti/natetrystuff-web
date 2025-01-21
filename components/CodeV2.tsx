@@ -1,5 +1,5 @@
 import { ProjectPath } from "@/interfaces/project";
-import { getAllPineconeNode, getAllProjects, getProjectFiles } from "@/services/mainService";
+import { getAllPineconeNode, getAllProjects, getLatestPrompt, getProjectFiles } from "@/services/mainService";
 import { fetchProjectPaths } from "@/services/projectPathService";
 import { Project } from "@/types/project";
 import { useEffect, useState } from "react";
@@ -22,6 +22,8 @@ const CodeV2 = () => {
 
     const [files, setFiles] = useState<string[]>([]);
     const [nodes, setNodes] = useState<any[]>([]);
+
+    const [prompt, setPrompt] = useState<string | null>(null);
 
     const handleSelectProject = (project: Project) => {
         setSelectedProject(project);
@@ -64,6 +66,14 @@ const CodeV2 = () => {
         });
     }, [selectedProject]);
 
+    //4. Fetch latest prompt
+    useEffect(() => {
+        getLatestPrompt().then((prompt: any) => {
+            setPrompt(prompt);
+        });
+    }, []);
+
+    console.log('Prompt:', prompt);
 
     return (
         <div className="font-Orbitron ">
@@ -78,7 +88,9 @@ const CodeV2 = () => {
                         <span className="flex">
                             <CustomButton onClick={() => handleEmbed} >Embed</CustomButton>
                             <CustomButton className="-ml-[0.0625rem]" onClick={() => handleReembed} >Re-embed</CustomButton>
-                        </span>                    
+                        </span>                
+
+
                     </div>
                 )
             }

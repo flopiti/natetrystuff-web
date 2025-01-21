@@ -30,7 +30,6 @@ export const getAllPineconeNode = async () => {
     try {
         const response = await get<any>('/api/get-all-nodes', {
             headers: {
-                'Content-Type': 'application/json',
                 'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
                 'Pragma': 'no-cache',
                 'Expires': '0',
@@ -43,3 +42,13 @@ export const getAllPineconeNode = async () => {
         return [];
     }
 };
+
+export const getLatestPrompt = async () => {
+    try {
+        const response = await get<any>('/api/latest-prompt');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching latest prompt:', error);
+        return [];
+    }
+}   
