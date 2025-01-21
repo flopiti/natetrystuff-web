@@ -2,18 +2,18 @@
 import { useState } from 'react'; import { motion } from 'framer-motion';
 
 interface RichTextBoxProps {
-  text: string;
+  text: string| null;
   handleSubmit: (text:string) => void;
 }
 
 export default function RichTextBox( {text, handleSubmit} : RichTextBoxProps ) {
-  const [content, setContent] = useState(text);
+  const [content, setContent] = useState(text || '');
   const [focused, setFocused] = useState(false);
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
       handleSubmit(content);
-      e.currentTarget.blur(); // Focus out after pressing Enter
+      e.currentTarget.blur();
     }
   };
 
