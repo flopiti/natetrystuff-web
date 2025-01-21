@@ -77,7 +77,7 @@ const CodeV2 = () => {
     console.log('Prompt:', prompt);
 
     return (
-        <div className="font-Orbitron ">
+        <div className="font-Orbitron flex flex-col items-center">
             <div className="flex justify-center">
                 <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
             </div>                            
