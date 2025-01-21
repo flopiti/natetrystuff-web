@@ -31,7 +31,7 @@ const Loader = ({ loading, className }: LoaderProps) => {
                 animate={
                     loading
                     ? {
-                        backgroundColor: ["#000000", "##53DD6C", "#000000"],
+                        backgroundColor: ["#000000", "#53DD6C", "#000000"],
                         transition: {
                             duration: 1,
                             repeat: Infinity,

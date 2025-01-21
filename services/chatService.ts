@@ -193,7 +193,6 @@ try {
  }
 
 export const getAllNodes = async () => {
-  console.log('DUDE WHY THE FUCK is this not reacing')
   try {
     const response = await fetch('/api/get-all-nodes', {
       method: 'GET',
@@ -205,9 +204,7 @@ export const getAllNodes = async () => {
         'Surrogate-Control': 'no-store'
       },
       cache: 'no-store',
-
-      
-    });
+  });
 
     if (response.ok) {
       const data = await response.json();
