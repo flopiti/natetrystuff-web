@@ -1,8 +1,13 @@
 // Front-end Good Practice: https://web.dev/learn/
 import { useState } from 'react'; import { motion } from 'framer-motion';
 
-export default function RichTextBox(){
-  const [content, setContent] = useState('');
+interface RichTextBoxProps {
+  text: string;
+  handleSubmit: (text:string) => void;
+}
+
+export default function RichTextBox( {text, handleSubmit} : RichTextBoxProps ) {
+  const [content, setContent] = useState(text);
   const [focused, setFocused] = useState(false);
   return (
     <div className="relative py-4 m-5 w-96 h-48">
@@ -14,8 +19,9 @@ export default function RichTextBox(){
         onBlur={()=>setFocused(false)} 
         animate={{ boxShadow: focused ? '0 0 10px rgba(0,0,0,0.5)' : 'none' }} 
         transition={{ duration:0.3 }}
+        onKeyDown={e => e.key==='Enter' && handleSubmit(content)}
       />
-      <button className="absolute bottom-[1.25rem] right-[1rem]" onClick={()=>console.log('Posting:', content)}>&#x23CE;</button>
+      <button className="absolute bottom-[1.25rem] right-[1rem]" onClick={()=>handleSubmit(content)}>&#x23CE;</button>
     </div>
   );
 }

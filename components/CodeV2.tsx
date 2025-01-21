@@ -11,8 +11,11 @@ import Loader from "./UI/Loader";
 import CustomButton from "./UI/CustomButton";
 import RichTextBox from "./UI/RichText";
 
-
-
+interface Prompt {
+    promptId: number;
+    promptText: string;
+    creationDate: string;
+}
 
 const CodeV2 = () => {
 
@@ -24,7 +27,12 @@ const CodeV2 = () => {
     const [files, setFiles] = useState<string[]>([]);
     const [nodes, setNodes] = useState<any[]>([]);
 
-    const [prompt, setPrompt] = useState<string | null>(null);
+    const [prompt, setPrompt] = useState<Prompt | null>(null);
+
+
+    const handlePromptSubmit = (text: string) => {
+        console.log('Prompt submitted:', text);
+    }
 
     const handleSelectProject = (project: Project) => {
         setSelectedProject(project);
@@ -94,7 +102,7 @@ const CodeV2 = () => {
                     </div>
                 )
             }
-            <RichTextBox />
+            {prompt && <RichTextBox text={prompt?.promptText} handleSubmit={handlePromptSubmit}/> }
       </div>
       );
 }
