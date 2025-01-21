@@ -4,18 +4,59 @@ import { ProjectPath } from "@/interfaces/project";import { getAllPineconeNode,g
 interface Prompt{promptId:number;promptText:string;creationDate:string;}
 
 const CodeV2=()=>{
-  const[allProjects,setAllProjects]=useState<Project[]>([]),[projectPath,setProjectPath]=useState<string|null>(null),
-        [selectedProject,setSelectedProject]=useState<Project|null>(null),[files,setFiles]=useState<string[]>([]),
-        [nodes,setNodes]=useState<any[]>([]),[prompt,setPrompt]=useState<Prompt|null>(null),[showPrompt,setShowPrompt]=useState<boolean>(false);
-  const handlePromptSubmit=(text:string)=>{console.log('Prompt submitted:',text);setShowPrompt(false);};
-  const handleSelectProject=(project:Project)=>{setSelectedProject(project);};
-  const handleEmbed=()=>{console.log('Embed');};
-  const handleReembed=()=>{console.log('Reembed');};
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [projectPath, setProjectPath] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [files, setFiles] = useState<string[]>([]);
+  const [nodes, setNodes] = useState<any[]>([]);
+  const [prompt, setPrompt] = useState<Prompt | null>(null);
+  const [showPrompt, setShowPrompt] = useState<boolean>(false);
 
-  useEffect(()=>{fetchProjectPaths().then((data:ProjectPath[])=>{setProjectPath(data[0].path);});},[]);
-  useEffect(()=>{if(!projectPath)return;getAllProjects(projectPath).then((projects:Project[])=>{setAllProjects(projects);});},[projectPath]);
-  useEffect(()=>{if(!selectedProject)return;getProjectFiles(selectedProject).then((files:any[])=>{setFiles(files);});getAllPineconeNode().then((nodes:any)=>{setNodes(nodes.matches);});},[selectedProject]);
-  useEffect(()=>{getLatestPrompt().then((prompt:any)=>{setPrompt(prompt);});},[]);
+  const handlePromptSubmit = (text: string) => {
+    console.log('Prompt submitted:', text);
+    setShowPrompt(false);
+  };
+
+  const handleSelectProject = (project: Project) => {
+    setSelectedProject(project);
+  };
+
+  const handleEmbed = () => {
+    console.log('Embed');
+  };
+
+  const handleReembed = () => {
+    console.log('Reembed');
+  };
+
+  useEffect(() => {
+    fetchProjectPaths().then((data: ProjectPath[]) => {
+      setProjectPath(data[0].path);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!projectPath) return;
+    getAllProjects(projectPath).then((projects: Project[]) => {
+      setAllProjects(projects);
+    });
+  }, [projectPath]);
+
+  useEffect(() => {
+    if (!selectedProject) return;
+    getProjectFiles(selectedProject).then((files: any[]) => {
+      setFiles(files);
+    });
+    getAllPineconeNode().then((nodes: any) => {
+      setNodes(nodes.matches);
+    });
+  }, [selectedProject]);
+
+  useEffect(() => {
+    getLatestPrompt().then((prompt: any) => {
+      setPrompt(prompt);
+    });
+  }, []);
 
   return(
     <div className="font-Orbitron flex flex-col items-center">
