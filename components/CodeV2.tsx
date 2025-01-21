@@ -9,6 +9,7 @@ import {AnimatePresence, motion, Variants} from 'framer-motion';
 import React from "react";
 import Loader from "./UI/Loader";
 import CustomButton from "./UI/CustomButton";
+import RichTextBox from "./UI/RichText";
 
 
 
@@ -90,10 +91,10 @@ const CodeV2 = () => {
                             <CustomButton className="-ml-[0.0625rem]" onClick={() => handleReembed} >Re-embed</CustomButton>
                         </span>                
 
-
                     </div>
                 )
             }
+            <RichTextBox />
       </div>
       );
 }
