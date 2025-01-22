@@ -64,7 +64,11 @@ const CodeV2=()=>{
         <Dropdown<Project> onSelect={handleSelectProject} selectedOption={selectedProject} options={allProjects} labelKey='name' />
       </div>
       {selectedProject && (
-        <div  className="flex flex-col items-center">
+        <motion.div  
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0, transition: { delay: 1 } }}
+          exit={{ opacity: 0, y: -20 }}
+          className="flex flex-col items-center">
           <div className="flex justify-center items-center gap-10 my-10"> 
             <Loader loading={false}/>
             <span className="text-sm">{`${nodes?.length} / ${files?.length} embedded`}</span>
@@ -85,7 +89,7 @@ const CodeV2=()=>{
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
       )}
     </div>
   );
