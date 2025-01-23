@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const token = (await getAccessToken()).accessToken;
-  const promptText = await request.text(); // expecting plain text
-
+  const promptText = await request.json();
   const res = await fetch(`${process.env.SPRING_BOOT_URL}/prompts`, {
     method: 'POST',
     headers: {

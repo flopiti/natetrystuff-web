@@ -1,5 +1,5 @@
 // Front-end Good Practice: https://web.dev/learn/
-import { ProjectPath } from "@/interfaces/project";import { getAllPineconeNode,getAllProjects,getLatestPrompt,getProjectFiles } from "@/services/mainService";import { fetchProjectPaths } from "@/services/projectPathService";import { Project } from "@/types/project";import { useEffect,useState } from "react";import Dropdown from "./UI/Dropdown";import { AnimatePresence,motion } from 'framer-motion';import React from "react";import Loader from "./UI/Loader";import CustomButton from "./UI/CustomButton";import RichTextBox from "./UI/RichText";
+import { ProjectPath } from "@/interfaces/project";import { createPrompt, getAllPineconeNode,getAllProjects,getLatestPrompt,getProjectFiles } from "@/services/mainService";import { fetchProjectPaths } from "@/services/projectPathService";import { Project } from "@/types/project";import { useEffect,useState } from "react";import Dropdown from "./UI/Dropdown";import { AnimatePresence,motion } from 'framer-motion';import React from "react";import Loader from "./UI/Loader";import CustomButton from "./UI/CustomButton";import RichTextBox from "./UI/RichText";
 
 interface Prompt{promptId:number;promptText:string;creationDate:string;}
 
@@ -12,9 +12,11 @@ const CodeV2=()=>{
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [showPrompt, setShowPrompt] = useState<boolean>(false);
 
-  const handlePromptSubmit = (text: string) => {
-    console.log('Prompt submitted:', text);
+  const handlePromptSubmit = async (prompt: any) => {
     setShowPrompt(false);
+    await createPrompt(prompt);
+    const latestPrompt = await getLatestPrompt();
+    setPrompt(latestPrompt);
   };
 
   const handleSelectProject = (project: Project) => {
@@ -58,6 +60,7 @@ const CodeV2=()=>{
     });
   }, []);
 
+  console.log(prompt);
   return(
     <div className="font-Orbitron flex flex-col items-center">
       <div className="flex justify-center">

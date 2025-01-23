@@ -1,4 +1,4 @@
-import { get } from "@/app/httpClient";
+import { get, post } from "@/app/httpClient";
 import { Project } from "@/interfaces/project";
 
 export const getAllProjects = async (dirPath: string): Promise<Project[]> => {
@@ -51,4 +51,14 @@ export const getLatestPrompt = async () => {
         console.error('Error fetching latest prompt:', error);
         return [];
     }
-}   
+} 
+
+export const createPrompt = async (prompt: string) => {
+    try {
+        const response = await post<any>('/api/latest-prompt', prompt);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating prompt:', error);
+        return [];
+    }
+}
